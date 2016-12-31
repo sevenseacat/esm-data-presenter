@@ -42,7 +42,7 @@ defmodule Tes.Parser do
 
   defp parse_record(<<type::binary-size(4), size::little-integer-size(32), _header1::bytes-size(4), _flags::bytes-size(4)>>, file) do
     subrecords = IO.binread(file, size) |> parse_sub_records(type, [])
-    {[[type, subrecords]], file}
+    {[{type, subrecords}], file}
   end
 
   @doc """
@@ -72,10 +72,25 @@ defmodule Tes.Parser do
   For type-specific formatting.
   eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   """
+  defp format_value("BOOK", name, value) when name in ["NAME", "MODL", "FNAM", "ITEX", "SCRI", "ENAM"], do: strip_null_terminator(value)
+  defp format_value("BOOK", "BKDT", <<weight::little-float-size(32),
+    value::little-integer-size(32), scroll::little-integer-size(32), skill_id::signed-little-integer-size(32),
+    enchantment::little-integer-size(32)>>) do
+      skill_id = if skill_id > 0, do: skill_id, else: nil
+      %{weight: weight, value: value, scroll: scroll == 1, skill_id: skill_id, enchantment: enchantment}
+  end
+  defp format_value("BOOK", "TEXT", value) do
+    # 147 and 148 are Windows-specific smart quotes - replace with Unicode quotes
+    value |> String.replace(<<147>>, "“") |> String.replace(<<148>>, "”")
+  end
+
   defp format_value("SKIL", "INDX", <<size::little-integer-size(32)>>), do: size
   defp format_value("SKIL", "SKDT", <<attribute_id::little-integer-size(32),
     specialization::little-integer-size(32), uses::binary>>) do
       %{attribute_id: attribute_id, specialization: specialization, uses: uses}
   end
+
   defp format_value(_type, _name, value), do: value
+
+  defp strip_null_terminator(name), do: String.trim_trailing name, <<0>>
 end
