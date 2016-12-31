@@ -34,4 +34,23 @@ defmodule Tes.EsmFormatter do
       text: Map.get(raw_data, "TEXT")
     }
   end
+
+  def faction(%{"NAME" => key, "FNAM" => name, "FADT" => fadt}=raw_data) do
+    %Tes.Faction{
+      key: key,
+      name: name,
+      favorite_attribute_ids: Map.get(fadt, :attribute_ids),
+      favorite_skill_ids: Map.get(fadt, :skill_ids),
+      reactions: Map.get(raw_data, "ANAM/INTV", []),
+      hidden: Map.get(fadt, :flags) == 1,
+      ranks: []
+    }
+    |> zip_faction_ranks(Map.get(raw_data, "RNAM", []), Map.get(fadt, :rankings))
+  end
+
+  defp zip_faction_ranks(faction, [], _), do: faction
+  defp zip_faction_ranks(faction, [name | names], [rank | ranks]) do
+    Map.update!(faction, :ranks, fn ranks -> ranks ++ [Map.put(rank, :name, name)] end)
+    |> zip_faction_ranks(names, ranks)
+  end
 end

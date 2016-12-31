@@ -45,6 +45,7 @@ defmodule Tes.EsmFile do
 
   defp build_record("SKIL", subrecords), do: Tes.EsmFormatter.skill(subrecords)
   defp build_record("BOOK", subrecords), do: Tes.EsmFormatter.book(subrecords)
+  defp build_record("FACT", subrecords), do: Tes.EsmFormatter.faction(subrecords)
   defp build_record(type, subrecords), do: %{type: type, subrecords: subrecords}
 
   @doc """
@@ -67,19 +68,42 @@ defmodule Tes.EsmFile do
     value = binary_part(rest, 0, size)
     rest = binary_part(rest, size, (byte_size(rest)-size))
 
-    new_list = record_value(list, name, format_value(type, name, value))
+    new_list = record_value(list, type, name, format_value(type, name, value))
     parse_sub_records(rest, type, new_list)
   end
 
   @doc """
   Later down the track a function head can be added for lists of properties, eg. NPC-held items or dialogue conditions
   """
-  def record_value(list, name, value), do: Map.put_new(list, name, value)
+  defp record_value(list, "FACT", "RNAM", value), do: Map.update(list, "RNAM", [value], &(&1 ++ [value]))
+
+  # ANAM and INTV subrecords come in pairs and should be stored together
+  defp record_value(list, "FACT", "ANAM", value) do
+    Map.update(list, "ANAM/INTV", [{value, nil}], &([{value, nil} | &1]))
+  end
+  defp record_value(list, "FACT", "INTV", value) do
+    # Find the ANAM record with no value - thats what the INTV record belongs to
+    Map.update!(list, "ANAM/INTV", fn([{key, nil} | rest]) -> [{key, value} | rest] end)
+  end
+
+  defp record_value(list, _type, name, value), do: Map.put_new(list, name, value)
 
   @doc """
   For type-specific formatting.
   eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   """
+  defp format_value("FACT", name, value) when name in ["FNAM", "NAME", "RNAM"], do: strip_null(value)
+  defp format_value("FACT", "INTV", <<value::signed-little-integer-size(32)>>), do: value
+  # Rankings and skills are long and repeated - split them out into their own functions
+  defp format_value("FACT", "FADT", <<
+    attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
+		rankings::binary-size(200), skills::binary-size(24),
+    unknown::little-integer-size(32),
+    flags::signed-little-integer-size(32)>>) do
+      %{attribute_ids: [attribute_1, attribute_2], rankings: format_faction_rankings(rankings),
+        skill_ids: format_faction_skills(skills), unknown: unknown, flags: flags}
+  end
+
   defp format_value("BOOK", name, value) when name in ["NAME", "MODL", "FNAM", "ITEX", "SCRI", "ENAM"], do: strip_null(value)
   defp format_value("BOOK", "BKDT", <<weight::little-float-size(32),
     value::little-integer-size(32), scroll::little-integer-size(32), skill_id::signed-little-integer-size(32),
@@ -101,4 +125,22 @@ defmodule Tes.EsmFile do
   defp format_value(_type, _name, value), do: value
 
   defp strip_null(name), do: String.trim_trailing name, <<0>>
+
+  defp format_faction_skills(skills), do: format_faction_skills(skills, [])
+  defp format_faction_skills("", list), do: Enum.reverse(list)
+  defp format_faction_skills(<<skill::signed-little-integer-size(32), rest::binary>>, list) do
+    case skill do
+      -1 -> list
+      skill -> format_faction_skills(rest, [skill | list])
+    end
+  end
+
+  defp format_faction_rankings(rankings), do: format_faction_rankings(rankings, [])
+  defp format_faction_rankings("", list), do: Enum.reverse(list)
+  defp format_faction_rankings(<<attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
+		skill_1::little-integer-size(32), skill_2::little-integer-size(32), faction::little-integer-size(32),
+    rest::binary>>, list) do
+      format_faction_rankings(rest, [%{attribute_1: attribute_1, attribute_2: attribute_2, skill_1: skill_1,
+        skill_2: skill_2, faction: faction} | list])
+	end
 end

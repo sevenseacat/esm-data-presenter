@@ -20,7 +20,7 @@ Some of these won't be parsed at all, but the list is here for completeness
 - [ ] `GMST` (Game settings)
 - [ ] `GLOB` (Global variables)
 - [ ] `CLAS` (Classes)
-- [ ] `FACT` (Factions)
+- [x] `FACT` (Factions)
 - [ ] `RACE` (Races)
 - [ ] `SOUN` (Sounds)
 - [x] `SKIL` (Skills) - "use values" are ignored
