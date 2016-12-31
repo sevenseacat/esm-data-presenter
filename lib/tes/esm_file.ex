@@ -97,7 +97,7 @@ defmodule Tes.EsmFile do
   # Rankings and skills are long and repeated - split them out into their own functions
   defp format_value("FACT", "FADT", <<
     attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
-		rankings::binary-size(200), skills::binary-size(24),
+    rankings::binary-size(200), skills::binary-size(24),
     unknown::little-integer-size(32),
     flags::signed-little-integer-size(32)>>) do
       %{attribute_ids: [attribute_1, attribute_2], rankings: format_faction_rankings(rankings),
@@ -138,9 +138,9 @@ defmodule Tes.EsmFile do
   defp format_faction_rankings(rankings), do: format_faction_rankings(rankings, [])
   defp format_faction_rankings("", list), do: Enum.reverse(list)
   defp format_faction_rankings(<<attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
-		skill_1::little-integer-size(32), skill_2::little-integer-size(32), faction::little-integer-size(32),
+    skill_1::little-integer-size(32), skill_2::little-integer-size(32), faction::little-integer-size(32),
     rest::binary>>, list) do
       format_faction_rankings(rest, [%{attribute_1: attribute_1, attribute_2: attribute_2, skill_1: skill_1,
         skill_2: skill_2, faction: faction} | list])
-	end
+  end
 end
