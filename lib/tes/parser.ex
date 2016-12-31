@@ -36,13 +36,10 @@ defmodule Tes.Parser do
   defp next_record(file) do
     case IO.binread(file, 16) do
       :eof -> {:halt, file}
-      header -> parse_record(header, file)
+      <<type::binary-size(4), size::little-integer-size(32), _header1::bytes-size(4), _flags::bytes-size(4)>> ->
+        subrecords = IO.binread(file, size) |> parse_sub_records(type, %{})
+        {[{type, subrecords}], file}
     end
-  end
-
-  defp parse_record(<<type::binary-size(4), size::little-integer-size(32), _header1::bytes-size(4), _flags::bytes-size(4)>>, file) do
-    subrecords = IO.binread(file, size) |> parse_sub_records(type, [])
-    {[{type, subrecords}], file}
   end
 
   @doc """
@@ -59,14 +56,20 @@ defmodule Tes.Parser do
 
   File format taken from http://www.uesp.net/morrow/tech/mw_esm.txt
   """
-  defp parse_sub_records("", _type, list), do: Enum.reverse(list)
+  defp parse_sub_records("", _type, list), do: list
   defp parse_sub_records(<<name::binary-size(4), size::little-integer-size(32), rest::binary>>, type, list) do
     # Split the "rest" out into the content for this sub-record, and the rest
     value = binary_part(rest, 0, size)
     rest = binary_part(rest, size, (byte_size(rest)-size))
 
-    parse_sub_records(rest, type, [{name, format_value(type, name, value)} | list])
+    new_list = record_value(list, name, format_value(type, name, value))
+    parse_sub_records(rest, type, new_list)
   end
+
+  @doc """
+  Later down the track a function head can be added for lists of properties, eg. NPC-held items or dialogue conditions
+  """
+  def record_value(list, name, value), do: Map.put_new(list, name, value)
 
   @doc """
   For type-specific formatting.

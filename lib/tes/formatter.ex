@@ -14,7 +14,7 @@ defmodule Tes.Formatter do
   def skills(stream) do
     stream
     |> by_key("SKIL")
-    |> Stream.map(fn [{"INDX", id}, {"SKDT", skdt}, {"DESC", desc}] ->
+    |> Stream.map(fn %{"INDX" => id, "SKDT" => skdt, "DESC" => desc} ->
       %{
         id: id,
         name: Map.get(@skills, id),
@@ -28,39 +28,26 @@ defmodule Tes.Formatter do
   def books(stream) do
     stream
     |> by_key("BOOK")
-    |> Stream.map(&book_data/1)
+    |> Stream.map(fn %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt}=raw_data ->
+      %{
+        id: id,
+        model: model,
+        name: name,
+        weight: Map.get(bkdt, :weight),
+        value: Map.get(bkdt, :value),
+        scroll: Map.get(bkdt, :scroll),
+        skill: Map.get(@skills, Map.get(bkdt, :skill_id)),
+        enchantment_name: Map.get(raw_data, "ENAM"),
+        enchantment_points: Map.get(bkdt, :enchantment),
+        script_name: Map.get(raw_data, "SCRI"),
+        texture: Map.get(raw_data, "ITEX"),
+        text: Map.get(raw_data, "TEXT")
+      }
+    end)
   end
 
   defp by_key(stream, key) do
     stream
     |> Stream.filter_map(fn {k, _v} -> k == key end, fn {_k, v} -> v end)
-  end
-
-  defp book_data(proplist), do: book_data(proplist, %{})
-
-  defp book_data([], book), do: book
-  defp book_data([{"NAME", val} | rest], book) do
-    book_data(rest, Map.put(book, :id, val))
-  end
-  defp book_data([{"MODL", val} | rest], book) do
-    book_data(rest, Map.put(book, :model, val))
-  end
-  defp book_data([{"FNAM", val} | rest], book) do
-    book_data(rest, Map.put(book, :name, val))
-  end
-  defp book_data([{"SCRI", val} | rest], book) do
-    book_data(rest, Map.put(book, :script_name, val))
-  end
-  defp book_data([{"ENAM", val} | rest], book) do
-    book_data(rest, Map.put(book, :enchantment_name, val))
-  end
-  defp book_data([{"ITEX", val} | rest], book) do
-    book_data(rest, Map.put(book, :texture, val))
-  end
-  defp book_data([{"TEXT", val} | rest], book) do
-    book_data(rest, Map.put(book, :text, val))
-  end
-  defp book_data([{"BKDT", val} | rest], book) do
-    book_data(rest, Map.merge(book, val))
   end
 end
