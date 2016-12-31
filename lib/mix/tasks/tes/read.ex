@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Tes.Read do
   @filename "./data/Morrowind.esm"
 
   def run(_args) do
-    Tes.Parser.new(@filename)
+    Tes.EsmFile.stream(@filename)
     |> Stream.run
   end
 end
