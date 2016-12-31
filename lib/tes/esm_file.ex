@@ -124,7 +124,7 @@ defmodule Tes.EsmFile do
 
   defp format_value(_type, _name, value), do: value
 
-  defp strip_null(name), do: String.trim_trailing name, <<0>>
+  defp strip_null(name), do: String.split(name, <<0>>, parts: 2) |> List.first
 
   defp format_faction_skills(skills), do: format_faction_skills(skills, [])
   defp format_faction_skills("", list), do: Enum.reverse(list)
