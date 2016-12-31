@@ -73,5 +73,9 @@ defmodule Tes.Parser do
   eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   """
   defp format_value("SKIL", "INDX", <<size::little-integer-size(32)>>), do: size
+  defp format_value("SKIL", "SKDT", <<attribute_id::little-integer-size(32),
+    specialization::little-integer-size(32), uses::binary>>) do
+      %{attribute_id: attribute_id, specialization: specialization, uses: uses}
+  end
   defp format_value(_type, _name, value), do: value
 end
