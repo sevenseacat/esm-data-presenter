@@ -1,11 +1,13 @@
 defmodule Tes.EsmFile do
+  @default_file "data/Morrowind.esm"
+
   @doc """
   Example:
 
   iex> Tes.EsmFile.stream("data/Morrowind.esm") |> Stream.run
   [%Tes.Book{...}, %Tes.Weapon{...}, ...]
   """
-  def stream(filename) do
+  def stream(filename \\ @default_file) do
     Stream.resource(
       fn -> File.open!(filename, [:binary]) end,
       fn(file) -> next_record(file) end,
