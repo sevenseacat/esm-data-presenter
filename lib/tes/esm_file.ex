@@ -38,14 +38,9 @@ defmodule Tes.EsmFile do
       :eof -> {:halt, file}
       <<type::binary-size(4), size::little-integer-size(32), _header1::bytes-size(4), _flags::bytes-size(4)>> ->
         subrecords = IO.binread(file, size) |> parse_sub_records(type, %{})
-        {[build_record(type, subrecords)], file}
+        {[Tes.EsmFormatter.build_record(type, subrecords)], file}
     end
   end
-
-  defp build_record("SKIL", subrecords), do: Tes.EsmFormatter.skill(subrecords)
-  defp build_record("BOOK", subrecords), do: Tes.EsmFormatter.book(subrecords)
-  defp build_record("FACT", subrecords), do: Tes.EsmFormatter.faction(subrecords)
-  defp build_record(type, subrecords), do: %{type: type, subrecords: subrecords}
 
   # All records, as shown above, are again composed entirely of a variable number of
   # sub-records with a similar format, as given below:
@@ -68,21 +63,22 @@ defmodule Tes.EsmFile do
     parse_sub_records(rest, type, new_list)
   end
 
-  defp record_value(list, "FACT", "RNAM", value), do: Map.update(list, "RNAM", [value], &(&1 ++ [value]))
+  defp record_value(list, "FACT", "RNAM", value), do: record_list(list, "RNAM", value)
 
   # ANAM and INTV subrecords come in pairs and should be stored together
-  defp record_value(list, "FACT", "ANAM", value) do
-    Map.update(list, "ANAM/INTV", [{value, nil}], &([{value, nil} | &1]))
-  end
-  defp record_value(list, "FACT", "INTV", value) do
-    # Find the ANAM record with no value - thats what the INTV record belongs to
-    Map.update!(list, "ANAM/INTV", fn([{key, nil} | rest]) -> [{key, value} | rest] end)
-  end
+  defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
+  defp record_value(list, "FACT", "INTV", value), do: record_pair_value(list, "ANAM/INTV", value)
+
+  # ANAM and INTV subrecords come in pairs and should be stored together
+  defp record_value(list, "BSGN", "NPCS", value), do: record_list(list, "NPCS", value)
 
   defp record_value(list, _type, name, value), do: Map.put_new(list, name, value)
 
   # For type-specific formatting.
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
+
+  defp format_value("BSGN", name, value) when name in ["DESC", "NAME", "FNAM", "TNAM", "NPCS"], do: strip_null(value)
+
   defp format_value("FACT", name, value) when name in ["FNAM", "NAME", "RNAM", "ANAM"], do: strip_null(value)
   defp format_value("FACT", "INTV", <<value::signed-little-integer-size(32)>>), do: value
   # Rankings and skills are long and repeated - split them out into their own functions
@@ -114,7 +110,20 @@ defmodule Tes.EsmFile do
 
   defp format_value(_type, _name, value), do: value
 
+  defp strip_null(value)
   defp strip_null(name), do: String.split(name, <<0>>, parts: 2) |> List.first
+
+  defp record_pair_key(list, key, value) do
+    Map.update(list, key, [{value, nil}], &([{value, nil} | &1]))
+  end
+
+  defp record_pair_value(list, key, value) do
+    Map.update!(list, key, fn([{key, nil} | rest]) -> [{key, value} | rest] end)
+  end
+
+  defp record_list(list, key, value) do
+    Map.update(list, key, [value], &(&1 ++ [value]))
+  end
 
   defp faction_skills(skills), do: faction_skills(skills, [])
   defp faction_skills("", list), do: Enum.reverse(list)

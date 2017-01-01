@@ -26,7 +26,7 @@ Some of these won't be parsed at all, but the list is here for completeness
 - [ ] `MGEF` (Magic effects)
 - [ ] `SCPT` (Scripts)
 - [ ] `REGN` (Regions)
-- [ ] `BSGN` (Birth signs)
+- [x] `BSGN` (Birth signs)
 - [ ] `MISC` (Miscellaneous items)
 - [ ] `WEAP` (Weapons)
 - [ ] `CONT` (Containers)

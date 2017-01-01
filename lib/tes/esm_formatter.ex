@@ -8,7 +8,7 @@ defmodule Tes.EsmFormatter do
     21 => "Light Armor", 22 => "Short Blade", 23 => "Marksman", 24 => "Mercantile",
     25 => "Speechcraft", 26 => "Hand to Hand"}
 
-  def skill(%{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
+  def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
     %Tes.Skill{
       id: id,
       name: Map.get(@skill_names, id),
@@ -18,7 +18,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def book(%{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt}=raw_data) do
+  def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt}=raw_data) do
     %Tes.Book{
       id: id,
       name: name,
@@ -35,7 +35,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def faction(%{"NAME" => key, "FNAM" => name, "FADT" => fadt}=raw_data) do
+  def build_record("FACT", %{"NAME" => key, "FNAM" => name, "FADT" => fadt}=raw_data) do
     %Tes.Faction{
       key: key,
       name: name,
@@ -47,6 +47,17 @@ defmodule Tes.EsmFormatter do
     }
     |> zip_faction_ranks(Map.get(raw_data, "RNAM", []), Map.get(fadt, :rankings))
   end
+
+  def build_record("BSGN", %{"NAME" => key, "FNAM" => name, "DESC" => desc, "NPCS" => skills}) do
+    %Tes.Birthsign{
+      key: key,
+      name: name,
+      description: desc,
+      skills: skills
+    }
+  end
+
+  def build_record(type, subrecords), do: %{type: type, subrecords: subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction
   defp zip_faction_ranks(faction, [name | names], [rank | ranks]) do
