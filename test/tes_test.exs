@@ -7,19 +7,20 @@ defmodule TesTest do
   end
 
   test "can read Books successfully", %{stream: stream} do
-    books = Tes.Filter.books(stream)
+    books = Tes.Filter.by_type(stream, :book)
 
     assert length(books) == 1
-    assert List.first(books) == %Tes.Book{id: "my_book", name: "My Awesome Book",
+    assert List.first(books) == %{id: "my_book", name: "My Awesome Book",
       enchantment_points: 10, weight: 2.5, value: 100, model: "", scroll: false,
-      text: "This book is pretty awesome.", skill_id: 6}
+      text: "This book is pretty awesome.", skill_id: 6, enchantment_name: nil,
+      script_name: nil, texture: nil}
   end
 
   test "can read Factions successfully", %{stream: stream} do
-    factions = Tes.Filter.factions(stream)
+    factions = Tes.Filter.by_type(stream, :faction)
 
     assert length(factions) == 1
-    assert List.first(factions) == %Tes.Faction{key: "awesome",
+    assert List.first(factions) == %{key: "awesome",
       name: "Awesome", favorite_attribute_ids: [3, 7],
       favorite_skill_ids: [9, 18, 19, 4, 17], reactions: [{"awesome", 1}],
       hidden: true, ranks: [
