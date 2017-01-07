@@ -99,7 +99,14 @@ defmodule Tes.EsmFile do
   end
   defp format_value("BOOK", "TEXT", value) do
     # 147 and 148 are Windows-specific smart quotes - replace with Unicode quotes
-    value |> strip_null |> String.replace(<<147>>, "“") |> String.replace(<<148>>, "”")
+    # 173 is a "soft hyphen" - just delete them
+    # 239 is a ï as in naïve - it works if you tell Elixir it's encoded in UTF8 but not otherwise
+    value
+    |> strip_null
+    |> String.replace(<<147>>, "“")
+    |> String.replace(<<148>>, "”")
+    |> String.replace(<<173>>, "")
+    |> String.replace(<<239>>, <<239::utf8>>)
   end
 
   defp format_value("SKIL", "INDX", <<size::little-integer-size(32)>>), do: size
