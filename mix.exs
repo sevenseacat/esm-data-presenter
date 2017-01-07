@@ -4,7 +4,7 @@ defmodule Tes.Mixfile do
   def project do
     [app: :tes,
      version: "0.1.0",
-     elixir: "~> 1.3",
+     elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -32,7 +32,7 @@ defmodule Tes.Mixfile do
   defp deps do
     [
       {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.0.0"}
+      {:ecto, "~> 2.1.2"}
     ]
   end
 end

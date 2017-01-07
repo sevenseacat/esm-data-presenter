@@ -8,6 +8,7 @@ defmodule Mix.Tasks.Tes.Import do
     Mix.shell.info("Deleting old skills...")
     Tes.Repo.delete_all(Tes.Skill)
 
+    Mix.shell.info("Importing new skills...")
     Tes.EsmFile.stream
     |> Tes.Filter.by_type(:skill)
     |> Stream.map(&Tes.Skill.changeset/1)
