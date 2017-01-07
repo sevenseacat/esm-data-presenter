@@ -9,55 +9,67 @@ defmodule Tes.EsmFormatter do
     25 => "Speechcraft", 26 => "Hand to Hand"}
 
   def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
-    %Tes.Skill{
-      id: id,
-      name: Map.get(@skill_names, id),
-      attribute_id: Map.get(skdt, :attribute_id),
-      specialization_id: Map.get(skdt, :specialization_id),
-      description: desc
+    {
+      :skill,
+      %{
+        id: id,
+        name: Map.get(@skill_names, id),
+        attribute_id: Map.get(skdt, :attribute_id),
+        specialization_id: Map.get(skdt, :specialization_id),
+        description: desc
+      }
     }
   end
 
   def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt}=raw_data) do
-    %Tes.Book{
-      id: id,
-      name: name,
-      model: model,
-      weight: Map.get(bkdt, :weight),
-      value: Map.get(bkdt, :value),
-      scroll: Map.get(bkdt, :scroll),
-      skill_id: Map.get(bkdt, :skill_id),
-      enchantment_name: Map.get(raw_data, "ENAM"),
-      enchantment_points: Map.get(bkdt, :enchantment),
-      script_name: Map.get(raw_data, "SCRI"),
-      texture: Map.get(raw_data, "ITEX"),
-      text: Map.get(raw_data, "TEXT")
+    {
+      :book,
+      %{
+        id: id,
+        name: name,
+        model: model,
+        weight: Map.get(bkdt, :weight),
+        value: Map.get(bkdt, :value),
+        scroll: Map.get(bkdt, :scroll),
+        skill_id: Map.get(bkdt, :skill_id),
+        enchantment_name: Map.get(raw_data, "ENAM"),
+        enchantment_points: Map.get(bkdt, :enchantment),
+        script_name: Map.get(raw_data, "SCRI"),
+        texture: Map.get(raw_data, "ITEX"),
+        text: Map.get(raw_data, "TEXT")
+      }
     }
   end
 
   def build_record("FACT", %{"NAME" => key, "FNAM" => name, "FADT" => fadt}=raw_data) do
-    %Tes.Faction{
-      key: key,
-      name: name,
-      favorite_attribute_ids: Map.get(fadt, :attribute_ids),
-      favorite_skill_ids: Map.get(fadt, :skill_ids),
-      reactions: Map.get(raw_data, "ANAM/INTV", []),
-      hidden: Map.get(fadt, :flags) == 1,
-      ranks: []
+    {
+      :faction,
+      %{
+        key: key,
+        name: name,
+        favorite_attribute_ids: Map.get(fadt, :attribute_ids),
+        favorite_skill_ids: Map.get(fadt, :skill_ids),
+        reactions: Map.get(raw_data, "ANAM/INTV", []),
+        hidden: Map.get(fadt, :flags) == 1,
+        ranks: []
+      }
+      |> zip_faction_ranks(Map.get(raw_data, "RNAM", []), Map.get(fadt, :rankings))
     }
-    |> zip_faction_ranks(Map.get(raw_data, "RNAM", []), Map.get(fadt, :rankings))
   end
 
   def build_record("BSGN", %{"NAME" => key, "FNAM" => name, "DESC" => desc, "NPCS" => skills}) do
-    %Tes.Birthsign{
-      key: key,
-      name: name,
-      description: desc,
-      skills: skills
+    {
+      :birthsign,
+      %{
+        key: key,
+        name: name,
+        description: desc,
+        skills: skills
+      }
     }
   end
 
-  def build_record(type, subrecords), do: %{type: type, subrecords: subrecords}
+  def build_record(type, subrecords), do: {type, subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction
   defp zip_faction_ranks(faction, [name | names], [rank | ranks]) do

@@ -20,6 +20,14 @@ use Mix.Config
 #
 #     config :logger, level: :info
 #
+config :tes, ecto_repos: [Tes.Repo]
+config :tes, Tes.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "tes_dev",
+  hostname: "localhost",
+  pool_size: 10
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment

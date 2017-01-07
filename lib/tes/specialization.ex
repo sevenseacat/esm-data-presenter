@@ -1,7 +1,9 @@
 defmodule Tes.Specialization do
-  @specializations %{0 => "Combat", 1 => "Magic", 2 => "Stealth"}
+  use Ecto.Schema
 
-  def find(id) do
-    Map.get(@specializations, id)
+  @primary_key {:id, :id, autogenerate: false}
+
+  schema "specializations" do
+    field :name
   end
 end
