@@ -2,16 +2,19 @@ defmodule Mix.Tasks.Tes.Import do
   use Mix.Task
   import Mix.Ecto
 
-  def run(["skill"]) do
+  @supported_types ["skill"]
+
+  def run([type]) when type in @supported_types do
     ensure_started Tes.Repo, []
+    class = :"Elixir.Tes.#{String.capitalize(type)}"
 
-    Mix.shell.info("Deleting old skills...")
-    Tes.Repo.delete_all(Tes.Skill)
+    Mix.shell.info("Deleting old #{type} records...")
+    Tes.Repo.delete_all(class)
 
-    Mix.shell.info("Importing new skills...")
+    Mix.shell.info("Importing new #{type} records...")
     Tes.EsmFile.stream
-    |> Tes.Filter.by_type(:skill)
-    |> Stream.map(&Tes.Skill.changeset/1)
+    |> Tes.Filter.by_type(String.to_atom(type))
+    |> Stream.map(&(apply(class, :changeset, [&1])))
     |> Enum.map(&Tes.Repo.insert!/1)
   end
 
