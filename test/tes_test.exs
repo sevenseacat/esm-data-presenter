@@ -20,20 +20,19 @@ defmodule TesTest do
     factions = Tes.Filter.by_type(stream, :faction)
 
     assert length(factions) == 1
-    assert List.first(factions) == %{key: "awesome",
-      name: "Awesome", favorite_attribute_ids: [3, 7],
-      favorite_skill_ids: [9, 18, 19, 4, 17], reactions: [{"awesome", 1}],
-      hidden: true, ranks: [
-        %{name: "Rank A", attribute_1: 10, attribute_2: 10, skill_1: 20, skill_2: 15, faction: 0},
-        %{name: "Rank B", attribute_1: 15, attribute_2: 12, skill_1: 20, skill_2: 20, faction: 10},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0},
-        %{name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, faction: 0}
+    assert List.first(factions) == %{id: "awesome", name: "Awesome",
+      favorite_skill_ids: [9, 18, 19, 4, 17], reactions: [%{target_id: "awesome", adjustment: 1}],
+      hidden: true, attribute_1_id: 3, attribute_2_id: 7, ranks: [
+        %{number: 1, name: "Rank A", attribute_1: 10, attribute_2: 10, skill_1: 20, skill_2: 15, reputation: 0},
+        %{number: 2, name: "Rank B", attribute_1: 15, attribute_2: 12, skill_1: 20, skill_2: 20, reputation: 10},
+        %{number: 3, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 4, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 5, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 6, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 7, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 8, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 9, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0},
+        %{number: 10, name: "", attribute_1: 0, attribute_2: 0, skill_1: 0, skill_2: 0, reputation: 0}
       ]
     }
   end
