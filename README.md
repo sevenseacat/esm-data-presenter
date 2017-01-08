@@ -8,45 +8,47 @@ Using the amazing work of Dave Humphrey detailed here: http://www.uesp.net/morro
 
 ## The Plan
 
-- [ ] Parse the ESM data file into a meaningful format
-- [ ] Insert the parsed data into a database
-- [ ] Build frontend to present data nicely
+- Parse the ESM data file into a meaningful format
+- Insert the parsed data into a database
+- Build frontend to present data nicely
 
-## Record types parsed from ESM so far
+## Record types
 
-Some of these won't be parsed at all, but the list is here for completeness
+Some of these won't be handled at all, but the list is here for completeness
 
-- [ ] `TES3` (Main header record)
-- [ ] `GMST` (Game settings)
-- [ ] `GLOB` (Global variables)
-- [ ] `CLAS` (Classes)
-- [x] `FACT` (Factions)
-- [ ] `RACE` (Races)
-- [x] `SKIL` (Skills) - "use values" are ignored
-- [ ] `MGEF` (Magic effects)
-- [ ] `SCPT` (Scripts)
-- [ ] `REGN` (Regions)
-- [x] `BSGN` (Birth signs)
-- [ ] `MISC` (Miscellaneous items)
-- [ ] `WEAP` (Weapons)
-- [ ] `CONT` (Containers)
-- [ ] `SPEL` (Spells)
-- [ ] `ENCH` (Enchantments)
-- [ ] `NPC_` (NPCs)
-- [ ] `ARMO` (Armour)
-- [ ] `CLOT` (Clothing)
-- [ ] `REPA` (Repair items)
-- [ ] `APPA` (Alchemy apparatus)
-- [ ] `LOCK` (Lockpicking items)
-- [ ] `PROB` (Probe items)
-- [ ] `INGR` (Ingredients)
-- [x] `BOOK` (Books and papers)
-- [ ] `ALCH` (Potions?)
-- [ ] `LEVI` (Levelled items)
-- [ ] `LEVC` (Levelled creatures)
-- [ ] `CELL` (Cells)
-- [ ] `DIAL` (Dialogue/journal topic)
-- [ ] `INFO` (Dialogue/journal records)
+| Parsed | Imported | Displayed | Name |
+| :---:  | :---:    | :---:     |------|
+|        |          |           | `TES3` (Main header record) |
+|        |          |           | `GMST` (Game settings) |
+|        |          |           | `GLOB` (Global variables) |
+|        |          |           | `CLAS` (Classes) |
+| ✅     | ✅        |           | `FACT` (Factions) |
+|        |          |           | `RACE` (Races) |
+| ✅     | ✅        |           | `SKIL` (Skills) - "use values" are ignored |
+|        |          |           | `MGEF` (Magic effects) |
+|        |          |           | `SCPT` (Scripts) |
+|        |          |           | `REGN` (Regions) |
+| ✅     |          |           | `BSGN` (Birth signs) |
+|        |          |           | `MISC` (Miscellaneous items) |
+|        |          |           | `WEAP` (Weapons) |
+|        |          |           | `CONT` (Containers) |
+|        |          |           | `SPEL` (Spells) |
+|        |          |           | `ENCH` (Enchantments) |
+|        |          |           | `NPC_` (NPCs) |
+|        |          |           | `ARMO` (Armour) |
+|        |          |           | `CLOT` (Clothing) |
+|        |          |           | `REPA` (Repair items) |
+|        |          |           | `APPA` (Alchemy apparatus) |
+|        |          |           | `LOCK` (Lockpicking items) |
+|        |          |           | `PROB` (Probe items) |
+|        |          |           | `INGR` (Ingredients) |
+| ✅     | ✅        |           | `BOOK` (Books and papers) |
+|        |          |           | `ALCH` (Potions?) |
+|        |          |           | `LEVI` (Levelled items) |
+|        |          |           | `LEVC` (Levelled creatures) |
+|        |          |           | `CELL` (Cells) |
+|        |          |           | `DIAL` (Dialogue/journal topic) |
+|        |          |           | `INFO` (Dialogue/journal records) |
 
 ### Record types (probably) not going to be done
 
