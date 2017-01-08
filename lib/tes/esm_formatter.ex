@@ -70,6 +70,18 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "SPDT" => spdt, "ENAM" => enam}) do
+    {
+      :spell,
+      %{
+        id: id,
+        name: name,
+        effects: enam
+      }
+      |> Map.merge(spdt)
+    }
+  end
+
   def build_record(type, subrecords), do: {type, subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction

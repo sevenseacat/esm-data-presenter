@@ -1,4 +1,6 @@
 defmodule Tes.EsmFile do
+  import Bitwise, only: [band: 2]
+
   @default_file "data/Morrowind.esm"
 
   @doc """
@@ -69,13 +71,28 @@ defmodule Tes.EsmFile do
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
   defp record_value(list, "FACT", "INTV", value), do: record_pair_value(list, "ANAM/INTV", value)
 
-  # ANAM and INTV subrecords come in pairs and should be stored together
   defp record_value(list, "BSGN", "NPCS", value), do: record_list(list, "NPCS", value)
+  defp record_value(list, "SPEL", "ENAM", value), do: record_list(list, "ENAM", value)
 
   defp record_value(list, _type, name, value), do: Map.put_new(list, name, value)
 
+  ###############################
   # For type-specific formatting.
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
+  ###############################
+  defp format_value("SPEL", name, value) when name in ["NAME", "FNAM"], do: strip_null(value)
+  defp format_value("SPEL", "SPDT", <<type::signed-little-integer-size(32),
+    cost::signed-little-integer-size(32), flags::signed-little-integer-size(32)>>) do
+      # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
+      %{type: type, cost: cost, autocalc: band(flags, 1) == 1,
+        starting_spell: band(flags, 2) == 2, always_succeeds: band(flags, 4) == 4}
+  end
+  defp format_value("SPEL", "ENAM", <<effect::signed-little-integer-size(16), skill::signed-little-integer-size(8),
+    attribute::signed-little-integer-size(8), type::signed-little-integer-size(32), area::signed-little-integer-size(32),
+    duration::signed-little-integer-size(32), min::signed-little-integer-size(32), max::signed-little-integer-size(32)>>) do
+    %{effect_id: effect, skill_id: nil_or_value(skill), attribute_id: nil_or_value(attribute), type: type, area: area,
+      duration: duration, magnitude_min: min, magnitude_max: max}
+  end
 
   defp format_value("BSGN", name, value) when name in ["DESC", "NAME", "FNAM", "TNAM", "NPCS"], do: strip_null(value)
 
@@ -94,8 +111,7 @@ defmodule Tes.EsmFile do
   defp format_value("BOOK", "BKDT", <<weight::little-float-size(32),
     value::little-integer-size(32), scroll::little-integer-size(32),
     skill_id::signed-little-integer-size(32), enchantment::little-integer-size(32)>>) do
-      skill_id = if skill_id > 0, do: skill_id, else: nil
-      %{weight: weight, value: value, scroll: scroll == 1, skill_id: skill_id, enchantment: enchantment}
+      %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_or_value(skill_id), enchantment: enchantment}
   end
   defp format_value("BOOK", "TEXT", value) do
     # 147 and 148 are Windows-specific smart quotes - replace with Unicode quotes
@@ -147,4 +163,6 @@ defmodule Tes.EsmFile do
       faction_rankings(rest, [%{number: number, attribute_1: attribute_1, attribute_2: attribute_2, skill_1: skill_1,
         skill_2: skill_2, reputation: reputation} | list], number+1)
   end
+
+  defp nil_or_value(value), do: if value >= 0, do: value, else: nil
 end
