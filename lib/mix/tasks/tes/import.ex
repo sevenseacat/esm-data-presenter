@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Tes.Import do
   use Mix.Task
   import Mix.Ecto
 
-  @supported_types ["skill", "book"]
+  @supported_types ["skill", "book", "faction"]
 
   def run([type]) when type in @supported_types do
     ensure_started Tes.Repo, []

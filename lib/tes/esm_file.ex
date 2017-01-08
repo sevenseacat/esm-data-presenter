@@ -139,12 +139,12 @@ defmodule Tes.EsmFile do
     faction_skills(rest, [skill | list])
   end
 
-  defp faction_rankings(rankings), do: faction_rankings(rankings, [])
-  defp faction_rankings("", list), do: Enum.reverse(list)
+  defp faction_rankings(rankings), do: faction_rankings(rankings, [], 1)
+  defp faction_rankings("", list, _number), do: Enum.reverse(list)
   defp faction_rankings(<<attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
-    skill_1::little-integer-size(32), skill_2::little-integer-size(32), faction::little-integer-size(32),
-    rest::binary>>, list) do
-      faction_rankings(rest, [%{attribute_1: attribute_1, attribute_2: attribute_2, skill_1: skill_1,
-        skill_2: skill_2, faction: faction} | list])
+    skill_1::little-integer-size(32), skill_2::little-integer-size(32), reputation::little-integer-size(32),
+    rest::binary>>, list, number) do
+      faction_rankings(rest, [%{number: number, attribute_1: attribute_1, attribute_2: attribute_2, skill_1: skill_1,
+        skill_2: skill_2, reputation: reputation} | list], number+1)
   end
 end
