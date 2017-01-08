@@ -3,6 +3,10 @@ defmodule Tes.EsmFile do
 
   @default_file "data/Morrowind.esm"
 
+  defmacro long do
+    quote do: signed-little-integer-size(32)
+  end
+
   @doc """
   Example:
 
@@ -38,7 +42,7 @@ defmodule Tes.EsmFile do
   defp next_record(file) do
     case IO.binread(file, 16) do
       :eof -> {:halt, file}
-      <<type::binary-size(4), size::little-integer-size(32), _header1::bytes-size(4), _flags::bytes-size(4)>> ->
+      <<type::binary-4, size::long, _header1::bytes-4, _flags::bytes-4>> ->
         subrecords = IO.binread(file, size) |> parse_sub_records(type, %{})
         {[Tes.EsmFormatter.build_record(type, subrecords)], file}
     end
@@ -56,7 +60,7 @@ defmodule Tes.EsmFile do
   #
   # File format taken from http://www.uesp.net/morrow/tech/mw_esm.txt
   defp parse_sub_records("", _type, list), do: list
-  defp parse_sub_records(<<name::binary-size(4), size::little-integer-size(32), rest::binary>>, type, list) do
+  defp parse_sub_records(<<name::binary-4, size::long, rest::binary>>, type, list) do
     # Split the "rest" out into the content for this sub-record, and the rest
     value = binary_part(rest, 0, size)
     rest = binary_part(rest, size, (byte_size(rest)-size))
@@ -81,15 +85,13 @@ defmodule Tes.EsmFile do
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   ###############################
   defp format_value("SPEL", name, value) when name in ["NAME", "FNAM"], do: strip_null(value)
-  defp format_value("SPEL", "SPDT", <<type::signed-little-integer-size(32),
-    cost::signed-little-integer-size(32), flags::signed-little-integer-size(32)>>) do
+  defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
       # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
       %{type: type, cost: cost, autocalc: band(flags, 1) == 1,
         starting_spell: band(flags, 2) == 2, always_succeeds: band(flags, 4) == 4}
   end
-  defp format_value("SPEL", "ENAM", <<effect::signed-little-integer-size(16), skill::signed-little-integer-size(8),
-    attribute::signed-little-integer-size(8), type::signed-little-integer-size(32), area::signed-little-integer-size(32),
-    duration::signed-little-integer-size(32), min::signed-little-integer-size(32), max::signed-little-integer-size(32)>>) do
+  defp format_value("SPEL", "ENAM", <<effect::signed-little-16, skill::signed-little-8,
+    attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>) do
     %{effect_id: effect, skill_id: nil_or_value(skill), attribute_id: nil_or_value(attribute), type: type, area: area,
       duration: duration, magnitude_min: min, magnitude_max: max}
   end
@@ -97,21 +99,18 @@ defmodule Tes.EsmFile do
   defp format_value("BSGN", name, value) when name in ["DESC", "NAME", "FNAM", "TNAM", "NPCS"], do: strip_null(value)
 
   defp format_value("FACT", name, value) when name in ["FNAM", "NAME", "RNAM", "ANAM"], do: strip_null(value)
-  defp format_value("FACT", "INTV", <<value::signed-little-integer-size(32)>>), do: value
+  defp format_value("FACT", "INTV", <<value::long>>), do: value
   # Rankings and skills are long and repeated - split them out into their own functions
-  defp format_value("FACT", "FADT", <<
-    attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
-    rankings::binary-size(200), skills::binary-size(24),
-    unknown::little-integer-size(32), flags::signed-little-integer-size(32)>>) do
+  defp format_value("FACT", "FADT", <<attribute_1::long, attribute_2::long,
+    rankings::binary-200, skills::binary-24, unknown::long, flags::long>>) do
       %{attribute_ids: [attribute_1, attribute_2], rankings: faction_rankings(rankings),
         skill_ids: faction_skills(skills), unknown: unknown, flags: flags}
   end
 
   defp format_value("BOOK", name, value) when name in ["NAME", "MODL", "FNAM", "ITEX", "SCRI", "ENAM"], do: strip_null(value)
-  defp format_value("BOOK", "BKDT", <<weight::little-float-size(32),
-    value::little-integer-size(32), scroll::little-integer-size(32),
-    skill_id::signed-little-integer-size(32), enchantment::little-integer-size(32)>>) do
-      %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_or_value(skill_id), enchantment: enchantment}
+  defp format_value("BOOK", "BKDT", <<weight::little-float-32, value::long, scroll::long,
+    skill_id::long, enchantment::long>>) do
+    %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_or_value(skill_id), enchantment: enchantment}
   end
   defp format_value("BOOK", "TEXT", value) do
     # 147 and 148 are Windows-specific smart quotes - replace with Unicode quotes
@@ -125,10 +124,9 @@ defmodule Tes.EsmFile do
     |> String.replace(<<239>>, <<239::utf8>>)
   end
 
-  defp format_value("SKIL", "INDX", <<size::little-integer-size(32)>>), do: size
-  defp format_value("SKIL", "SKDT", <<attribute_id::little-integer-size(32),
-    specialization_id::little-integer-size(32), uses::binary>>) do
-      %{attribute_id: attribute_id, specialization_id: specialization_id, uses: uses}
+  defp format_value("SKIL", "INDX", <<size::long>>), do: size
+  defp format_value("SKIL", "SKDT", <<attribute_id::long, specialization::long, uses::binary>>) do
+      %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
   end
 
   defp format_value(_type, _name, value), do: value
@@ -150,16 +148,15 @@ defmodule Tes.EsmFile do
 
   defp faction_skills(skills), do: faction_skills(skills, [])
   defp faction_skills("", list), do: Enum.reverse(list)
-  defp faction_skills(<<-1::signed-little-integer-size(32), _rest::binary>>, list), do: list
-  defp faction_skills(<<skill::signed-little-integer-size(32), rest::binary>>, list) do
+  defp faction_skills(<<-1::long, _rest::binary>>, list), do: list
+  defp faction_skills(<<skill::long, rest::binary>>, list) do
     faction_skills(rest, [skill | list])
   end
 
   defp faction_rankings(rankings), do: faction_rankings(rankings, [], 1)
   defp faction_rankings("", list, _number), do: Enum.reverse(list)
-  defp faction_rankings(<<attribute_1::little-integer-size(32), attribute_2::little-integer-size(32),
-    skill_1::little-integer-size(32), skill_2::little-integer-size(32), reputation::little-integer-size(32),
-    rest::binary>>, list, number) do
+  defp faction_rankings(<<attribute_1::long, attribute_2::long, skill_1::long, skill_2::long,
+    reputation::long, rest::binary>>, list, number) do
       faction_rankings(rest, [%{number: number, attribute_1: attribute_1, attribute_2: attribute_2, skill_1: skill_1,
         skill_2: skill_2, reputation: reputation} | list], number+1)
   end
