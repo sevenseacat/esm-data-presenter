@@ -145,6 +145,19 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("RACE", %{"NAME" => id, "FNAM" => name, "RADT" => radt} = raw_data) do
+    {
+      :race,
+      %{
+        id: id,
+        name: name,
+        description: Map.get(raw_data, "DESC"),
+        spells: Map.get(raw_data, "NPCS")
+      }
+      |> Map.merge(radt)
+    }
+  end
+
   def build_record(type, subrecords), do: {type, subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction

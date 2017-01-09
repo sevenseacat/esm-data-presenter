@@ -73,7 +73,7 @@ defmodule Tes.EsmFile do
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
   defp record_value(list, "FACT", "INTV", value), do: record_pair_value(list, "ANAM/INTV", value)
 
-  defp record_value(list, "BSGN", "NPCS", value), do: record_list(list, "NPCS", value)
+  defp record_value(list, _type, "NPCS", value), do: record_list(list, "NPCS", value)
   defp record_value(list, "SPEL", "ENAM", value), do: record_list(list, "ENAM", value)
 
   defp record_value(list, _type, name, value), do: Map.put_new(list, name, value)
@@ -82,7 +82,9 @@ defmodule Tes.EsmFile do
   # For field-specific formatting.
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   ###############################
-  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC"], do: strip_null(value)
+  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS"] do
+    strip_null(value)
+  end
   defp format_value(_type, "INDX", <<id::long>>), do: id
   # These are filenames that for some reason have double directory separators in them
   defp format_value(_type, name, value) when name in ["MODL", "ITEX", "PTEX"] do
@@ -113,7 +115,7 @@ defmodule Tes.EsmFile do
       blue: blue, green: green, speed: speed, size: size, size_cap: size_cap}
   end
 
-  defp format_value("BSGN", name, value) when name in ["TNAM", "NPCS"], do: strip_null(value)
+  defp format_value("BSGN", "TNAM", value), do: strip_null(value)
 
   defp format_value("FACT", name, value) when name in ["ANAM", "RNAM"], do: strip_null(value)
   defp format_value("FACT", "INTV", <<value::long>>), do: value
@@ -144,6 +146,20 @@ defmodule Tes.EsmFile do
 
   defp format_value("SKIL", "SKDT", <<attribute_id::long, specialization::long, uses::binary>>) do
     %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
+  end
+
+  defp format_value("RACE", "RADT", <<skills::binary-56, str_m::long, str_f::long, int_m::long,
+    int_f::long, wil_m::long, wil_f::long, agi_m::long, agi_f::long, spd_m::long, spd_f::long,
+    end_m::long, end_f::long, per_m::long, per_f::long, luc_m::long, luc_f::long,
+    height_m::little-float-32, height_f::little-float-32, weight_m::little-float-32,
+    weight_f::little-float-32, flags::long>>) do
+    %{skill_bonuses: race_skills(skills),
+      playable: band(flags, 1) == 1,
+      beast: band(flags, 2) == 2,
+      male_attributes: %{str: str_m, int: int_m, wil: wil_m, agi: agi_m, spd: spd_m, end: end_m,
+        per: per_m, luc: luc_m, height: Float.round(height_m, 2), weight: Float.round(weight_m, 2)},
+      female_attributes: %{str: str_f, int: int_f, wil: wil_f, agi: agi_f, spd: spd_f, end: end_f,
+        per: per_f, luc: luc_f, height: Float.round(height_f, 2), weight: Float.round(weight_f, 2)}}
   end
 
   defp format_value(_type, _name, value), do: value
@@ -180,5 +196,12 @@ defmodule Tes.EsmFile do
     reputation::long, rest::binary>>, list, number) do
     faction_rankings(rest, [%{number: number, attribute_1: attribute_1, attribute_2: attribute_2,
       skill_1: skill_1, skill_2: skill_2, reputation: reputation} | list], number + 1)
+  end
+
+  defp race_skills(skills), do: race_skills(skills, [])
+  defp race_skills("", list), do: list
+  defp race_skills(<<-1::long, _rest::binary>>, list), do: list
+  defp race_skills(<<skill::long, bonus::long, rest::binary>>, list) do
+    race_skills(rest, [%{skill_id: skill, bonus: bonus} | list])
   end
 end

@@ -23,7 +23,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |          |           | `GLOB` (Global variables) |
 |        |          |           | `CLAS` (Classes) |
 | ✅     | ✅        |           | `FACT` (Factions) |
-|        |          |           | `RACE` (Races) |
+| ✅      |          |           | `RACE` (Races) |
 | ✅     | ✅        |           | `SKIL` (Skills) - "use values" are ignored |
 | ✅      |          |           | `MGEF` (Magic effects) |
 |        |          |           | `SCPT` (Scripts) |
