@@ -2,8 +2,8 @@ defmodule Tes.Faction.Rank do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_params [:number, :name, :attribute_1, :attribute_2, :skill_1, :skill_2,
-    :reputation]
+  @required_params [:number, :name, :attribute_1, :attribute_2, :skill_1,
+    :skill_2, :reputation]
 
   schema "faction_ranks" do
     field :number, :integer

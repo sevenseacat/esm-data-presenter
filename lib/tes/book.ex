@@ -21,7 +21,8 @@ defmodule Tes.Book do
 
   def changeset(params) do
     %Tes.Book{}
-    |> cast(params, @required_fields ++ [:scroll, :enchantment_name, :enchantment_points, :texture, :text])
+    |> cast(params, @required_fields ++ [:scroll, :enchantment_name, :enchantment_points,
+        :texture, :text])
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:skill_id)
   end

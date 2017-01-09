@@ -21,7 +21,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt}=raw_data) do
+  def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt} = raw_data) do
     {
       :book,
       %{
@@ -41,16 +41,16 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => fadt}=raw_data) do
+  def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => fadt} = raw_data) do
     {
       :faction,
       %{
         id: id,
         name: name,
-        attribute_1_id: Map.get(fadt, :attribute_ids) |> List.first,
-        attribute_2_id: Map.get(fadt, :attribute_ids) |> List.last,
+        attribute_1_id: fadt |> Map.get(:attribute_ids) |> List.first,
+        attribute_2_id: fadt |> Map.get(:attribute_ids) |> List.last,
         favorite_skill_ids: Map.get(fadt, :skill_ids),
-        reactions: map_faction_reactions(Map.get(raw_data, "ANAM/INTV", [])),
+        reactions: raw_data |> Map.get("ANAM/INTV", []) |> map_faction_reactions,
         hidden: Map.get(fadt, :flags) == 1,
         ranks: []
       }
@@ -86,7 +86,8 @@ defmodule Tes.EsmFormatter do
 
   defp zip_faction_ranks(faction, [], _), do: faction
   defp zip_faction_ranks(faction, [name | names], [rank | ranks]) do
-    Map.update!(faction, :ranks, fn ranks -> ranks ++ [Map.put(rank, :name, name)] end)
+    faction
+    |> Map.update!(:ranks, fn ranks -> ranks ++ [Map.put(rank, :name, name)] end)
     |> zip_faction_ranks(names, ranks)
   end
 
