@@ -25,7 +25,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅     | ✅        |           | `FACT` (Factions) |
 |        |          |           | `RACE` (Races) |
 | ✅     | ✅        |           | `SKIL` (Skills) - "use values" are ignored |
-|        |          |           | `MGEF` (Magic effects) |
+| ✅      |          |           | `MGEF` (Magic effects) |
 |        |          |           | `SCPT` (Scripts) |
 |        |          |           | `REGN` (Regions) |
 | ✅     |          |           | `BSGN` (Birth signs) |

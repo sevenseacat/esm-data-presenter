@@ -82,7 +82,12 @@ defmodule Tes.EsmFile do
   # For field-specific formatting.
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   ###############################
-  defp format_value(_type, name, value) when name in ["NAME", "FNAM"], do: strip_null(value)
+  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC"], do: strip_null(value)
+  defp format_value(_type, "INDX", <<id::long>>), do: id
+  # These are filenames that for some reason have double directory separators in them
+  defp format_value(_type, name, value) when name in ["MODL", "ITEX", "PTEX"] do
+    value |> strip_null |> String.replace("\\\\", "\\")
+  end
 
   defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
     # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
@@ -96,7 +101,19 @@ defmodule Tes.EsmFile do
       type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
   end
 
-  defp format_value("BSGN", name, value) when name in ["DESC", "TNAM", "NPCS"], do: strip_null(value)
+  defp format_value("MGEF", name, value) when name in ["AVFX", "BVFX", "HVFX", "CVFX", "ASND",
+    "BSND", "HSND", "CSND"] do
+    strip_null(value)
+  end
+  defp format_value("MGEF", "MEDT", <<school::long, base_cost::little-float-32, flags::long,
+    red::long, green::long, blue::long, speed::little-float-32, size::little-float-32,
+    size_cap::little-float-32>>) do
+    %{school: school, base_cost: base_cost, spellmaking: band(flags, 0x0200) == 0x0200,
+      enchanting: band(flags, 0x0400) == 0x0400, negative: band(flags, 0x0800) == 0x0800, red: red,
+      blue: blue, green: green, speed: speed, size: size, size_cap: size_cap}
+  end
+
+  defp format_value("BSGN", name, value) when name in ["TNAM", "NPCS"], do: strip_null(value)
 
   defp format_value("FACT", name, value) when name in ["ANAM", "RNAM"], do: strip_null(value)
   defp format_value("FACT", "INTV", <<value::long>>), do: value
@@ -107,9 +124,7 @@ defmodule Tes.EsmFile do
       skill_ids: faction_skills(skills), unknown: unknown, flags: flags}
   end
 
-  defp format_value("BOOK", name, value) when name in ["MODL", "ITEX", "SCRI", "ENAM"] do
-    strip_null(value)
-  end
+  defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
   defp format_value("BOOK", "BKDT", <<weight::little-float-32, value::long, scroll::long,
     skill_id::long, enchantment::long>>) do
     %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_or_value(skill_id),
@@ -127,7 +142,6 @@ defmodule Tes.EsmFile do
     |> String.replace(<<239>>, <<239::utf8>>)
   end
 
-  defp format_value("SKIL", "INDX", <<size::long>>), do: size
   defp format_value("SKIL", "SKDT", <<attribute_id::long, specialization::long, uses::binary>>) do
     %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
   end
