@@ -162,6 +162,8 @@ defmodule Tes.EsmFile do
         per: per_f, luc: luc_f, height: Float.round(height_f, 2), weight: Float.round(weight_f, 2)}}
   end
 
+  defp format_value("DIAL", "DATA", <<type::integer>>), do: type
+
   defp format_value(_type, _name, value), do: value
 
   ###############################

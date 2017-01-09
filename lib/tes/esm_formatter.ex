@@ -158,6 +158,10 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("DIAL", %{"NAME" => name, "DATA" => type}) do
+    { :dialogue, %{name: name, type: type} }
+  end
+
   def build_record(type, subrecords), do: {type, subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction
