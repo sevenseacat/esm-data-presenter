@@ -164,6 +164,14 @@ defmodule Tes.EsmFile do
 
   defp format_value("DIAL", "DATA", <<type::integer>>), do: type
 
+  defp format_value("INFO", name, value) when name in ["INAM"], do: strip_null(value)
+  defp format_value("INFO", name, value) when name in ["PNAM", "NNAM"] do
+    value |> strip_null |> nil_if_empty
+  end
+  # Data is different for journal entries and dialogue responses
+  # "rest" always seems to be <<255, 255, 255, 0>> for journal entries
+  defp format_value("INFO", "DATA", <<4::long, index::long, _rest::long>>), do: index
+
   defp format_value(_type, _name, value), do: value
 
   ###############################
@@ -183,7 +191,11 @@ defmodule Tes.EsmFile do
     Map.update(list, key, [value], &(&1 ++ [value]))
   end
 
-  defp nil_or_value(value), do: if value >= 0, do: value, else: nil
+  defp nil_if_empty(value) when value == "", do: nil
+  defp nil_if_empty(value), do: value
+
+  defp nil_or_value(value) when value >= 0, do: value
+  defp nil_or_value(_value), do: nil
 
   defp faction_skills(skills), do: faction_skills(skills, [])
   defp faction_skills("", list), do: Enum.reverse(list)
