@@ -171,6 +171,7 @@ defmodule Tes.EsmFile do
   # Data is different for journal entries and dialogue responses
   # "rest" always seems to be <<255, 255, 255, 0>> for journal entries
   defp format_value("INFO", "DATA", <<4::long, index::long, _rest::long>>), do: index
+  defp format_value("INFO", name, <<value::8>>) when name in ["QSTN", "QSTF", "QSTR"], do: value
 
   defp format_value(_type, _name, value), do: value
 

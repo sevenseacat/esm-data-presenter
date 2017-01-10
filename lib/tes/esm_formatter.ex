@@ -164,8 +164,19 @@ defmodule Tes.EsmFormatter do
 
   # Journal dialogue entries.
   def build_record("INFO", %{"NAME" => text, "DATA" => index, "INAM" => id, "PNAM" => previous,
-    "NNAM" => next }) when is_integer(index) do
-    { :info, %{text: text, index: index, id: id, previous: previous, next: next} }
+    "NNAM" => next } = raw_data) when is_integer(index) do
+    { :info,
+      %{
+        id: id,
+        text: text,
+        index: index,
+        previous: previous,
+        next: next,
+        name: Map.get(raw_data, "QSTN") == 1,
+        finished: Map.get(raw_data, "QSTF") == 1,
+        restart: Map.get(raw_data, "QSTR") == 1
+      }
+    }
   end
 
   def build_record(type, subrecords), do: {type, subrecords}
