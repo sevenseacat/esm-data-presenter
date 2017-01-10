@@ -162,6 +162,10 @@ defmodule Tes.EsmFormatter do
     { :journal, %{id: id, infos: []} }
   end
 
+  def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
+    { :dialogue, %{id: id, type: type, infos: []} }
+  end
+
   # Journal dialogue entries.
   def build_record("INFO", %{"NAME" => text, "DATA" => index, "INAM" => id, "PNAM" => previous,
     "NNAM" => next } = raw_data) when is_integer(index) do
