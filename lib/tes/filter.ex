@@ -4,8 +4,10 @@ defmodule Tes.Filter do
   # Collect them all together here
   def by_type(stream, key) when key in [:journal, :dialogue] do
     stream
-    |> Enum.drop_while(fn {type, _record} -> type != key end)
-    |> group_dialogues
+    |> Stream.drop_while(fn {type, _record} -> type != key end)
+    |> Stream.chunk_by(fn {type, _record} -> type end) # [[dialogue], [info, info], [dialogue]...]
+    |> Stream.chunk(2) # [[[dialogue], [info, info, info]], [[dialogue], ...]]
+    |> Stream.map(&combine_dialogue_with_infos/1)
   end
 
   def by_type(stream, selected_type) do
@@ -28,22 +30,7 @@ defmodule Tes.Filter do
     end)
   end
 
-  defp group_dialogues([]), do: []
-  defp group_dialogues([{key, dialogue} | rest]) when key in [:journal, :dialogue] do
-    group_dialogues(rest, dialogue, [])
-  end
-
-  defp group_dialogues([{key, dialogue} | rest], current, list) when key in [:journal, :dialogue] do
-    group_dialogues(rest, dialogue, [current | list])
-  end
-
-  defp group_dialogues([{:info, info} | rest], current, list) do
-    current = Map.update!(current, :infos, &([info | &1]))
-    group_dialogues(rest, current, list)
-  end
-
-  defp group_dialogues(_other, current, list) do
-    [current | list]
-    |> Enum.reverse
+  def combine_dialogue_with_infos([[{_key, dialogue}], infos]) do
+    Map.put(dialogue, :infos, Keyword.values(infos))
   end
 end
