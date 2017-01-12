@@ -73,6 +73,10 @@ defmodule Tes.EsmFile do
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
   defp record_value(list, "FACT", "INTV", value), do: record_pair_value(list, "ANAM/INTV", value)
 
+  defp record_value(list, "INFO", "SCVR", value), do: record_pair_key(list, "CONDS", value)
+  defp record_value(list, "INFO", "INTV", value), do: record_pair_value(list, "CONDS", value)
+  defp record_value(list, "INFO", "FLTV", value), do: record_pair_value(list, "CONDS", value)
+
   defp record_value(list, _type, "NPCS", value), do: record_list(list, "NPCS", value)
   defp record_value(list, "SPEL", "ENAM", value), do: record_list(list, "ENAM", value)
 
@@ -99,7 +103,7 @@ defmodule Tes.EsmFile do
 
   defp format_value("SPEL", "ENAM", <<effect::signed-little-16, skill::signed-little-8,
     attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>) do
-    %{effect_id: effect, skill_id: nil_or_value(skill), attribute_id: nil_or_value(attribute),
+    %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
       type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
   end
 
@@ -129,7 +133,7 @@ defmodule Tes.EsmFile do
   defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
   defp format_value("BOOK", "BKDT", <<weight::little-float-32, value::long, scroll::long,
     skill_id::long, enchantment::long>>) do
-    %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_or_value(skill_id),
+    %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_if_negative(skill_id),
       enchantment: enchantment}
   end
   defp format_value("BOOK", "TEXT", value) do
@@ -164,14 +168,28 @@ defmodule Tes.EsmFile do
 
   defp format_value("DIAL", "DATA", <<type::integer>>), do: type
 
-  defp format_value("INFO", name, value) when name in ["INAM"], do: strip_null(value)
+  defp format_value("INFO", name, value) when name in ["INAM", "ONAM", "RNAM", "CNAM", "FNAM",
+    "ANAM", "DNAM", "SNAM"] do
+    strip_null(value)
+  end
   defp format_value("INFO", name, value) when name in ["PNAM", "NNAM"] do
     value |> strip_null |> nil_if_empty
   end
-  # Data is different for journal entries and dialogue responses
-  # "rest" always seems to be <<255, 255, 255, 0>> for journal entries
-  defp format_value("INFO", "DATA", <<4::long, index::long, _rest::long>>), do: index
   defp format_value("INFO", name, <<value::8>>) when name in ["QSTN", "QSTF", "QSTR"], do: value
+  defp format_value("INFO", "SCVR", <<index::binary-1, type::binary-1, function::binary-2,
+    operator::binary-1, name::binary>>) do
+    %{index: index, type: type, function: function, operator: operator, name: name}
+  end
+  defp format_value("INFO", "INTV", <<value::long>>), do: value
+  defp format_value("INFO", "FLTV", <<value::signed-float-32>>), do: value
+
+  # Data is different for journal entries and dialogue responses
+  defp format_value("INFO", "DATA", <<4::long, index::long, 255, 255, 255, 0>>), do: index
+  defp format_value("INFO", "DATA", <<_unknown1::long, disposition::long, npc_rank::signed-8,
+    gender::8, pc_rank::signed-8, _unknown2::8>>) do
+    %{disposition: disposition, npc_rank: nil_if_negative(npc_rank),
+      pc_rank: nil_if_negative(pc_rank), gender: parse_gender(gender)}
+  end
 
   defp format_value(_type, _name, value), do: value
 
@@ -195,8 +213,8 @@ defmodule Tes.EsmFile do
   defp nil_if_empty(value) when value == "", do: nil
   defp nil_if_empty(value), do: value
 
-  defp nil_or_value(value) when value >= 0, do: value
-  defp nil_or_value(_value), do: nil
+  defp nil_if_negative(value) when value < 0, do: nil
+  defp nil_if_negative(value), do: value
 
   defp faction_skills(skills), do: faction_skills(skills, [])
   defp faction_skills("", list), do: Enum.reverse(list)
@@ -219,4 +237,8 @@ defmodule Tes.EsmFile do
   defp race_skills(<<skill::long, bonus::long, rest::binary>>, list) do
     race_skills(rest, [%{skill_id: skill, bonus: bonus} | list])
   end
+
+  defp parse_gender(0xFF), do: nil
+  defp parse_gender(0x00), do: :male
+  defp parse_gender(0x01), do: :female
 end

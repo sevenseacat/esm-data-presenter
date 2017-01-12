@@ -49,6 +49,32 @@ defmodule Tes.EsmFormatter do
     136 => "Stunted Magicka", 137 => "Summon Fabricant", 138 => "Summon Wolf", 139 => "Summon Bear",
     140 => "Summon Bonewolf", 141 => "Summon Creature 04 ???", 142 => "Summon Creature 05 ???"}
 
+  @dialogue_types %{0 => :topic, 1 => :voice, 2 => :greeting, 3 => :persuasion, 4 => :journal}
+
+  @dialogue_functions %{"00" => :rank_low, "01" => :rank_high, "02" => :rank_requirement,
+    "03" => :reputation, "04" => :health_percent, "05" => :pc_reputation, "06" => :pc_level,
+    "07" => :pc_health_percent, "08" => :pc_magicka, "09" => :pc_fatigue, "10" => :pc_strength,
+    "11" => :pc_block, "12" => :pc_armorer, "13" => :pc_medium_armor, "14" => :pc_heavy_armor,
+    "15" => :pc_blunt_weapon, "16" => :pc_long_blade, "17" => :pc_axe, "18" => :pc_spear,
+    "19" => :pc_athletics, "20" => :pc_enchant, "21" => :pc_destruction, "22" => :pc_alteration,
+    "23" => :pc_illusion, "24" => :pc_conjuration, "25" => :pc_mysticism,  "26" => :pc_restoration,
+    "27" => :pc_alchemy, "28" => :pc_unarmored, "29" => :pc_security, "30" => :pc_sneak,
+    "31" => :pc_acrobatics, "32" => :pc_light_armor, "33" => :pc_short_blade, "34" => :pc_marksman,
+    "35" => :pc_mercantile, "36" => :pc_speechcraft, "37" => :pc_hand_to_hand, "38" => :pc_gender,
+    "39" => :pc_expelled, "40" => :pc_common_disease, "41" => :pc_blight_disease,
+    "42" => :pc_clothing_modifier, "43" => :pc_crime_level, "44" => :same_gender,
+    "45" => :same_race, "46" => :same_faction, "47" => :faction_rank_diff, "48" => :detected,
+    "49" => :alarmed, "50" => :choice, "51" => :pc_intelligence, "52" => :pc_willpower,
+    "53" => :pc_agility, "54" => :pc_speed, "55" => :pc_endurance, "56" => :pc_personality,
+    "57" => :pc_luck, "58" => :pc_corprus, "59" => :weather, "60" => :pc_vampire, "61" => :level,
+    "62" => :attacked, "63" => :talked_to_pc, "64" => :pc_health, "65" => :creature_target,
+    "66" => :friend_hit, "67" => :fight, "69" => :hello, "69" => :alarm, "70" => :flee,
+    "71" => :should_attack, "sX" => :not_local, "JX" => :journal, "IX" => :item, "DX" => :dead,
+    "XX" => :not_id, "FX" => :not_faction, "CX" => :not_class, "RX" => :not_race, "LX" => :not_cell,
+    "fX" => :global}
+
+  @dialogue_operations %{"0" => "=", "1" => "!=", "2" => ">", "3" => ">=", "4" => "<", "5" => "<="}
+
   def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
     {
       :skill,
@@ -163,23 +189,33 @@ defmodule Tes.EsmFormatter do
   end
 
   def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
-    { :dialogue, %{id: id, type: type, infos: []} }
+    { :dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []} }
   end
 
   # Journal dialogue entries.
-  def build_record("INFO", %{"NAME" => text, "DATA" => index, "INAM" => id, "PNAM" => previous,
-    "NNAM" => next } = raw_data) when is_integer(index) do
+  def build_record("INFO", %{"DATA" => index} = raw_data) when is_integer(index) do
     { :info,
-      %{
-        id: id,
-        text: text,
+      raw_data
+      |> common_dialogue_fields
+      |> Map.merge(%{
         index: index,
-        previous: previous,
-        next: next,
         name: Map.get(raw_data, "QSTN") == 1,
         finished: Map.get(raw_data, "QSTF") == 1,
         restart: Map.get(raw_data, "QSTR") == 1
-      }
+      })
+    }
+  end
+
+  # Non-journal dialogue entries
+  def build_record("INFO", %{"DATA" => data} = raw_data) when is_map(data) do
+    { :info,
+      raw_data
+      |> common_dialogue_fields
+      |> Map.merge(%{
+        conditions: raw_data |> Map.get("CONDS") |> readable_conditions,
+        script: Map.get(raw_data, "BNAM")
+      })
+      |> Map.merge(data)
     }
   end
 
@@ -194,5 +230,26 @@ defmodule Tes.EsmFormatter do
 
   defp map_faction_reactions(tuples) do
     Enum.map(tuples, fn({target, adjustment}) -> %{target_id: target, adjustment: adjustment} end)
+  end
+
+  defp common_dialogue_fields(raw_data) do
+    %{
+      id: Map.get(raw_data, "INAM"),
+      text: Map.get(raw_data, "NAME"),
+      previous: Map.get(raw_data, "PNAM"),
+      next: Map.get(raw_data, "NNAM")
+    }
+  end
+
+  defp readable_conditions(nil), do: []
+  defp readable_conditions(conditions), do: Enum.map(conditions, &condition/1)
+  defp condition({%{function: fun, index: index, name: name, operator: op}, value}) do
+    %{
+      index: index,
+      function: Map.fetch!(@dialogue_functions, fun),
+      name: name,
+      operator: Map.fetch!(@dialogue_operations, op),
+      value: value
+    }
   end
 end

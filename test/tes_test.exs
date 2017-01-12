@@ -7,7 +7,7 @@ defmodule TesTest do
   end
 
   test "can read Books successfully", %{stream: stream} do
-    books = Tes.Filter.by_type(stream, :book)
+    books = Tes.Filter.by_type(stream, :book) |> Enum.to_list
 
     assert length(books) == 1
     assert List.first(books) == %{id: "my_book", name: "My Awesome Book",
@@ -17,7 +17,7 @@ defmodule TesTest do
   end
 
   test "can read Factions successfully", %{stream: stream} do
-    factions = Tes.Filter.by_type(stream, :faction)
+    factions = Tes.Filter.by_type(stream, :faction) |> Enum.to_list
 
     assert length(factions) == 1
     assert List.first(factions) == %{id: "awesome", name: "Awesome",

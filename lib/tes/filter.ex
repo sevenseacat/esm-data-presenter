@@ -9,11 +9,23 @@ defmodule Tes.Filter do
   end
 
   def by_type(stream, selected_type) do
-    Enum.filter_map(
+    Stream.filter_map(
       stream,
       fn {type, _record} -> type == selected_type end,
       fn {_type, record} -> record end
     )
+  end
+
+  def filter_by_condition_value(dialogue, field, value) do
+    Enum.any?(Map.get(dialogue, :infos, []), fn(info) ->
+      if Map.get(info, :conditions) != nil do
+        Enum.any?(Map.get(info, :conditions), fn({condition, _val}) ->
+          condition[field] == value
+        end)
+      else
+        false
+      end
+    end)
   end
 
   defp group_dialogues([]), do: []
