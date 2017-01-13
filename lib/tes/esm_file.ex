@@ -97,8 +97,8 @@ defmodule Tes.EsmFile do
 
   defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
     # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
-    %{type: type, cost: cost, autocalc: band(flags, 1) == 1,
-      starting_spell: band(flags, 2) == 2, always_succeeds: band(flags, 4) == 4}
+    %{type: type, cost: cost}
+    |> Map.merge(parse_bitmask(flags, [autocalc: 1, starting_spell: 2, always_succeeds: 4]))
   end
 
   defp format_value("SPEL", "ENAM", <<effect::signed-little-16, skill::signed-little-8,
@@ -114,9 +114,9 @@ defmodule Tes.EsmFile do
   defp format_value("MGEF", "MEDT", <<school::long, base_cost::little-float-32, flags::long,
     red::long, green::long, blue::long, speed::little-float-32, size::little-float-32,
     size_cap::little-float-32>>) do
-    %{school: school, base_cost: base_cost, spellmaking: band(flags, 0x0200) == 0x0200,
-      enchanting: band(flags, 0x0400) == 0x0400, negative: band(flags, 0x0800) == 0x0800, red: red,
-      blue: blue, green: green, speed: speed, size: size, size_cap: size_cap}
+    %{school: school, base_cost: base_cost, red: red, blue: blue, green: green, speed: speed,
+      size: size, size_cap: size_cap}
+    |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
   end
 
   defp format_value("BSGN", "TNAM", value), do: strip_null(value)
@@ -158,12 +158,11 @@ defmodule Tes.EsmFile do
     height_m::little-float-32, height_f::little-float-32, weight_m::little-float-32,
     weight_f::little-float-32, flags::long>>) do
     %{skill_bonuses: race_skills(skills),
-      playable: band(flags, 1) == 1,
-      beast: band(flags, 2) == 2,
       male_attributes: %{str: str_m, int: int_m, wil: wil_m, agi: agi_m, spd: spd_m, end: end_m,
         per: per_m, luc: luc_m, height: Float.round(height_m, 2), weight: Float.round(weight_m, 2)},
       female_attributes: %{str: str_f, int: int_f, wil: wil_f, agi: agi_f, spd: spd_f, end: end_f,
         per: per_f, luc: luc_f, height: Float.round(height_f, 2), weight: Float.round(weight_f, 2)}}
+    |> Map.merge(parse_bitmask(flags, [playable: 1, beast: 2]))
   end
 
   defp format_value("DIAL", "DATA", <<type::integer>>), do: type
@@ -191,6 +190,19 @@ defmodule Tes.EsmFile do
       pc_rank: nil_if_negative(pc_rank), gender: parse_gender(gender)}
   end
 
+  defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
+    minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
+    minor_4::long, major_4::long, minor_5::long, major_5::long, playable::long, flags::long>>) do
+    %{attributes: [attribute_1, attribute_2], specialization: specialization,
+      major_skills: [major_1, major_2, major_3, major_4, major_5],
+      minor_skills: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
+      merchants: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
+        book: 0x00008, ingredient: 0x00010, pick: 0x00020, probe: 0x00040, light: 0x00080,
+        apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spell: 0x00800, magic_item: 0x01000,
+        potion: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
+        repair_item: 0x20000])}
+  end
+
   defp format_value(_type, _name, value), do: value
 
   ###############################
@@ -208,6 +220,13 @@ defmodule Tes.EsmFile do
 
   defp record_list(list, key, value) do
     Map.update(list, key, [value], &(&1 ++ [value]))
+  end
+
+  def parse_bitmask(mask, list), do: parse_bitmask(mask, list, %{})
+  def parse_bitmask(_mask, [], map), do: map
+  def parse_bitmask(mask, [{key, value} | rest], map) do
+    map = Map.put(map, key, band(mask, value) == value)
+    parse_bitmask(mask, rest, map)
   end
 
   defp nil_if_empty(value) when value == "", do: nil

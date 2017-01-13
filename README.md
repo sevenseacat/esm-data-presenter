@@ -21,7 +21,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |          |           | `TES3` (Main header record) |
 |        |          |           | `GMST` (Game settings) |
 |        |          |           | `GLOB` (Global variables) |
-|        |          |           | `CLAS` (Classes) |
+| ✅      |          |           | `CLAS` (Classes) |
 | ✅     | ✅        |           | `FACT` (Factions) |
 | ✅      |          |           | `RACE` (Races) |
 | ✅     | ✅        |           | `SKIL` (Skills) - "use values" are ignored |
@@ -48,7 +48,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |          |           | `LEVC` (Levelled creatures) |
 |        |          |           | `CELL` (Cells) |
 | ✅      |          |           | `DIAL` (Dialogue/journal topics) |
-|        |          |           | `INFO` (Dialogue records) |
+| ✅      |          |           | `INFO` (Dialogue records) |
 | ✅      |          |           | `INFO` (Journal records) |
 
 ### Record types (probably) not going to be done
