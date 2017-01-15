@@ -165,7 +165,8 @@ defmodule Tes.EsmFile do
     |> Map.merge(parse_bitmask(flags, [playable: 1, beast: 2]))
   end
 
-  defp format_value("DIAL", "DATA", <<type::integer>>), do: type
+  defp format_value("DIAL", "DATA", <<type::integer-8, _rest::binary>>), do: type
+  defp format_value("DIAL", "DELE", <<type::long>>), do: type == 0
 
   defp format_value("INFO", name, value) when name in ["INAM", "ONAM", "RNAM", "CNAM", "FNAM",
     "ANAM", "DNAM", "SNAM"] do
@@ -180,7 +181,7 @@ defmodule Tes.EsmFile do
     %{index: index, type: type, function: function, operator: operator, name: name}
   end
   defp format_value("INFO", "INTV", <<value::long>>), do: value
-  defp format_value("INFO", "FLTV", <<value::signed-float-32>>), do: value
+  defp format_value("INFO", "FLTV", <<value::signed-little-float-32>>), do: value
 
   # Data is different for journal entries and dialogue responses
   defp format_value("INFO", "DATA", <<4::long, index::long, 255, 255, 255, 0>>), do: index
@@ -196,7 +197,7 @@ defmodule Tes.EsmFile do
     %{attributes: [attribute_1, attribute_2], specialization: specialization,
       major_skills: [major_1, major_2, major_3, major_4, major_5],
       minor_skills: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
-      merchants: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
+      autocalc: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
         book: 0x00008, ingredient: 0x00010, pick: 0x00020, probe: 0x00040, light: 0x00080,
         apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spell: 0x00800, magic_item: 0x01000,
         potion: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,

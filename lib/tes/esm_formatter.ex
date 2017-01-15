@@ -125,14 +125,16 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("BSGN", %{"NAME" => key, "FNAM" => name, "DESC" => desc, "NPCS" => skills}) do
+  def build_record("BSGN", %{"NAME" => id, "FNAM" => name, "DESC" => desc, "NPCS" => skills,
+    "TNAM" => texture}) do
     {
       :birthsign,
       %{
-        key: key,
+        id: id,
         name: name,
         description: desc,
-        skills: skills
+        skills: skills,
+        image: texture
       }
     }
   end
