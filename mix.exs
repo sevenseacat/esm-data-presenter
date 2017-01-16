@@ -46,6 +46,7 @@ defmodule Tes.Mixfile do
   defp aliases do
     [
       "ecto.reset": ["ecto.drop", "ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end
