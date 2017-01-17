@@ -1,12 +1,30 @@
 defmodule Tes.EsmFormatter do
   # Hardcoded things - there's a few of them
-  @skill_names %{0 => "Block", 1 => "Armorer", 2 => "Medium Armor", 3 => "Heavy Armor",
-    4 => "Blunt Weapon", 5 => "Long Blade", 6 => "Axe", 7 => "Spear", 8 => "Athletics",
-    9 => "Enchant", 10 => "Destruction", 11 => "Alteration", 12 => "Illusion",
-    13 => "Conjuration", 14 => "Mysticism", 15 => "Restoration", 16 => "Alchemy",
-    17 => "Unarmored", 18 => "Security", 19 => "Sneak", 20 => "Acrobatics",
-    21 => "Light Armor", 22 => "Short Blade", 23 => "Marksman", 24 => "Mercantile",
-    25 => "Speechcraft", 26 => "Hand to Hand"}
+  @dialogue_types %{0 => :topic, 1 => :voice, 2 => :greeting, 3 => :persuasion, 4 => :journal}
+
+  @dialogue_functions %{"00" => :rank_low, "01" => :rank_high, "02" => :rank_requirement,
+    "03" => :reputation, "04" => :health_percent, "05" => :pc_reputation, "06" => :pc_level,
+    "07" => :pc_health_percent, "08" => :pc_magicka, "09" => :pc_fatigue, "10" => :pc_strength,
+    "11" => :pc_block, "12" => :pc_armorer, "13" => :pc_medium_armor, "14" => :pc_heavy_armor,
+    "15" => :pc_blunt_weapon, "16" => :pc_long_blade, "17" => :pc_axe, "18" => :pc_spear,
+    "19" => :pc_athletics, "20" => :pc_enchant, "21" => :pc_destruction, "22" => :pc_alteration,
+    "23" => :pc_illusion, "24" => :pc_conjuration, "25" => :pc_mysticism,  "26" => :pc_restoration,
+    "27" => :pc_alchemy, "28" => :pc_unarmored, "29" => :pc_security, "30" => :pc_sneak,
+    "31" => :pc_acrobatics, "32" => :pc_light_armor, "33" => :pc_short_blade, "34" => :pc_marksman,
+    "35" => :pc_mercantile, "36" => :pc_speechcraft, "37" => :pc_hand_to_hand, "38" => :pc_gender,
+    "39" => :pc_expelled, "40" => :pc_common_disease, "41" => :pc_blight_disease,
+    "42" => :pc_clothing_modifier, "43" => :pc_crime_level, "44" => :same_gender,
+    "45" => :same_race, "46" => :same_faction, "47" => :faction_rank_diff, "48" => :detected,
+    "49" => :alarmed, "50" => :choice, "51" => :pc_intelligence, "52" => :pc_willpower,
+    "53" => :pc_agility, "54" => :pc_speed, "55" => :pc_endurance, "56" => :pc_personality,
+    "57" => :pc_luck, "58" => :pc_corprus, "59" => :weather, "60" => :pc_vampire, "61" => :level,
+    "62" => :attacked, "63" => :talked_to_pc, "64" => :pc_health, "65" => :creature_target,
+    "66" => :friend_hit, "67" => :fight, "69" => :hello, "69" => :alarm, "70" => :flee,
+    "71" => :should_attack, "sX" => :not_local, "JX" => :journal, "IX" => :item, "DX" => :dead,
+    "XX" => :not_id, "FX" => :not_faction, "CX" => :not_class, "RX" => :not_race, "LX" => :not_cell,
+    "fX" => :global}
+
+  @dialogue_operations %{"0" => "=", "1" => "!=", "2" => ">", "3" => ">=", "4" => "<", "5" => "<="}
 
   @magic_effect_names %{0 => "Water Breathing", 1 => "Swift Swim", 2 => "Water Walking",
     3 => "Shield", 4 => "Fire Shield", 5 => "Lightning Shield", 6 => "Frost Shield", 7 => "Burden",
@@ -49,44 +67,13 @@ defmodule Tes.EsmFormatter do
     136 => "Stunted Magicka", 137 => "Summon Fabricant", 138 => "Summon Wolf", 139 => "Summon Bear",
     140 => "Summon Bonewolf", 141 => "Summon Creature 04 ???", 142 => "Summon Creature 05 ???"}
 
-  @dialogue_types %{0 => :topic, 1 => :voice, 2 => :greeting, 3 => :persuasion, 4 => :journal}
-
-  @dialogue_functions %{"00" => :rank_low, "01" => :rank_high, "02" => :rank_requirement,
-    "03" => :reputation, "04" => :health_percent, "05" => :pc_reputation, "06" => :pc_level,
-    "07" => :pc_health_percent, "08" => :pc_magicka, "09" => :pc_fatigue, "10" => :pc_strength,
-    "11" => :pc_block, "12" => :pc_armorer, "13" => :pc_medium_armor, "14" => :pc_heavy_armor,
-    "15" => :pc_blunt_weapon, "16" => :pc_long_blade, "17" => :pc_axe, "18" => :pc_spear,
-    "19" => :pc_athletics, "20" => :pc_enchant, "21" => :pc_destruction, "22" => :pc_alteration,
-    "23" => :pc_illusion, "24" => :pc_conjuration, "25" => :pc_mysticism,  "26" => :pc_restoration,
-    "27" => :pc_alchemy, "28" => :pc_unarmored, "29" => :pc_security, "30" => :pc_sneak,
-    "31" => :pc_acrobatics, "32" => :pc_light_armor, "33" => :pc_short_blade, "34" => :pc_marksman,
-    "35" => :pc_mercantile, "36" => :pc_speechcraft, "37" => :pc_hand_to_hand, "38" => :pc_gender,
-    "39" => :pc_expelled, "40" => :pc_common_disease, "41" => :pc_blight_disease,
-    "42" => :pc_clothing_modifier, "43" => :pc_crime_level, "44" => :same_gender,
-    "45" => :same_race, "46" => :same_faction, "47" => :faction_rank_diff, "48" => :detected,
-    "49" => :alarmed, "50" => :choice, "51" => :pc_intelligence, "52" => :pc_willpower,
-    "53" => :pc_agility, "54" => :pc_speed, "55" => :pc_endurance, "56" => :pc_personality,
-    "57" => :pc_luck, "58" => :pc_corprus, "59" => :weather, "60" => :pc_vampire, "61" => :level,
-    "62" => :attacked, "63" => :talked_to_pc, "64" => :pc_health, "65" => :creature_target,
-    "66" => :friend_hit, "67" => :fight, "69" => :hello, "69" => :alarm, "70" => :flee,
-    "71" => :should_attack, "sX" => :not_local, "JX" => :journal, "IX" => :item, "DX" => :dead,
-    "XX" => :not_id, "FX" => :not_faction, "CX" => :not_class, "RX" => :not_race, "LX" => :not_cell,
-    "fX" => :global}
-
-  @dialogue_operations %{"0" => "=", "1" => "!=", "2" => ">", "3" => ">=", "4" => "<", "5" => "<="}
-
-  def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
-    {
-      :skill,
-      %{
-        id: id,
-        name: Map.get(@skill_names, id),
-        attribute_id: Map.get(skdt, :attribute_id),
-        specialization_id: Map.get(skdt, :specialization_id),
-        description: desc
-      }
-    }
-  end
+  @skill_names %{0 => "Block", 1 => "Armorer", 2 => "Medium Armor", 3 => "Heavy Armor",
+    4 => "Blunt Weapon", 5 => "Long Blade", 6 => "Axe", 7 => "Spear", 8 => "Athletics",
+    9 => "Enchant", 10 => "Destruction", 11 => "Alteration", 12 => "Illusion",
+    13 => "Conjuration", 14 => "Mysticism", 15 => "Restoration", 16 => "Alchemy",
+    17 => "Unarmored", 18 => "Security", 19 => "Sneak", 20 => "Acrobatics",
+    21 => "Light Armor", 22 => "Short Blade", 23 => "Marksman", 24 => "Mercantile",
+    25 => "Speechcraft", 26 => "Hand to Hand"}
 
   def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt} = raw_data) do
     {
@@ -108,6 +95,37 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("BSGN", %{"NAME" => id, "FNAM" => name, "DESC" => desc, "NPCS" => skills,
+    "TNAM" => texture}) do
+    {
+      :birthsign,
+      %{
+        id: id,
+        name: name,
+        description: desc,
+        skills: skills,
+        image: texture
+      }
+    }
+  end
+
+  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => cldt, "DESC" => desc}) do
+    { :class,
+      %{id: id,
+        name: name,
+        description: desc}
+      |> Map.merge(cldt)
+    }
+  end
+
+  def build_record("DIAL", %{"NAME" => id, "DATA" => 4}) do
+    { :journal, %{id: id, infos: []} }
+  end
+
+  def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
+    { :dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []} }
+  end
+
   def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => fadt} = raw_data) do
     {
       :faction,
@@ -125,29 +143,30 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("BSGN", %{"NAME" => id, "FNAM" => name, "DESC" => desc, "NPCS" => skills,
-    "TNAM" => texture}) do
-    {
-      :birthsign,
-      %{
-        id: id,
-        name: name,
-        description: desc,
-        skills: skills,
-        image: texture
-      }
+  # Journal dialogue entries.
+  def build_record("INFO", %{"DATA" => index} = raw_data) when is_integer(index) do
+    { :info,
+      raw_data
+      |> common_dialogue_fields
+      |> Map.merge(%{
+        index: index,
+        name: Map.get(raw_data, "QSTN") == 1,
+        finished: Map.get(raw_data, "QSTF") == 1,
+        restart: Map.get(raw_data, "QSTR") == 1
+      })
     }
   end
 
-  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "SPDT" => spdt, "ENAM" => enam}) do
-    {
-      :spell,
-      %{
-        id: id,
-        name: name,
-        effects: enam
-      }
-      |> Map.merge(spdt)
+  # Non-journal dialogue entries
+  def build_record("INFO", %{"DATA" => data} = raw_data) when is_map(data) do
+    { :info,
+      raw_data
+      |> common_dialogue_fields
+      |> Map.merge(%{
+        conditions: raw_data |> Map.get("CONDS") |> readable_conditions,
+        script: Map.get(raw_data, "BNAM")
+      })
+      |> Map.merge(data)
     }
   end
 
@@ -186,47 +205,28 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("DIAL", %{"NAME" => id, "DATA" => 4}) do
-    { :journal, %{id: id, infos: []} }
-  end
-
-  def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
-    { :dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []} }
-  end
-
-  # Journal dialogue entries.
-  def build_record("INFO", %{"DATA" => index} = raw_data) when is_integer(index) do
-    { :info,
-      raw_data
-      |> common_dialogue_fields
-      |> Map.merge(%{
-        index: index,
-        name: Map.get(raw_data, "QSTN") == 1,
-        finished: Map.get(raw_data, "QSTF") == 1,
-        restart: Map.get(raw_data, "QSTR") == 1
-      })
+  def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
+    {
+      :skill,
+      %{
+        id: id,
+        name: Map.get(@skill_names, id),
+        attribute_id: Map.get(skdt, :attribute_id),
+        specialization_id: Map.get(skdt, :specialization_id),
+        description: desc
+      }
     }
   end
 
-  # Non-journal dialogue entries
-  def build_record("INFO", %{"DATA" => data} = raw_data) when is_map(data) do
-    { :info,
-      raw_data
-      |> common_dialogue_fields
-      |> Map.merge(%{
-        conditions: raw_data |> Map.get("CONDS") |> readable_conditions,
-        script: Map.get(raw_data, "BNAM")
-      })
-      |> Map.merge(data)
-    }
-  end
-
-  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => cldt, "DESC" => desc}) do
-    { :class,
-      %{id: id,
+  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "SPDT" => spdt, "ENAM" => enam}) do
+    {
+      :spell,
+      %{
+        id: id,
         name: name,
-        description: desc}
-      |> Map.merge(cldt)
+        effects: enam
+      }
+      |> Map.merge(spdt)
     }
   end
 

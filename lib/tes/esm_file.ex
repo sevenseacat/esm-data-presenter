@@ -68,6 +68,7 @@ defmodule Tes.EsmFile do
   # How values should be stored
   # eg. as a primitive value, or a key-value tuple, or a list
   ##############################
+
   defp record_value(list, "FACT", "RNAM", value), do: record_list(list, "RNAM", value)
 
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
@@ -86,6 +87,7 @@ defmodule Tes.EsmFile do
   # For field-specific formatting.
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   ###############################
+
   defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS"] do
     strip_null(value)
   end
@@ -93,41 +95,6 @@ defmodule Tes.EsmFile do
   # These are filenames that for some reason have double directory separators in them
   defp format_value(_type, name, value) when name in ["MODL", "ITEX", "PTEX"] do
     value |> strip_null |> String.replace("\\\\", "\\")
-  end
-
-  defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
-    # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
-    %{type: type, cost: cost}
-    |> Map.merge(parse_bitmask(flags, [autocalc: 1, starting_spell: 2, always_succeeds: 4]))
-  end
-
-  defp format_value("SPEL", "ENAM", <<effect::signed-little-16, skill::signed-little-8,
-    attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>) do
-    %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
-      type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
-  end
-
-  defp format_value("MGEF", name, value) when name in ["AVFX", "BVFX", "HVFX", "CVFX", "ASND",
-    "BSND", "HSND", "CSND"] do
-    strip_null(value)
-  end
-  defp format_value("MGEF", "MEDT", <<school::long, base_cost::little-float-32, flags::long,
-    red::long, green::long, blue::long, speed::little-float-32, size::little-float-32,
-    size_cap::little-float-32>>) do
-    %{school: school, base_cost: base_cost, red: red, blue: blue, green: green, speed: speed,
-      size: size, size_cap: size_cap}
-    |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
-  end
-
-  defp format_value("BSGN", "TNAM", value), do: strip_null(value)
-
-  defp format_value("FACT", name, value) when name in ["ANAM", "RNAM"], do: strip_null(value)
-  defp format_value("FACT", "INTV", <<value::long>>), do: value
-  # Rankings and skills are long and repeated - split them out into their own functions
-  defp format_value("FACT", "FADT", <<attribute_1::long, attribute_2::long,
-    rankings::binary-200, skills::binary-24, unknown::long, flags::long>>) do
-    %{attribute_ids: [attribute_1, attribute_2], rankings: faction_rankings(rankings),
-      skill_ids: faction_skills(skills), unknown: unknown, flags: flags}
   end
 
   defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
@@ -148,25 +115,32 @@ defmodule Tes.EsmFile do
     |> String.replace(<<239>>, <<239::utf8>>)
   end
 
-  defp format_value("SKIL", "SKDT", <<attribute_id::long, specialization::long, uses::binary>>) do
-    %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
-  end
+  defp format_value("BSGN", "TNAM", value), do: strip_null(value)
 
-  defp format_value("RACE", "RADT", <<skills::binary-56, str_m::long, str_f::long, int_m::long,
-    int_f::long, wil_m::long, wil_f::long, agi_m::long, agi_f::long, spd_m::long, spd_f::long,
-    end_m::long, end_f::long, per_m::long, per_f::long, luc_m::long, luc_f::long,
-    height_m::little-float-32, height_f::little-float-32, weight_m::little-float-32,
-    weight_f::little-float-32, flags::long>>) do
-    %{skill_bonuses: race_skills(skills),
-      male_attributes: %{str: str_m, int: int_m, wil: wil_m, agi: agi_m, spd: spd_m, end: end_m,
-        per: per_m, luc: luc_m, height: Float.round(height_m, 2), weight: Float.round(weight_m, 2)},
-      female_attributes: %{str: str_f, int: int_f, wil: wil_f, agi: agi_f, spd: spd_f, end: end_f,
-        per: per_f, luc: luc_f, height: Float.round(height_f, 2), weight: Float.round(weight_f, 2)}}
-    |> Map.merge(parse_bitmask(flags, [playable: 1, beast: 2]))
+  defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
+    minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
+    minor_4::long, major_4::long, minor_5::long, major_5::long, playable::long, flags::long>>) do
+    %{attributes: [attribute_1, attribute_2], specialization: specialization,
+      major_skills: [major_1, major_2, major_3, major_4, major_5],
+      minor_skills: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
+      autocalc: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
+        book: 0x00008, ingredient: 0x00010, pick: 0x00020, probe: 0x00040, light: 0x00080,
+        apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spell: 0x00800, magic_item: 0x01000,
+        potion: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
+        repair_item: 0x20000])}
   end
 
   defp format_value("DIAL", "DATA", <<type::integer-8, _rest::binary>>), do: type
   defp format_value("DIAL", "DELE", <<type::long>>), do: type == 0
+
+  defp format_value("FACT", name, value) when name in ["ANAM", "RNAM"], do: strip_null(value)
+  defp format_value("FACT", "INTV", <<value::long>>), do: value
+  # Rankings and skills are long and repeated - split them out into their own functions
+  defp format_value("FACT", "FADT", <<attribute_1::long, attribute_2::long,
+    rankings::binary-200, skills::binary-24, unknown::long, flags::long>>) do
+    %{attribute_ids: [attribute_1, attribute_2], rankings: faction_rankings(rankings),
+      skill_ids: faction_skills(skills), unknown: unknown, flags: flags}
+  end
 
   defp format_value("INFO", name, value) when name in ["INAM", "ONAM", "RNAM", "CNAM", "FNAM",
     "ANAM", "DNAM", "SNAM"] do
@@ -191,17 +165,45 @@ defmodule Tes.EsmFile do
       pc_rank: nil_if_negative(pc_rank), gender: parse_gender(gender)}
   end
 
-  defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
-    minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
-    minor_4::long, major_4::long, minor_5::long, major_5::long, playable::long, flags::long>>) do
-    %{attributes: [attribute_1, attribute_2], specialization: specialization,
-      major_skills: [major_1, major_2, major_3, major_4, major_5],
-      minor_skills: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
-      autocalc: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
-        book: 0x00008, ingredient: 0x00010, pick: 0x00020, probe: 0x00040, light: 0x00080,
-        apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spell: 0x00800, magic_item: 0x01000,
-        potion: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
-        repair_item: 0x20000])}
+  defp format_value("MGEF", name, value) when name in ["AVFX", "BVFX", "HVFX", "CVFX", "ASND",
+    "BSND", "HSND", "CSND"] do
+    strip_null(value)
+  end
+  defp format_value("MGEF", "MEDT", <<school::long, base_cost::little-float-32, flags::long,
+    red::long, green::long, blue::long, speed::little-float-32, size::little-float-32,
+    size_cap::little-float-32>>) do
+    %{school: school, base_cost: base_cost, red: red, blue: blue, green: green, speed: speed,
+      size: size, size_cap: size_cap}
+    |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
+  end
+
+  defp format_value("RACE", "RADT", <<skills::binary-56, str_m::long, str_f::long, int_m::long,
+    int_f::long, wil_m::long, wil_f::long, agi_m::long, agi_f::long, spd_m::long, spd_f::long,
+    end_m::long, end_f::long, per_m::long, per_f::long, luc_m::long, luc_f::long,
+    height_m::little-float-32, height_f::little-float-32, weight_m::little-float-32,
+    weight_f::little-float-32, flags::long>>) do
+    %{skill_bonuses: race_skills(skills),
+      male_attributes: %{str: str_m, int: int_m, wil: wil_m, agi: agi_m, spd: spd_m, end: end_m,
+        per: per_m, luc: luc_m, height: Float.round(height_m, 2), weight: Float.round(weight_m, 2)},
+      female_attributes: %{str: str_f, int: int_f, wil: wil_f, agi: agi_f, spd: spd_f, end: end_f,
+        per: per_f, luc: luc_f, height: Float.round(height_f, 2), weight: Float.round(weight_f, 2)}}
+    |> Map.merge(parse_bitmask(flags, [playable: 1, beast: 2]))
+  end
+
+  defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
+    # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
+    %{type: type, cost: cost}
+    |> Map.merge(parse_bitmask(flags, [autocalc: 1, starting_spell: 2, always_succeeds: 4]))
+  end
+
+  defp format_value("SKIL", "SKDT", <<attribute_id::long, specialization::long, uses::binary>>) do
+    %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
+  end
+
+  defp format_value("SPEL", "ENAM", <<effect::signed-little-16, skill::signed-little-8,
+    attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>) do
+    %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
+      type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
   end
 
   defp format_value(_type, _name, value), do: value
@@ -209,6 +211,7 @@ defmodule Tes.EsmFile do
   ###############################
   # Misc. helper methods
   ###############################
+
   defp strip_null(name), do: name |> String.split(<<0>>, parts: 2) |> List.first
 
   defp record_pair_key(list, key, value) do
