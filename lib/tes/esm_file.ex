@@ -94,7 +94,7 @@ defmodule Tes.EsmFile do
   defp format_value(_type, "INDX", <<id::long>>), do: id
   # These are filenames that for some reason have double directory separators in them
   defp format_value(_type, name, value) when name in ["MODL", "ITEX", "PTEX"] do
-    value |> strip_null |> String.replace("\\\\", "\\")
+    value |> strip_null
   end
 
   defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
@@ -172,8 +172,8 @@ defmodule Tes.EsmFile do
   defp format_value("MGEF", "MEDT", <<school::long, base_cost::little-float-32, flags::long,
     red::long, green::long, blue::long, speed::little-float-32, size::little-float-32,
     size_cap::little-float-32>>) do
-    %{school: school, base_cost: base_cost, red: red, blue: blue, green: green, speed: speed,
-      size: size, size_cap: size_cap}
+    %{school: school, base_cost: float(base_cost), red: red, blue: blue, green: green,
+      speed: float(speed), size: float(size), size_cap: float(size_cap)}
     |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
   end
 
@@ -260,6 +260,8 @@ defmodule Tes.EsmFile do
   defp race_skills(<<skill::long, bonus::long, rest::binary>>, list) do
     race_skills(rest, [%{skill_id: skill, bonus: bonus} | list])
   end
+
+  defp float(val), do: Float.round(val, 2)
 
   defp parse_gender(0xFF), do: nil
   defp parse_gender(0x00), do: :male

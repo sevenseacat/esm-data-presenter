@@ -67,6 +67,9 @@ defmodule Tes.EsmFormatter do
     136 => "Stunted Magicka", 137 => "Summon Fabricant", 138 => "Summon Wolf", 139 => "Summon Bear",
     140 => "Summon Bonewolf", 141 => "Summon Creature 04 ???", 142 => "Summon Creature 05 ???"}
 
+  # Mapping school IDs to their actual skill IDs.
+  @magic_effect_schools %{0 => 11, 1 => 13, 2 => 10, 3 => 12, 4 => 14, 5 => 15}
+
   @skill_names %{0 => "Block", 1 => "Armorer", 2 => "Medium Armor", 3 => "Heavy Armor",
     4 => "Blunt Weapon", 5 => "Long Blade", 6 => "Axe", 7 => "Spear", 8 => "Athletics",
     9 => "Enchant", 10 => "Destruction", 11 => "Alteration", 12 => "Illusion",
@@ -74,6 +77,10 @@ defmodule Tes.EsmFormatter do
     17 => "Unarmored", 18 => "Security", 19 => "Sneak", 20 => "Acrobatics",
     21 => "Light Armor", 22 => "Short Blade", 23 => "Marksman", 24 => "Mercantile",
     25 => "Speechcraft", 26 => "Hand to Hand"}
+
+  @spell_effect_types %{0 => :self, 1 => :touch, 2 => :target}
+
+  @spell_types %{0 => :spell, 1 => :ability, 2 => :blight, 3 => :disease, 4 => :curse, 5 => :power}
 
   def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt} = raw_data) do
     {
@@ -173,22 +180,25 @@ defmodule Tes.EsmFormatter do
   def build_record("MGEF", %{"INDX" => id, "DESC" => description, "MEDT" => medt} = raw_data) do
     {
       :magic_effect,
-      %{
+      medt
+      |> Map.take([:base_cost, :red, :blue, :green, :speed, :size, :size_cap, :spellmaking,
+        :enchanting, :negative])
+      |> Map.merge(%{
         id: id,
         name: Map.get(@magic_effect_names, id),
         description: description,
         icon_texture: Map.get(raw_data, "ITEX"),
         particle_texture: Map.get(raw_data, "PTEX"),
-        casting_visual: Map.get(raw_data, "CVFX"),
+        cast_visual: Map.get(raw_data, "CVFX"),
         bolt_visual: Map.get(raw_data, "BVFX"),
         hit_visual: Map.get(raw_data, "HVFX"),
         area_visual: Map.get(raw_data, "AVFX"),
         cast_sound: Map.get(raw_data, "CSND"),
         bolt_sound: Map.get(raw_data, "BSND"),
         hit_sound: Map.get(raw_data, "HSND"),
-        area_sound: Map.get(raw_data, "ASND")
-      }
-      |> Map.merge(medt)
+        area_sound: Map.get(raw_data, "ASND"),
+        skill_id: Map.get(@magic_effect_schools, Map.get(medt, :school))
+      })
     }
   end
 
@@ -218,15 +228,17 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "SPDT" => spdt, "ENAM" => enam}) do
+  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "ENAM" => enam} = raw_data) do
     {
       :spell,
-      %{
+      raw_data
+      |> Map.get("SPDT")
+      |> Map.update!(:type, &(Map.get(@spell_types, &1)))
+      |> Map.merge(%{
         id: id,
         name: name,
-        effects: enam
-      }
-      |> Map.merge(spdt)
+        effects: format_magic_effects(enam)
+      })
     }
   end
 
@@ -262,5 +274,11 @@ defmodule Tes.EsmFormatter do
       operator: Map.fetch!(@dialogue_operations, op),
       value: value
     }
+  end
+
+  defp format_magic_effects(effects) do
+    Enum.map(effects, fn effect ->
+      Map.update!(effect, :type, &(Map.get(@spell_effect_types, &1)))
+    end)
   end
 end

@@ -26,7 +26,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      | ✅     |          |           | `CLAS` (Classes) |
 | ✅      | ✅     | ✅       |           | `FACT` (Factions) |
 | ✅      |       |          |           | `RACE` (Races) |
-| ✅     |        | ✅        |           | `SKIL` (Skills) - "use values" are ignored |
+| ✅     | ✅      | ✅       |           | `SKIL` (Skills) - "use values" are ignored |
 | ✅      |       |          |           | `MGEF` (Magic effects) |
 |        |        |          |           | `SCPT` (Scripts) |
 |        |        |          |           | `REGN` (Regions) |
@@ -34,7 +34,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |        |          |           | `MISC` (Miscellaneous items) |
 |        |        |          |           | `WEAP` (Weapons) |
 |        |        |          |           | `CONT` (Containers) |
-| ✅      |       |          |           | `SPEL` (Spells) |
+| ✅      | ✅     |          |           | `SPEL` (Spells) |
 |        |        |          |           | `ENCH` (Enchantments) |
 |        |        |          |           | `NPC_` (NPCs) |
 |        |        |          |           | `ARMO` (Armour) |
