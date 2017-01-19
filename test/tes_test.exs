@@ -45,6 +45,7 @@ defmodule TesTest do
         enchanting: false, repair_item: false}}
   end
 
+  @tag :pending
   test "can read Dialogue data", %{stream: _stream} do
     assert false
   end
@@ -73,8 +74,27 @@ defmodule TesTest do
   test "can read Ingredient data", %{stream: _stream} do
   end
 
-  test "can read Journal data", %{stream: _stream} do
-    assert false
+  test "can read Journal data", %{stream: stream} do
+    journals = Filter.by_type(stream, :journal) |> Enum.to_list
+
+    assert length(journals) == 1
+    # Because it's a pattern match to ensure the unknown data is correct, it has to be on the LHS of
+    # the assert. ExUnit will catch the MatchError and render an appropriate message, if it happens.
+    # https://groups.google.com/forum/#!msg/elixir-lang-talk/4X0Ng0PJntQ/UPTznkD6TIUJ
+    assert %{id: "test_j", infos: [
+      %{id: id_1, previous: nil, next: id_2, index: 0, text: "Test Journal Name", name: true,
+        complete: false, restart: false},
+      %{id: id_2, previous: id_1, next: id_3, index: 10, text: "This is an index.", name: false,
+        complete: false, restart: false},
+      %{id: id_3, previous: id_2, next: id_4, index: 11, text: "Quest complete!", complete: true,
+        name: false, restart: false},
+      %{id: id_4, previous: id_3, next: id_5, index: 9, text: "Quest still complete!",
+        complete: true, name: false, restart: false},
+      %{id: id_5, previous: id_4, next: id_6, index: 100, text: "You dun goofed.", name: false,
+        complete: false, restart: true},
+      %{id: id_6, previous: id_5, next: nil, index: 500, text: "Complete again. Yay.", name: false,
+        complete: true, restart: false}]
+    } = List.first(journals)
   end
 
   test "can read Magic Effect data", %{stream: stream} do

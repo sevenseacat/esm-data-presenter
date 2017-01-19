@@ -5,9 +5,10 @@ defmodule Tes.Filter do
   def by_type(stream, key) when key in [:journal, :dialogue] do
     stream
     |> Stream.drop_while(fn {type, _record} -> type != key end)
-    |> Stream.chunk_by(fn {type, _record} -> type end) # [[dialogue], [info, info], [dialogue]...]
-    |> Stream.chunk(2) # [[[dialogue], [info, info, info]], [[dialogue], ...]]
+    |> Stream.take_while(fn {type, _record} -> type in [key, :info] end)
+    |> chunk_dialogues(key)
     |> Stream.map(&combine_dialogue_with_infos/1)
+    |> Stream.reject(&(&1[:id] == ""))
   end
 
   def by_type(stream, selected_type) do
@@ -30,7 +31,21 @@ defmodule Tes.Filter do
     end)
   end
 
-  def combine_dialogue_with_infos([[{_key, dialogue}], infos]) do
+  # Group each dialogue together with its following info blocks (if any).
+  # Adapted from http://stackoverflow.com/a/41723947/560215
+  defp chunk_dialogues(stream, key) do
+    stream
+    |> Stream.concat([nil])
+    |> Stream.transform([], fn e, acc ->
+      case e do
+        nil -> {[acc], nil}
+        {^key, _} -> {(if Enum.empty?(acc), do: [], else: [acc]), [e]}
+        {:info, _} -> {[], acc ++ [e]}
+      end
+    end)
+  end
+
+  defp combine_dialogue_with_infos([{_key, dialogue} | infos]) do
     Map.put(dialogue, :infos, Keyword.values(infos))
   end
 end

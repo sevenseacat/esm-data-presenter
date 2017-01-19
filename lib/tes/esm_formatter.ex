@@ -158,7 +158,7 @@ defmodule Tes.EsmFormatter do
       |> Map.merge(%{
         index: index,
         name: Map.get(raw_data, "QSTN") == 1,
-        finished: Map.get(raw_data, "QSTF") == 1,
+        complete: Map.get(raw_data, "QSTF") == 1,
         restart: Map.get(raw_data, "QSTR") == 1
       })
     }

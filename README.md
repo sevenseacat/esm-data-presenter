@@ -49,9 +49,9 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |        |          |           | `LEVI` (Levelled items) |
 |        |        |          |           | `LEVC` (Levelled creatures) |
 |        |        |          |           | `CELL` (Cells) |
-| ✅      |        |          |           | `DIAL` (Dialogue/journal topics) |
+| ✅      | ✅     |          |           | `DIAL` (Dialogue/journal topics) |
 | ✅      |        |          |           | `INFO` (Dialogue records) |
-| ✅      |        |          |           | `INFO` (Journal records) |
+| ✅      | ✅     |          |           | `INFO` (Journal records) |
 
 ### Record types (probably) not going to be done
 
