@@ -217,6 +217,19 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  # There are extra fields - BNAM = Sleep creature string and SNAM = Sound Records - not using them
+  def build_record("REGN", %{"NAME" => id, "FNAM" => name, "WEAT" => weather, "CNAM" => color}) do
+    {
+      :region,
+      %{
+        id: id,
+        name: name,
+        map_color: color,
+        weather: weather
+      }
+    }
+  end
+
   def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
     {
       :skill,

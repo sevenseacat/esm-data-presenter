@@ -190,6 +190,17 @@ defmodule Tes.EsmFile do
     |> Map.merge(parse_bitmask(flags, [playable: 1, beast: 2]))
   end
 
+  defp format_value("REGN", "CNAM", <<red::integer, green::integer, blue::integer, _::integer>>) do
+    %{red: red, green: green, blue: blue}
+  end
+
+  defp format_value("REGN", "WEAT", <<clear::integer, cloudy::integer, foggy::integer,
+    overcast::integer, rain::integer, thunder::integer, ash::integer, blight::integer,
+    snow::integer, blizzard::integer>>) do
+    %{clear: clear, cloudy: cloudy, foggy: foggy, overcast: overcast, rain: rain, thunder: thunder,
+      ash: ash, blight: blight, snow: snow, blizzard: blizzard}
+  end
+
   defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
     # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
     %{type: type, cost: cost}

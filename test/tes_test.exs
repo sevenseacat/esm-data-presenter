@@ -149,8 +149,13 @@ defmodule TesTest do
     assert false
   end
 
-  @tag :pending
-  test "can read Region data", %{stream: _stream} do
+  test "can read Region data", %{stream: stream} do
+    regions = Filter.by_type(stream, :region) |> Enum.to_list
+
+    assert length(regions) == 1
+    assert List.first(regions) == %{id: "House", name: "My House", weather:
+      %{clear: 10, cloudy: 25, foggy: 35, overcast: 15, rain: 10, thunder: 0, ash: 0, blight: 0, snow: 5, blizzard: 0},
+      map_color: %{red: 105, green: 227, blue: 74}}
   end
 
   test "can read Skill data", %{stream: stream} do
