@@ -50,7 +50,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |        |          |           | `LEVC` (Levelled creatures) |
 |        |        |          |           | `CELL` (Cells) |
 | ✅      | ✅     |          |           | `DIAL` (Dialogue/journal topics) |
-| ✅      |        |          |           | `INFO` (Dialogue records) |
+| ✅      | ✅     |          |           | `INFO` (Dialogue records) |
 | ✅      | ✅     |          |           | `INFO` (Journal records) |
 
 ### Record types (probably) not going to be done
