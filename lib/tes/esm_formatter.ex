@@ -170,6 +170,8 @@ defmodule Tes.EsmFormatter do
       raw_data
       |> common_dialogue_fields
       |> Map.merge(%{
+        race: Map.get(raw_data, "RNAM"),
+        faction: Map.get(raw_data, "FNAM"),
         conditions: raw_data |> Map.get("CONDS") |> readable_conditions,
         script: Map.get(raw_data, "BNAM")
       })
@@ -265,10 +267,10 @@ defmodule Tes.EsmFormatter do
   end
 
   defp readable_conditions(nil), do: []
-  defp readable_conditions(conditions), do: Enum.map(conditions, &condition/1)
+  defp readable_conditions(conditions), do: Enum.map(conditions, &condition/1) |> Enum.reverse
   defp condition({%{function: fun, index: index, name: name, operator: op}, value}) do
     %{
-      index: index,
+      index: String.to_integer(index),
       function: Map.fetch!(@dialogue_functions, fun),
       name: name,
       operator: Map.fetch!(@dialogue_operations, op),

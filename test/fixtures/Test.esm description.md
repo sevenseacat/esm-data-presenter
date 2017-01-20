@@ -93,7 +93,7 @@ This is going to be even harder to describe. These entries are ordered.
 ### Greeting 0
 
 * "Oh God, I think you [goofed]."
-* Race: other_guild
+* Race: other
 * Disposition: 25
 * Conditions:
   * Not ID fargoth = 0

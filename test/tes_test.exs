@@ -45,9 +45,36 @@ defmodule TesTest do
         enchanting: false, repair_item: false}}
   end
 
-  @tag :pending
-  test "can read Dialogue data", %{stream: _stream} do
-    assert false
+  test "can read Dialogue data", %{stream: stream} do
+    dialogues = Tes.Filter.by_type(stream, :dialogue) |> Enum.to_list
+    assert length(dialogues) == 28 # Two I created, and lots of predefined ones
+
+    goofed = Enum.find(dialogues, &(&1[:id] == "goofed"))
+    assert %{id: "goofed", type: :topic, infos: [
+      %{id: id_1, text: "Yes, I think you goofed.", previous: nil, next: id_2,
+        disposition: 0, script: "; lol it worked!", gender: nil, npc_rank: nil,
+        pc_rank: nil, faction: nil, race: nil, conditions: [
+          %{index: 0, function: :item, name: "Gold_010", operator: "=", value: 10}
+        ]},
+      %{id: id_2, text: "Nah, you're cool, %PCName.", previous: id_1, next: id_3,
+        disposition: 0, script: nil, gender: nil, npc_rank: nil,
+        pc_rank: nil, faction: nil, race: nil, conditions: [
+          %{index: 0, function: :dead, name: "fargoth", operator: "=", value: 1},
+          %{index: 1, function: :journal, name: "test_j", operator: "!=", value: 200},
+          %{index: 2, function: :not_faction, name: "ym_guild", operator: "=", value: 5}
+        ]},
+      %{id: id_3, text: "Huh?", previous: id_2, next: nil,
+        disposition: 100, script: nil, faction: "ym_guild", npc_rank: 0, gender: :male,
+        pc_rank: nil, race: nil, conditions: []}
+    ]} = goofed
+
+    greeting = Enum.find(dialogues, &(&1[:id] == "Greeting 0"))
+    assert %{id: "Greeting 0", type: :greeting, infos: [
+      %{id: _, text: "Oh God, I think you goofed.", previous: nil, next: nil,
+        disposition: 25, script: nil, gender: nil, npc_rank: nil,
+        pc_rank: nil, faction: nil, race: "other", conditions: [
+          %{index: 0, function: :not_id, name: "fargoth", operator: "=", value: 0}
+        ]}]} = greeting
   end
 
   test "can read Faction data", %{stream: stream} do
