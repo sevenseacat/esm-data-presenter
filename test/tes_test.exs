@@ -97,8 +97,15 @@ defmodule TesTest do
     }
   end
 
-  @tag :pending
-  test "can read Ingredient data", %{stream: _stream} do
+  test "can read Ingredient data", %{stream: stream} do
+    ingredients = Filter.by_type(stream, :ingredient) |> Enum.to_list
+
+    assert length(ingredients) == 1
+    assert List.first(ingredients) == %{id: "skooma", name: "Skooma", weight: 0.1, value: 500,
+     icon: "a\\Tx_Fur_Colovian_helm_r.dds", script: nil, effects: [
+       %{skill_id: nil, attribute_id: nil, effect_id: 132},
+       %{skill_id: nil, attribute_id: nil, effect_id: 23},
+       %{skill_id: nil, attribute_id: nil, effect_id: 47}]}
   end
 
   test "can read Journal data", %{stream: stream} do

@@ -43,7 +43,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |        |          |           | `APPA` (Alchemy apparatus) |
 |        |        |          |           | `LOCK` (Lockpicking items) |
 |        |        |          |           | `PROB` (Probe items) |
-|        |        |          |           | `INGR` (Ingredients) |
+| ✅      | ✅     |          |           | `INGR` (Ingredients) |
 | ✅      | ✅     | ✅       |           | `BOOK` (Books and papers) |
 |        |        |          |           | `ALCH` (Potions?) |
 |        |        |          |           | `LEVI` (Levelled items) |

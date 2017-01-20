@@ -165,6 +165,12 @@ defmodule Tes.EsmFile do
       pc_rank: nil_if_negative(pc_rank), gender: parse_gender(gender)}
   end
 
+  defp format_value("INGR", "IRDT", <<weight::little-float-32, value::long, effects::binary-16,
+    skills::binary-16, attributes::binary-16>>) do
+    %{weight: float(weight), value: value,
+      effects: zip_ingredient_effects(effects, skills, attributes)}
+  end
+
   defp format_value("MGEF", name, value) when name in ["AVFX", "BVFX", "HVFX", "CVFX", "ASND",
     "BSND", "HSND", "CSND"] do
     strip_null(value)
@@ -270,6 +276,18 @@ defmodule Tes.EsmFile do
   defp race_skills(<<-1::long, _rest::binary>>, list), do: list
   defp race_skills(<<skill::long, bonus::long, rest::binary>>, list) do
     race_skills(rest, [%{skill_id: skill, bonus: bonus} | list])
+  end
+
+  def zip_ingredient_effects(effects, skills, attributes) do
+    zip_ingredient_effects(effects, skills, attributes, [])
+  end
+  def zip_ingredient_effects("", "", "", parsed), do: Enum.reverse(parsed)
+  def zip_ingredient_effects(<<-1::long, _rest::binary>>, _, _, parsed), do: Enum.reverse(parsed)
+  def zip_ingredient_effects(<<effect::long, effects::binary>>, <<skill::long, skills::binary>>,
+    <<attribute::long, attributes::binary>>, parsed) do
+    parsed_effect = %{effect_id: effect, skill_id: nil_if_negative(skill),
+      attribute_id: nil_if_negative(attribute)}
+    zip_ingredient_effects(effects, skills, attributes, [parsed_effect | parsed])
   end
 
   defp float(val), do: Float.round(val, 2)

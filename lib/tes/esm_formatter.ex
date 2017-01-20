@@ -179,6 +179,18 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("INGR", %{"NAME" => id, "FNAM" => name, "IRDT" => irdt}=raw_data) do
+    {
+      :ingredient,
+      %{
+        id: id,
+        name: name,
+        icon: Map.get(raw_data, "ITEX"),
+        script: Map.get(raw_data, "SCRI")
+      } |> Map.merge(irdt)
+    }
+  end
+
   def build_record("MGEF", %{"INDX" => id, "DESC" => description, "MEDT" => medt} = raw_data) do
     {
       :magic_effect,
