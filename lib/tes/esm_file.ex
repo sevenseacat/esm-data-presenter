@@ -207,6 +207,10 @@ defmodule Tes.EsmFile do
       ash: ash, blight: blight, snow: snow, blizzard: blizzard}
   end
 
+  defp format_value("SCPT", "SCHD", <<name::binary-32, _rest::binary>>) do
+    %{name: strip_null(name)}
+  end
+
   defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
     # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
     %{type: type, cost: cost}

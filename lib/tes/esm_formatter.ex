@@ -242,6 +242,14 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  # Script data contains lots of compilation data, but we just want the raw text
+  def build_record("SCPT", %{"SCHD" => header, "SCTX" => text}) do
+    {
+      :script,
+      %{name: Map.get(header, :name), text: text}
+    }
+  end
+
   def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
     {
       :skill,

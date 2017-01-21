@@ -165,6 +165,14 @@ defmodule TesTest do
       map_color: %{red: 105, green: 227, blue: 74}}
   end
 
+  test "can read Script data", %{stream: stream} do
+    scripts = Filter.by_type(stream, :script) |> Enum.to_list
+
+    assert length(scripts) == 2 # ToolScript and DaughterOfFargoth
+    assert List.first(scripts) == %{name: "DaughterOfFargoth",
+      text: "begin DaughterOfFargoth\r\n; does something?\r\nend"}
+  end
+
   test "can read Skill data", %{stream: stream} do
     skill = Filter.by_type(stream, :skill) |> Enum.find(&(&1[:name] == "Marksman"))
     assert skill == %{id: 23, name: "Marksman", attribute_id: 3, specialization_id: 2,
