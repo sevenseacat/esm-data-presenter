@@ -117,6 +117,19 @@ defmodule Tes.EsmFile do
 
   defp format_value("BSGN", "TNAM", value), do: strip_null(value)
 
+  defp format_value("CELL", "AMBI", <<ambient::binary-4, sunlight::binary-4, fog_color::binary-4,
+    density::signed-little-float-32>>) do
+    %{ambient: parse_colorref(ambient), sunlight: parse_colorref(sunlight),
+      fog: parse_colorref(fog_color) |> Map.put(:density, float(density))}
+  end
+  defp format_value("CELL", "WHGT", <<value::signed-little-float-32>>), do: value
+  defp format_value("CELL", "DATA", <<flags::long, _grid_x::long, _grid_y::long>>) do
+    parse_bitmask(flags, [interior: 0x01, water: 0x02, sleep_illegal: 0x04,
+      behave_like_exterior: 0x80])
+  end
+  defp format_value("CELL", "NAM0", <<value::long>>), do: value
+  defp format_value("CELL", "NAM5", <<color::long>>), do: parse_colorref(color)
+
   defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
     minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
     minor_4::long, major_4::long, minor_5::long, major_5::long, playable::long, flags::long>>) do
@@ -247,11 +260,15 @@ defmodule Tes.EsmFile do
     Map.update(list, key, [value], &(&1 ++ [value]))
   end
 
-  def parse_bitmask(mask, list), do: parse_bitmask(mask, list, %{})
-  def parse_bitmask(_mask, [], map), do: map
-  def parse_bitmask(mask, [{key, value} | rest], map) do
+  defp parse_bitmask(mask, list), do: parse_bitmask(mask, list, %{})
+  defp parse_bitmask(_mask, [], map), do: map
+  defp parse_bitmask(mask, [{key, value} | rest], map) do
     map = Map.put(map, key, band(mask, value) == value)
     parse_bitmask(mask, rest, map)
+  end
+
+  defp parse_colorref(<<red::integer-8, green::integer-8, blue::integer-8, _rest>>) do
+    %{red: red, green: green, blue: blue}
   end
 
   defp nil_if_empty(value) when value == "", do: nil

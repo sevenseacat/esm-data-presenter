@@ -116,6 +116,20 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("CELL", %{"NAME" => name}=raw_data) do
+    {
+      :cell,
+      %{
+        name: (if name == "", do: Map.get(raw_data, "RGNN"), else: name),
+        water_height: Map.get(raw_data, "WHGT"),
+        object_count: Map.get(raw_data, "NAM0"),
+        map_color: Map.get(raw_data, "NAM5"),
+      }
+      |> Map.merge(Map.get(raw_data, "DATA"))
+      |> Map.merge(Map.get(raw_data, "AMBI"))
+    }
+  end
+
   def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => cldt, "DESC" => desc}) do
     { :class,
       %{id: id,

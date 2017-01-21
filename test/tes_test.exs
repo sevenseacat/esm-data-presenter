@@ -28,8 +28,16 @@ defmodule TesTest do
       texture: "m\\tx_gold_001.dds", text: "Something about polishing spears goes here."}
   end
 
-  @tag :pending
-  test "can read Cell data", %{stream: _stream} do
+  test "can read Cell data", %{stream: stream} do
+    cells = Filter.by_type(stream, :cell) |> Enum.to_list
+
+    assert length(cells) == 1
+    assert List.first(cells) == %{name: "Bedroom", water: true, interior: true, water_height: 5.0,
+      sleep_illegal: false, behave_like_exterior: false, object_count: 2, map_color: nil,
+      ambient: %{red: 28, green: 115, blue: 71},
+      sunlight: %{red: 242, green: 217, blue: 217},
+      fog: %{red: 210, green: 217, blue: 85, density: 0.5},
+      references: [%{index: 0, id: "fargoth"}, %{index: 1, id: "LootBag"}]}
   end
 
   test "can read Class data", %{stream: stream} do
