@@ -33,11 +33,13 @@ defmodule TesTest do
 
     assert length(cells) == 1
     assert List.first(cells) == %{name: "Bedroom", water: true, interior: true, water_height: 5.0,
-      sleep_illegal: false, behave_like_exterior: false, object_count: 2, map_color: nil,
+      sleep_illegal: false, behave_like_exterior: false, map_color: nil,
       ambient: %{red: 28, green: 115, blue: 71},
       sunlight: %{red: 242, green: 217, blue: 217},
       fog: %{red: 210, green: 217, blue: 85, density: 0.5},
-      references: [%{index: 0, id: "fargoth"}, %{index: 1, id: "LootBag"}]}
+      references: [
+        %{index: 1, name: "fargoth", key: nil, trap: nil, owner: nil},
+        %{index: 2, name: "LootBag", key: nil, trap: nil, owner: nil}]}
   end
 
   test "can read Class data", %{stream: stream} do

@@ -122,19 +122,19 @@ defmodule Tes.EsmFormatter do
       %{
         name: (if name == "", do: Map.get(raw_data, "RGNN"), else: name),
         water_height: Map.get(raw_data, "WHGT"),
-        object_count: Map.get(raw_data, "NAM0"),
         map_color: Map.get(raw_data, "NAM5"),
+        references: Map.get(raw_data, "REFS", []) |> Enum.map(&format_cell_references/1) |> Enum.reverse
       }
-      |> Map.merge(Map.get(raw_data, "DATA"))
-      |> Map.merge(Map.get(raw_data, "AMBI"))
+      |> Map.merge(Map.get(raw_data, "DATA", %{}))
+      |> Map.merge(Map.get(raw_data, "AMBI", %{}))
     }
   end
 
-  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => cldt, "DESC" => desc}) do
+  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => cldt}=raw_data) do
     { :class,
       %{id: id,
         name: name,
-        description: desc}
+        description: Map.get(raw_data, "DESC")}
       |> Map.merge(cldt)
     }
   end
@@ -205,7 +205,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("MGEF", %{"INDX" => id, "DESC" => description, "MEDT" => medt} = raw_data) do
+  def build_record("MGEF", %{"INDX" => id, "MEDT" => medt} = raw_data) do
     {
       :magic_effect,
       medt
@@ -214,7 +214,7 @@ defmodule Tes.EsmFormatter do
       |> Map.merge(%{
         id: id,
         name: Map.get(@magic_effect_names, id),
-        description: description,
+        description: Map.get(raw_data, "DESC"),
         icon_texture: Map.get(raw_data, "ITEX"),
         particle_texture: Map.get(raw_data, "PTEX"),
         cast_visual: Map.get(raw_data, "CVFX"),
@@ -329,5 +329,15 @@ defmodule Tes.EsmFormatter do
     Enum.map(effects, fn effect ->
       Map.update!(effect, :type, &(Map.get(@spell_effect_types, &1)))
     end)
+  end
+
+  def format_cell_references(reference) do
+    %{
+      index: Map.get(reference, "index"),
+      name: Map.get(reference, "NAME"),
+      key: Map.get(reference, "KNAM"),
+      trap: Map.get(reference, "TNAM"),
+      owner: Map.get(reference, "ANAM")
+    }
   end
 end

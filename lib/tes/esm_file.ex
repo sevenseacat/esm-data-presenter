@@ -69,6 +69,22 @@ defmodule Tes.EsmFile do
   # eg. as a primitive value, or a key-value tuple, or a list
   ##############################
 
+  defp record_value(list, "CELL", "FRMR", value) do
+    record_list_map_key(list, "REFS", "index", value)
+  end
+  # Name and data appear multiple times for a cell - once for the cell itself, then once for each reference
+  defp record_value(list, "CELL", name, value) when name in ["NAME", "DATA", "INTV"] do
+    if Map.has_key?(list, "REFS") do
+      record_list_map_value(list, "REFS", name, value)
+    else
+      Map.put_new(list, name, value)
+    end
+  end
+  defp record_value(list, "CELL", name, value) when name in ["XSCL", "DELE", "DODT", "DNAM",
+    "FLTV", "KNAM", "TNAM", "UNAM", "ANAM", "BNAM", "NAM9", "XSOL", "DATA"] do
+    record_list_map_value(list, "REFS", name, value)
+  end
+
   defp record_value(list, "FACT", "RNAM", value), do: record_list(list, "RNAM", value)
 
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
@@ -127,8 +143,14 @@ defmodule Tes.EsmFile do
     parse_bitmask(flags, [interior: 0x01, water: 0x02, sleep_illegal: 0x04,
       behave_like_exterior: 0x80])
   end
-  defp format_value("CELL", "NAM0", <<value::long>>), do: value
-  defp format_value("CELL", "NAM5", <<color::long>>), do: parse_colorref(color)
+  defp format_value("CELL", "DATA", <<x_pos::signed-little-float-32, y_pos::signed-little-float-32,
+    z_pos::signed-little-float-32, x_rotate::signed-little-float-32, y_rotate::signed-little-float-32,
+    z_rotate::signed-little-float-32>>) do
+    %{x_pos: float(x_pos), y_pos: float(y_pos), z_pos: float(z_pos), x_rotate: x_rotate, y_rotate: y_rotate, z_rotate: z_rotate}
+  end
+  defp format_value("CELL", "FRMR", <<value::long>>), do: value
+  defp format_value("CELL", "NAM5", <<color::binary-4>>), do: parse_colorref(color)
+  defp format_value("CELL", name, value) when name in ["RGNN", "ANAM"], do: strip_null(value)
 
   defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
     minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
@@ -258,6 +280,14 @@ defmodule Tes.EsmFile do
 
   defp record_list(list, key, value) do
     Map.update(list, key, [value], &(&1 ++ [value]))
+  end
+
+  defp record_list_map_key(list, field, key, value) do
+    Map.update(list, field, [%{key => value}], &([%{key => value} | &1]))
+  end
+
+  defp record_list_map_value(list, field, key, value) do
+    Map.update!(list, field, fn([map | rest]) -> [Map.put(map, key, value) | rest] end)
   end
 
   defp parse_bitmask(mask, list), do: parse_bitmask(mask, list, %{})

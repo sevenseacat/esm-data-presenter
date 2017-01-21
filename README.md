@@ -47,8 +47,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      | ✅     | ✅       |           | `BOOK` (Books and papers) |
 |        |        |          |           | `ALCH` (Potions?) |
 |        |        |          |           | `LEVI` (Levelled items) |
-|        |        |          |           | `LEVC` (Levelled creatures) |
-|        |        |          |           | `CELL` (Cells) |
+| ✅      | ✅     |          |           | `CELL` (Cells) |
 | ✅      | ✅     |          |           | `DIAL` (Dialogue/journal topics) |
 | ✅      | ✅     |          |           | `INFO` (Dialogue records) |
 | ✅      | ✅     |          |           | `INFO` (Journal records) |
@@ -64,3 +63,4 @@ Some of these won't be handled at all, but the list is here for completeness
 - `PGRD` (Path grids)
 - `SNDG` (Sound generators)
 - `ACTI` (Activators)
+- `LEVC` (Levelled creatures)
