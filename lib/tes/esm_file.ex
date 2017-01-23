@@ -113,6 +113,12 @@ defmodule Tes.EsmFile do
     value |> strip_null
   end
 
+  defp format_value("APPA", "AADT", <<type::long, quality::signed-little-float-32,
+    weight::signed-little-float-32, value::long>>) do
+    %{type: type, weight: float(weight), value: value, quality: float(quality)}
+  end
+  defp format_value("APPA", "SCRI", value), do: strip_null(value)
+
   defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
   defp format_value("BOOK", "BKDT", <<weight::little-float-32, value::long, scroll::long,
     skill_id::long, enchantment::long>>) do

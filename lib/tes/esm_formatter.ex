@@ -1,5 +1,7 @@
 defmodule Tes.EsmFormatter do
   # Hardcoded things - there's a few of them
+  @apparatus_types %{0 => :mortar_pestle, 1 => :alembic, 2 => :calcinator, 3 => :retort}
+
   @dialogue_types %{0 => :topic, 1 => :voice, 2 => :greeting, 3 => :persuasion, 4 => :journal}
 
   @dialogue_functions %{"00" => :rank_low, "01" => :rank_high, "02" => :rank_requirement,
@@ -81,6 +83,21 @@ defmodule Tes.EsmFormatter do
   @spell_effect_types %{0 => :self, 1 => :touch, 2 => :target}
 
   @spell_types %{0 => :spell, 1 => :ability, 2 => :blight, 3 => :disease, 4 => :curse, 5 => :power}
+
+  def build_record("APPA", %{"NAME" => id, "FNAM" => name, "AADT" => data} = raw_data) do
+    {
+      :apparatus,
+      data
+      |> Map.update!(:type, &(@apparatus_types[&1]))
+      |> Map.merge(%{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        script: Map.get(raw_data, "SCRI")
+      })
+    }
+  end
 
   def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt} = raw_data) do
     {

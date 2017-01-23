@@ -6,8 +6,13 @@ defmodule TesTest do
     {:ok, stream: EsmFile.stream("test/fixtures/Test.esm")}
   end
 
-  @tag :pending
-  test "can read Apparatus data", %{stream: _stream} do
+  test "can read Apparatus data", %{stream: stream} do
+    apparatuses = Filter.by_type(stream, :apparatus) |> Enum.to_list
+
+    assert length(apparatuses) == 1
+    assert List.first(apparatuses) == %{id: "noob_tool", name: "Noob Tool", type: :mortar_pestle,
+      script: "ToolScript", weight: 1.5, value: 12, quality: 2.7, model: "a\\A_Ebony_Boot_GND.nif",
+      texture: "s\\B_Tx_S_fire_shield.dds"}
   end
 
   test "can read Birthsign data", %{stream: stream} do
