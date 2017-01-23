@@ -31,7 +31,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      | ✅     |          |           | `SCPT` (Scripts) |
 | ✅      | ✅     |          |           | `REGN` (Regions) |
 | ✅     | ✅      |          |           | `BSGN` (Birth signs) |
-|        |        |          |           | `MISC` (Miscellaneous items) |
+| ✅      | ✅     |          |           | `MISC` (Miscellaneous items) |
 |        |        |          |           | `WEAP` (Weapons) |
 |        |        |          |           | `CONT` (Containers) |
 | ✅      | ✅     |          |           | `SPEL` (Spells) |

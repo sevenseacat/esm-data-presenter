@@ -260,6 +260,20 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("MISC", %{"NAME" => id, "FNAM" => name, "MCDT" => data}=raw_data) do
+    {
+      :misc_item,
+      %{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        enchantment: Map.get(raw_data, "ENAM"),
+        script: Map.get(raw_data, "SCRI")
+      } |> Map.merge(data)
+    }
+  end
+
   def build_record("PROB", %{"NAME" => id, "FNAM" => name, "PBDT" => data}=raw_data) do
     {
       :probe,

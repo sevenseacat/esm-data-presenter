@@ -230,6 +230,10 @@ defmodule Tes.EsmFile do
     |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
   end
 
+  defp format_value("MISC", "MCDT", <<weight::signed-little-float-32, value::long, _::binary>>) do
+    %{weight: float(weight), value: value}
+  end
+
   # Exactly the same as "LOCK"/"LKDT".
   defp format_value("PROB", "PBDT", <<weight::signed-little-float-32, value::long,
     quality::signed-little-float-32, uses::long>>) do

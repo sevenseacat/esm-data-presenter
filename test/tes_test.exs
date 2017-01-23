@@ -162,8 +162,13 @@ defmodule TesTest do
       particle_texture: nil, red: 33, green: 66, blue: 99}
   end
 
-  @tag :pending
-  test "can read Misc Item data", %{stream: _stream} do
+  test "can read Misc Item data", %{stream: stream} do
+    misc_items = Filter.by_type(stream, :misc_item) |> Enum.to_list
+
+    assert length(misc_items) == 1
+    assert List.first(misc_items) == %{id: "Misc_SoulGem_Petty", name: "Pretty Soul Gem",
+      weight: 0.25, value: 11, model: "m\\misc_soulgem_petty.nif",
+      texture: "m\\tx_soulgem_petty.tga", enchantment: nil, script: nil}
   end
 
   @tag :pending
