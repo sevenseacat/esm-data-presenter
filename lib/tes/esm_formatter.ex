@@ -205,6 +205,19 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("LOCK", %{"NAME" => id, "FNAM" => name, "LKDT" => data}=raw_data) do
+    {
+      :lockpick,
+      %{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        script: Map.get(raw_data, "SCRI")
+      } |> Map.merge(data)
+    }
+  end
+
   def build_record("MGEF", %{"INDX" => id, "MEDT" => medt} = raw_data) do
     {
       :magic_effect,
@@ -227,6 +240,19 @@ defmodule Tes.EsmFormatter do
         area_sound: Map.get(raw_data, "ASND"),
         skill_id: Map.get(@magic_effect_schools, Map.get(medt, :school))
       })
+    }
+  end
+
+  def build_record("PROB", %{"NAME" => id, "FNAM" => name, "PBDT" => data}=raw_data) do
+    {
+      :probe,
+      %{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        script: Map.get(raw_data, "SCRI")
+      } |> Map.merge(data)
     }
   end
 
@@ -253,6 +279,19 @@ defmodule Tes.EsmFormatter do
         map_color: color,
         weather: weather
       }
+    }
+  end
+
+  def build_record("REPA", %{"NAME" => id, "FNAM" => name, "RIDT" => data}=raw_data) do
+    {
+      :repair,
+      %{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        script: Map.get(raw_data, "SCRI")
+      } |> Map.merge(data)
     }
   end
 

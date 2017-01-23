@@ -207,6 +207,11 @@ defmodule Tes.EsmFile do
       effects: zip_ingredient_effects(effects, skills, attributes)}
   end
 
+  defp format_value("LOCK", "LKDT", <<weight::signed-little-float-32, value::long,
+    quality::signed-little-float-32, uses::long>>) do
+    %{weight: float(weight), value: value, quality: float(quality), uses: uses}
+  end
+
   defp format_value("MGEF", name, value) when name in ["AVFX", "BVFX", "HVFX", "CVFX", "ASND",
     "BSND", "HSND", "CSND"] do
     strip_null(value)
@@ -217,6 +222,12 @@ defmodule Tes.EsmFile do
     %{school: school, base_cost: float(base_cost), red: red, blue: blue, green: green,
       speed: float(speed), size: float(size), size_cap: float(size_cap)}
     |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
+  end
+
+  # Exactly the same as "LOCK"/"LKDT".
+  defp format_value("PROB", "PBDT", <<weight::signed-little-float-32, value::long,
+    quality::signed-little-float-32, uses::long>>) do
+    %{weight: float(weight), value: value, quality: float(quality), uses: uses}
   end
 
   defp format_value("RACE", "RADT", <<skills::binary-56, str_m::long, str_f::long, int_m::long,
@@ -242,6 +253,13 @@ defmodule Tes.EsmFile do
     %{clear: clear, cloudy: cloudy, foggy: foggy, overcast: overcast, rain: rain, thunder: thunder,
       ash: ash, blight: blight, snow: snow, blizzard: blizzard}
   end
+
+  # Just _slightly_ different than "LOCK"/"LKDT" and "PROB"/"PBDT".
+  defp format_value("REPA", "RIDT", <<weight::signed-little-float-32, value::long,
+    uses::long, quality::signed-little-float-32>>) do
+    %{weight: float(weight), value: value, quality: float(quality), uses: uses}
+  end
+
 
   defp format_value("SCPT", "SCHD", <<name::binary-32, _rest::binary>>) do
     %{name: strip_null(name)}

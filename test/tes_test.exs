@@ -141,6 +141,10 @@ defmodule TesTest do
     } = List.first(journals)
   end
 
+  @tag :pending
+  test "can read Lockpick data", %{stream: _stream} do
+  end
+
   test "can read Magic Effect data", %{stream: stream} do
     effect = Filter.by_type(stream, :magic_effect) |> Enum.find(&(&1[:name] == "Mark"))
     assert effect == %{id: 60, name: "Mark", skill_id: 14, base_cost: 15.0, spellmaking: true,
@@ -162,8 +166,11 @@ defmodule TesTest do
   end
 
   @tag :pending
+  test "can read Probe data", %{stream: _stream} do
+  end
+
+  @tag :pending
   test "can read Race data", %{stream: _stream} do
-    assert false
   end
 
   test "can read Region data", %{stream: stream} do
@@ -174,6 +181,10 @@ defmodule TesTest do
       %{clear: 10, cloudy: 25, foggy: 35, overcast: 15, rain: 10, thunder: 0, ash: 0, blight: 0,
         snow: 5, blizzard: 0},
       map_color: %{red: 105, green: 227, blue: 74}}
+  end
+
+  @tag :pending
+  test "can read Repair Item data", %{stream: _stream} do
   end
 
   test "can read Script data", %{stream: stream} do
