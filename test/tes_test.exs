@@ -171,7 +171,8 @@ defmodule TesTest do
 
     assert length(regions) == 1
     assert List.first(regions) == %{id: "House", name: "My House", weather:
-      %{clear: 10, cloudy: 25, foggy: 35, overcast: 15, rain: 10, thunder: 0, ash: 0, blight: 0, snow: 5, blizzard: 0},
+      %{clear: 10, cloudy: 25, foggy: 35, overcast: 15, rain: 10, thunder: 0, ash: 0, blight: 0,
+        snow: 5, blizzard: 0},
       map_color: %{red: 105, green: 227, blue: 74}}
   end
 

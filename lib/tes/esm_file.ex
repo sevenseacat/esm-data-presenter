@@ -72,7 +72,7 @@ defmodule Tes.EsmFile do
   defp record_value(list, "CELL", "FRMR", value) do
     record_list_map_key(list, "REFS", "index", value)
   end
-  # Name and data appear multiple times for a cell - once for the cell itself, then once for each reference
+  # Name and data appear multiple times for a cell - once for the cell itself, once for each ref
   defp record_value(list, "CELL", name, value) when name in ["NAME", "DATA", "INTV"] do
     if Map.has_key?(list, "REFS") do
       record_list_map_value(list, "REFS", name, value)
@@ -144,9 +144,10 @@ defmodule Tes.EsmFile do
       behave_like_exterior: 0x80])
   end
   defp format_value("CELL", "DATA", <<x_pos::signed-little-float-32, y_pos::signed-little-float-32,
-    z_pos::signed-little-float-32, x_rotate::signed-little-float-32, y_rotate::signed-little-float-32,
-    z_rotate::signed-little-float-32>>) do
-    %{x_pos: float(x_pos), y_pos: float(y_pos), z_pos: float(z_pos), x_rotate: x_rotate, y_rotate: y_rotate, z_rotate: z_rotate}
+    z_pos::signed-little-float-32, x_rotate::signed-little-float-32,
+    y_rotate::signed-little-float-32, z_rotate::signed-little-float-32>>) do
+    %{x_pos: float(x_pos), y_pos: float(y_pos), z_pos: float(z_pos), x_rotate: x_rotate,
+      y_rotate: y_rotate, z_rotate: z_rotate}
   end
   defp format_value("CELL", "FRMR", <<value::long>>), do: value
   defp format_value("CELL", "NAM5", <<color::binary-4>>), do: parse_colorref(color)
