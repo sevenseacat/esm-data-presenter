@@ -35,7 +35,7 @@ Some of these won't be handled at all, but the list is here for completeness
 |        |        |          |           | `WEAP` (Weapons) |
 |        |        |          |           | `CONT` (Containers) |
 | ✅      | ✅     |          |           | `SPEL` (Spells) |
-|        |        |          |           | `ENCH` (Enchantments) |
+| ✅      |        |          |           | `ENCH` (Enchantments) |
 |        |        |          |           | `NPC_` (NPCs) |
 |        |        |          |           | `ARMO` (Armour) |
 |        |        |          |           | `CLOT` (Clothing) |

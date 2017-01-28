@@ -28,6 +28,8 @@ defmodule Tes.EsmFormatter do
 
   @dialogue_operations %{"0" => "=", "1" => "!=", "2" => ">", "3" => ">=", "4" => "<", "5" => "<="}
 
+  @enchantment_types %{0 => :once, 1 => :on_strike, 2 => :when_used, 3 => :constant_effect}
+
   @magic_effect_names %{0 => "Water Breathing", 1 => "Swift Swim", 2 => "Water Walking",
     3 => "Shield", 4 => "Fire Shield", 5 => "Lightning Shield", 6 => "Frost Shield", 7 => "Burden",
     8 => "Feather", 9 => "Jump", 10 => "Levitate", 11 => "Slow Fall", 12 => "Lock", 13 => "Open",
@@ -162,6 +164,18 @@ defmodule Tes.EsmFormatter do
 
   def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
     { :dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []} }
+  end
+
+  def build_record("ENCH", %{"NAME" => id, "ENAM" => enam, "ENDT" => data}) do
+    {
+      :enchantment,
+      data
+      |> Map.update!(:type, &(@enchantment_types[&1]))
+      |> Map.merge(%{
+        id: id,
+        effects: format_magic_effects(enam)
+      })
+    }
   end
 
   def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => fadt} = raw_data) do

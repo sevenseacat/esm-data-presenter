@@ -85,6 +85,8 @@ defmodule Tes.EsmFile do
     record_list_map_value(list, "REFS", name, value)
   end
 
+  defp record_value(list, "ENCH", "ENAM", value), do: record_list(list, "ENAM", value)
+
   defp record_value(list, "FACT", "RNAM", value), do: record_list(list, "RNAM", value)
 
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
@@ -175,6 +177,9 @@ defmodule Tes.EsmFile do
   defp format_value("DIAL", "DATA", <<type::integer-8, _rest::binary>>), do: type
   defp format_value("DIAL", "DELE", <<type::long>>), do: type == 0
 
+  defp format_value("ENCH", "ENDT", <<type::long, cost::long, charge::long, autocalc::long>>) do
+    %{type: type, cost: cost, charge: charge, autocalc: autocalc == 1}
+  end
   defp format_value("FACT", name, value) when name in ["ANAM", "RNAM"], do: strip_null(value)
   defp format_value("FACT", "INTV", <<value::long>>), do: value
   # Rankings and skills are long and repeated - split them out into their own functions
@@ -285,8 +290,9 @@ defmodule Tes.EsmFile do
     %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
   end
 
-  defp format_value("SPEL", "ENAM", <<effect::signed-little-16, skill::signed-little-8,
-    attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>) do
+  defp format_value(name, "ENAM", <<effect::signed-little-16, skill::signed-little-8,
+    attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>)
+    when name in ["SPEL", "ENCH"] do
     %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
       type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
   end
