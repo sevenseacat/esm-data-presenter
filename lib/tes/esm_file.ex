@@ -1,12 +1,9 @@
 defmodule Tes.EsmFile do
   import Bitwise, only: [band: 2]
+  import VariableSizes
   alias Tes.EsmFormatter
 
   @default_file "data/Morrowind.esm"
-
-  defmacro long do
-    quote do: signed-little-integer-size(32)
-  end
 
   @doc """
   iex> Tes.EsmFile.stream("data/Morrowind.esm") |> Stream.run
@@ -115,15 +112,14 @@ defmodule Tes.EsmFile do
     value |> strip_null
   end
 
-  defp format_value("APPA", "AADT", <<type::long, quality::signed-little-float-32,
-    weight::signed-little-float-32, value::long>>) do
+  defp format_value("APPA", "AADT", <<type::long, quality::lfloat, weight::lfloat, value::long>>) do
     %{type: type, weight: float(weight), value: value, quality: float(quality)}
   end
   defp format_value("APPA", "SCRI", value), do: strip_null(value)
 
   defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
-  defp format_value("BOOK", "BKDT", <<weight::little-float-32, value::long, scroll::long,
-    skill_id::long, enchantment::long>>) do
+  defp format_value("BOOK", "BKDT", <<weight::lfloat, value::long, scroll::long, skill_id::long,
+    enchantment::long>>) do
     %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_if_negative(skill_id),
       enchantment: enchantment}
   end
@@ -142,18 +138,17 @@ defmodule Tes.EsmFile do
   defp format_value("BSGN", "TNAM", value), do: strip_null(value)
 
   defp format_value("CELL", "AMBI", <<ambient::binary-4, sunlight::binary-4, fog_color::binary-4,
-    density::signed-little-float-32>>) do
+    density::lfloat>>) do
     %{ambient: parse_colorref(ambient), sunlight: parse_colorref(sunlight),
       fog: parse_colorref(fog_color) |> Map.put(:density, float(density))}
   end
-  defp format_value("CELL", "WHGT", <<value::signed-little-float-32>>), do: value
+  defp format_value("CELL", "WHGT", <<value::lfloat>>), do: value
   defp format_value("CELL", "DATA", <<flags::long, _grid_x::long, _grid_y::long>>) do
     parse_bitmask(flags, [interior: 0x01, water: 0x02, sleep_illegal: 0x04,
       behave_like_exterior: 0x80])
   end
-  defp format_value("CELL", "DATA", <<x_pos::signed-little-float-32, y_pos::signed-little-float-32,
-    z_pos::signed-little-float-32, x_rotate::signed-little-float-32,
-    y_rotate::signed-little-float-32, z_rotate::signed-little-float-32>>) do
+  defp format_value("CELL", "DATA", <<x_pos::lfloat, y_pos::lfloat, z_pos::lfloat, x_rotate::lfloat,
+    y_rotate::lfloat, z_rotate::lfloat>>) do
     %{x_pos: float(x_pos), y_pos: float(y_pos), z_pos: float(z_pos), x_rotate: x_rotate,
       y_rotate: y_rotate, z_rotate: z_rotate}
   end
@@ -202,24 +197,23 @@ defmodule Tes.EsmFile do
     %{index: index, type: type, function: function, operator: operator, name: name}
   end
   defp format_value("INFO", "INTV", <<value::long>>), do: value
-  defp format_value("INFO", "FLTV", <<value::signed-little-float-32>>), do: value
+  defp format_value("INFO", "FLTV", <<value::lfloat>>), do: value
 
   # Data is different for journal entries and dialogue responses
   defp format_value("INFO", "DATA", <<4::long, index::long, 255, 255, 255, 0>>), do: index
-  defp format_value("INFO", "DATA", <<_unknown1::long, disposition::long, npc_rank::signed-8,
-    gender::8, pc_rank::signed-8, _unknown2::8>>) do
+  defp format_value("INFO", "DATA", <<_unknown1::long, disposition::long, npc_rank::byte,
+    gender::8, pc_rank::byte, _unknown2::8>>) do
     %{disposition: disposition, npc_rank: nil_if_negative(npc_rank),
       pc_rank: nil_if_negative(pc_rank), gender: parse_gender(gender)}
   end
 
-  defp format_value("INGR", "IRDT", <<weight::little-float-32, value::long, effects::binary-16,
+  defp format_value("INGR", "IRDT", <<weight::lfloat, value::long, effects::binary-16,
     skills::binary-16, attributes::binary-16>>) do
     %{weight: float(weight), value: value,
       effects: zip_ingredient_effects(effects, skills, attributes)}
   end
 
-  defp format_value("LOCK", "LKDT", <<weight::signed-little-float-32, value::long,
-    quality::signed-little-float-32, uses::long>>) do
+  defp format_value("LOCK", "LKDT", <<weight::lfloat, value::long, quality::lfloat, uses::long>>) do
     %{weight: float(weight), value: value, quality: float(quality), uses: uses}
   end
 
@@ -227,34 +221,31 @@ defmodule Tes.EsmFile do
     "BSND", "HSND", "CSND"] do
     strip_null(value)
   end
-  defp format_value("MGEF", "MEDT", <<school::long, base_cost::little-float-32, flags::long,
-    red::long, green::long, blue::long, speed::little-float-32, size::little-float-32,
-    size_cap::little-float-32>>) do
+  defp format_value("MGEF", "MEDT", <<school::long, base_cost::lfloat, flags::long, red::long,
+    green::long, blue::long, speed::lfloat, size::lfloat, size_cap::lfloat>>) do
     %{school: school, base_cost: float(base_cost), red: red, blue: blue, green: green,
       speed: float(speed), size: float(size), size_cap: float(size_cap)}
     |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
   end
 
-  defp format_value("MISC", "MCDT", <<weight::signed-little-float-32, value::long, _::binary>>) do
+  defp format_value("MISC", "MCDT", <<weight::lfloat, value::long, _::binary>>) do
     %{weight: float(weight), value: value}
   end
 
   # Exactly the same as "LOCK"/"LKDT".
-  defp format_value("PROB", "PBDT", <<weight::signed-little-float-32, value::long,
-    quality::signed-little-float-32, uses::long>>) do
+  defp format_value("PROB", "PBDT", <<weight::lfloat, value::long, quality::lfloat, uses::long>>) do
     %{weight: float(weight), value: value, quality: float(quality), uses: uses}
   end
 
   defp format_value("RACE", "RADT", <<skills::binary-56, str_m::long, str_f::long, int_m::long,
     int_f::long, wil_m::long, wil_f::long, agi_m::long, agi_f::long, spd_m::long, spd_f::long,
-    end_m::long, end_f::long, per_m::long, per_f::long, luc_m::long, luc_f::long,
-    height_m::little-float-32, height_f::little-float-32, weight_m::little-float-32,
-    weight_f::little-float-32, flags::long>>) do
+    end_m::long, end_f::long, per_m::long, per_f::long, luc_m::long, luc_f::long, height_m::lfloat,
+    height_f::lfloat, weight_m::lfloat, weight_f::lfloat, flags::long>>) do
     %{skill_bonuses: race_skills(skills),
       male_attributes: %{str: str_m, int: int_m, wil: wil_m, agi: agi_m, spd: spd_m, end: end_m,
-        per: per_m, luc: luc_m, height: Float.round(height_m, 2), weight: Float.round(weight_m, 2)},
+        per: per_m, luc: luc_m, height: float(height_m), weight: float(weight_m)},
       female_attributes: %{str: str_f, int: int_f, wil: wil_f, agi: agi_f, spd: spd_f, end: end_f,
-        per: per_f, luc: luc_f, height: Float.round(height_f, 2), weight: Float.round(weight_f, 2)}}
+        per: per_f, luc: luc_f, height: float(height_f), weight: float(weight_f)}}
     |> Map.merge(parse_bitmask(flags, [playable: 1, beast: 2]))
   end
 
@@ -270,11 +261,9 @@ defmodule Tes.EsmFile do
   end
 
   # Just _slightly_ different than "LOCK"/"LKDT" and "PROB"/"PBDT".
-  defp format_value("REPA", "RIDT", <<weight::signed-little-float-32, value::long,
-    uses::long, quality::signed-little-float-32>>) do
+  defp format_value("REPA", "RIDT", <<weight::lfloat, value::long, uses::long, quality::lfloat>>) do
     %{weight: float(weight), value: value, quality: float(quality), uses: uses}
   end
-
 
   defp format_value("SCPT", "SCHD", <<name::binary-32, _rest::binary>>) do
     %{name: strip_null(name)}
@@ -290,9 +279,8 @@ defmodule Tes.EsmFile do
     %{attribute_id: attribute_id, specialization_id: specialization, uses: uses}
   end
 
-  defp format_value(name, "ENAM", <<effect::signed-little-16, skill::signed-little-8,
-    attribute::signed-little-8, type::long, area::long, duration::long, min::long, max::long>>)
-    when name in ["SPEL", "ENCH"] do
+  defp format_value(name, "ENAM", <<effect::short, skill::byte, attribute::byte, type::long,
+    area::long, duration::long, min::long, max::long>>) when name in ["SPEL", "ENCH"] do
     %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
       type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
   end
