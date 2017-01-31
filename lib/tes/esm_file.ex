@@ -103,21 +103,18 @@ defmodule Tes.EsmFile do
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   ###############################
 
-  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS"] do
+  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS", "MODL",
+    "ITEX", "PTEX", "SCRI"] do
     strip_null(value)
   end
   defp format_value(_type, "INDX", <<id::long>>), do: id
-  # These are filenames that for some reason have double directory separators in them
-  defp format_value(_type, name, value) when name in ["MODL", "ITEX", "PTEX"] do
-    value |> strip_null
-  end
 
   defp format_value("APPA", "AADT", <<type::long, quality::lfloat, weight::lfloat, value::long>>) do
     %{type: type, weight: float(weight), value: value, quality: float(quality)}
   end
-  defp format_value("APPA", "SCRI", value), do: strip_null(value)
 
-  defp format_value("BOOK", name, value) when name in ["SCRI", "ENAM"], do: strip_null(value)
+  defp format_value(type, "ENAM", value) when type in ["BOOK", "CLOT"], do: strip_null(value)
+
   defp format_value("BOOK", "BKDT", <<weight::lfloat, value::long, scroll::long, skill_id::long,
     enchantment::long>>) do
     %{weight: weight, value: value, scroll: scroll == 1, skill_id: nil_if_negative(skill_id),
@@ -167,6 +164,11 @@ defmodule Tes.EsmFile do
         apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spell: 0x00800, magic_item: 0x01000,
         potion: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
         repair_item: 0x20000])}
+  end
+
+  defp format_value("CLOT", "CTDT", <<type::long, weight::lfloat, value::short,
+    enchantment_points::short>>) do
+    %{type: type, weight: float(weight), value: value, enchantment_points: enchantment_points}
   end
 
   defp format_value("DIAL", "DATA", <<type::integer-8, _rest::binary>>), do: type

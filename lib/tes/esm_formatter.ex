@@ -2,6 +2,9 @@ defmodule Tes.EsmFormatter do
   # Hardcoded things - there's a few of them
   @apparatus_types %{0 => :mortar_pestle, 1 => :alembic, 2 => :calcinator, 3 => :retort}
 
+  @clothing_types %{0 => :pants, 1 => :shoes, 2 => :shirt, 3 => :belt, 4 => :robe,
+    5 => :right_glove, 6 => :left_glove, 7 => :skirt, 8 => :ring, 9 => :amulet}
+
   @dialogue_types %{0 => :topic, 1 => :voice, 2 => :greeting, 3 => :persuasion, 4 => :journal}
 
   @dialogue_functions %{"00" => :rank_low, "01" => :rank_high, "02" => :rank_requirement,
@@ -155,6 +158,21 @@ defmodule Tes.EsmFormatter do
         name: name,
         description: Map.get(raw_data, "DESC")}
       |> Map.merge(cldt)
+    }
+  end
+
+  def build_record("CLOT", %{"NAME" => id, "FNAM" => name, "CTDT" => ctdt} = raw_data) do
+    { :clothing,
+      ctdt
+      |> Map.update!(:type, &(Map.get(@clothing_types, &1)))
+      |> Map.merge(%{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        enchantment: Map.get(raw_data, "ENAM"),
+        script: Map.get(raw_data, "SCRI")
+      })
     }
   end
 
