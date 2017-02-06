@@ -119,6 +119,20 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("ARMO", %{"NAME" => id, "FNAM" => name, "AODT" => aodt} = raw_data) do
+    {
+      :armor,
+      %{
+        id: id,
+        name: name,
+        model: Map.get(raw_data, "MODL"),
+        texture: Map.get(raw_data, "ITEX"),
+        script: Map.get(raw_data, "SCRI")
+      }
+      |> Map.merge(aodt)
+    }
+  end
+
   def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt} = raw_data) do
     {
       :book,

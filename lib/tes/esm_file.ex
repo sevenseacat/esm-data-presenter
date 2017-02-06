@@ -119,6 +119,12 @@ defmodule Tes.EsmFile do
     %{type: type, weight: float(weight), value: value, quality: float(quality)}
   end
 
+  defp format_value("ARMO", "AODT", <<type::long, weight::lfloat, value::long, health::long,
+    enchantment_points::long, armor::long>>) do
+    %{type: type, weight: float(weight), value: value, health: health,
+      enchantment_points: enchantment_points, armor: armor}
+  end
+
   defp format_value(type, "ENAM", value) when type in ["BOOK", "CLOT"], do: strip_null(value)
 
   defp format_value("BOOK", "BKDT", <<weight::lfloat, value::long, scroll::long, skill_id::long,

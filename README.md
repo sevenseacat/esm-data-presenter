@@ -37,7 +37,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      | ✅     |          |           | `SPEL` (Spells) |
 | ✅      |        |          |           | `ENCH` (Enchantments) |
 |        |        |          |           | `NPC_` (NPCs) |
-|        |        |          |           | `ARMO` (Armour) |
+| ✅      |        |          |           | `ARMO` (Armour) |
 | ✅      |        |          |           | `CLOT` (Clothing) |
 | ✅      |        |          |           | `REPA` (Repair items) |
 | ✅      | ✅     |          |           | `APPA` (Alchemy apparatus) |
