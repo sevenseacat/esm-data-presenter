@@ -128,7 +128,9 @@ defmodule Tes.EsmFile do
       enchantment_points: enchantment_points, armor: armor}
   end
 
-  defp format_value(type, "ENAM", value) when type in ["BOOK", "CLOT"], do: strip_null(value)
+  defp format_value(type, "ENAM", value) when type in ["ARMO", "BOOK", "CLOT", "WEAP"] do
+    strip_null(value)
+  end
 
   defp format_value("BOOK", "BKDT", <<weight::lfloat, value::long, scroll::long, skill_id::long,
     enchantment::long>>) do
@@ -305,6 +307,15 @@ defmodule Tes.EsmFile do
     area::long, duration::long, min::long, max::long>>) when name in ["ALCH", "SPEL", "ENCH"] do
     %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
       type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
+  end
+
+  defp format_value("WEAP", "WPDT", <<weight::lfloat, value::long, type::short, health::short,
+    speed::lfloat, reach::lfloat, enchantment_points::short, chop_min::byte, chop_max::byte,
+    slash_min::byte, slash_max::byte, thrust_min::byte, thrust_max::byte, flags::long>>) do
+    %{weight: weight, value: value, type: type, health: health, speed: float(speed), reach: reach,
+      enchantment_points: enchantment_points, chop_min: chop_min, chop_max: chop_max,
+      slash_min: slash_min, slash_max: slash_max, thrust_min: thrust_min, thrust_max: thrust_max,
+      ignore_weapon_resistance: flags == 1}
   end
 
   defp format_value(_type, _name, value), do: value

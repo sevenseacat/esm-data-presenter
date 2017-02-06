@@ -93,6 +93,11 @@ defmodule Tes.EsmFormatter do
 
   @spell_types %{0 => :spell, 1 => :ability, 2 => :blight, 3 => :disease, 4 => :curse, 5 => :power}
 
+  @weapon_types %{0 => :short_blade_1_hand, 1 => :long_blade_1_hand, 2 => :long_blade_2_hand,
+    3 => :blunt_1_hand, 4 => :blunt_2_hand_close, 5 => :blunt_2_hand_wide, 6 => :spear,
+    7 => :axe_1_hand, 8 => :axe_2_hand, 9 => :bow, 10 => :crossbow, 11 => :thrown, 12 => :arrow,
+    13 => :bolt}
+
   def build_record("ALCH", %{"NAME" => id, "FNAM" => name, "ALDT" => data} = raw_data) do
     {
       :potion,
@@ -133,7 +138,8 @@ defmodule Tes.EsmFormatter do
         name: name,
         model: Map.get(raw_data, "MODL"),
         texture: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI")
+        script: Map.get(raw_data, "SCRI"),
+        enchantment: Map.get(raw_data, "ENAM")
       })
     }
   end
@@ -435,6 +441,21 @@ defmodule Tes.EsmFormatter do
         id: id,
         name: name,
         effects: format_magic_effects(enam)
+      })
+    }
+  end
+
+  def build_record("WEAP", %{"NAME" => id, "FNAM" => name, "WPDT" => wpdt} = raw_data) do
+    {
+      :weapon,
+      wpdt
+      |> Map.update!(:type, &(Map.get(@weapon_types, &1)))
+      |> Map.merge(%{
+        id: id,
+        name: name,
+        enchantment: Map.get(raw_data, "ENAM"),
+        texture: Map.get(raw_data, "ITEX"),
+        model: Map.get(raw_data, "MODL")
       })
     }
   end
