@@ -45,7 +45,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      |        |          |           | `PROB` (Probe items) |
 | ✅      | ✅     |          |           | `INGR` (Ingredients) |
 | ✅      | ✅     | ✅       |           | `BOOK` (Books and papers) |
-|        |        |          |           | `ALCH` (Potions?) |
+| ✅      |        |          |           | `ALCH` (Potions?) |
 |        |        |          |           | `LEVI` (Levelled items) |
 | ✅      | ✅     |          |           | `CELL` (Cells) |
 | ✅      | ✅     |          |           | `DIAL` (Dialogue/journal topics) |

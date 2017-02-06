@@ -82,8 +82,6 @@ defmodule Tes.EsmFile do
     record_list_map_value(list, "REFS", name, value)
   end
 
-  defp record_value(list, "ENCH", "ENAM", value), do: record_list(list, "ENAM", value)
-
   defp record_value(list, "FACT", "RNAM", value), do: record_list(list, "RNAM", value)
 
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
@@ -94,7 +92,9 @@ defmodule Tes.EsmFile do
   defp record_value(list, "INFO", "FLTV", value), do: record_pair_value(list, "CONDS", value)
 
   defp record_value(list, _type, "NPCS", value), do: record_list(list, "NPCS", value)
-  defp record_value(list, "SPEL", "ENAM", value), do: record_list(list, "ENAM", value)
+  defp record_value(list, type, "ENAM", value) when type in ["ALCH", "ENCH", "SPEL"] do
+    record_list(list, "ENAM", value)
+  end
 
   defp record_value(list, _type, name, value), do: Map.put_new(list, name, value)
 
@@ -108,6 +108,12 @@ defmodule Tes.EsmFile do
     strip_null(value)
   end
   defp format_value(_type, "INDX", <<id::long>>), do: id
+
+  defp format_value("ALCH", "TEXT", value), do: strip_null(value)
+
+  defp format_value("ALCH", "ALDT", <<weight::lfloat, value::long, autocalc::long>>) do
+    %{weight: weight, value: value, autocalc: autocalc == 1}
+  end
 
   defp format_value("APPA", "AADT", <<type::long, quality::lfloat, weight::lfloat, value::long>>) do
     %{type: type, weight: float(weight), value: value, quality: float(quality)}
@@ -282,7 +288,7 @@ defmodule Tes.EsmFile do
   end
 
   defp format_value(name, "ENAM", <<effect::short, skill::byte, attribute::byte, type::long,
-    area::long, duration::long, min::long, max::long>>) when name in ["SPEL", "ENCH"] do
+    area::long, duration::long, min::long, max::long>>) when name in ["ALCH", "SPEL", "ENCH"] do
     %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
       type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
   end

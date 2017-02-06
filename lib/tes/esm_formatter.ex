@@ -89,6 +89,21 @@ defmodule Tes.EsmFormatter do
 
   @spell_types %{0 => :spell, 1 => :ability, 2 => :blight, 3 => :disease, 4 => :curse, 5 => :power}
 
+  def build_record("ALCH", %{"NAME" => id, "FNAM" => name, "ALDT" => data} = raw_data) do
+    {
+      :potion,
+      %{
+        id: id,
+        name: name,
+        effects: Map.get(raw_data, "ENAM") |> format_magic_effects,
+        texture: Map.get(raw_data, "TEXT"),
+        model: Map.get(raw_data, "MODL"),
+        script: Map.get(raw_data, "SCRI")
+      }
+      |> Map.merge(data)
+    }
+  end
+
   def build_record("APPA", %{"NAME" => id, "FNAM" => name, "AADT" => data} = raw_data) do
     {
       :apparatus,
