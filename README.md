@@ -46,7 +46,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      | ✅     |          |           | `INGR` (Ingredients) |
 | ✅      | ✅     | ✅       |           | `BOOK` (Books and papers) |
 | ✅      |        |          |           | `ALCH` (Potions?) |
-|        |        |          |           | `LEVI` (Levelled items) |
+| ✅      |        |          |           | `LEVI` (Levelled items) |
 | ✅      | ✅     |          |           | `CELL` (Cells) |
 | ✅      | ✅     |          |           | `DIAL` (Dialogue/journal topics) |
 | ✅      | ✅     |          |           | `INFO` (Dialogue records) |

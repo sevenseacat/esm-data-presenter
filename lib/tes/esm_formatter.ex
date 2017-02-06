@@ -288,6 +288,18 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("LEVI", %{"NAME" => id, "INDX" => length, "ENTR" => entries, "NNAM" => none}) do
+    {
+      :levelled_item,
+      %{
+        id: id,
+        length: length,
+        items: entries,
+        chance_none: none
+      }
+    }
+  end
+
   def build_record("LOCK", %{"NAME" => id, "FNAM" => name, "LKDT" => data}=raw_data) do
     {
       :lockpick,

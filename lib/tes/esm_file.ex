@@ -91,6 +91,9 @@ defmodule Tes.EsmFile do
   defp record_value(list, "INFO", "INTV", value), do: record_pair_value(list, "CONDS", value)
   defp record_value(list, "INFO", "FLTV", value), do: record_pair_value(list, "CONDS", value)
 
+  defp record_value(list, "LEVI", "INAM", value), do: record_pair_key(list, "ENTR", value)
+  defp record_value(list, "LEVI", "INTV", value), do: record_pair_value(list, "ENTR", value)
+
   defp record_value(list, _type, "NPCS", value), do: record_list(list, "NPCS", value)
   defp record_value(list, type, "ENAM", value) when type in ["ALCH", "ENCH", "SPEL"] do
     record_list(list, "ENAM", value)
@@ -226,6 +229,11 @@ defmodule Tes.EsmFile do
     %{weight: float(weight), value: value,
       effects: zip_ingredient_effects(effects, skills, attributes)}
   end
+
+  defp format_value("LEVI", "DATA", <<value::long>>), do: value
+  defp format_value("LEVI", "NNAM", <<value::byte>>), do: value
+  defp format_value("LEVI", "INAM", value), do: strip_null(value)
+  defp format_value("LEVI", "INTV", <<value::short>>), do: value
 
   defp format_value("LOCK", "LKDT", <<weight::lfloat, value::long, quality::lfloat, uses::long>>) do
     %{weight: float(weight), value: value, quality: float(quality), uses: uses}
