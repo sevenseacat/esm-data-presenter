@@ -33,7 +33,8 @@ defmodule Tes.Mixfile do
   defp deps do
     [
       {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.1.2"}
+      {:ecto, "~> 2.1.2"},
+      {:credo, "~> 0.6", only: [:dev, :test]}
     ]
   end
 
