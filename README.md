@@ -33,7 +33,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅     | ✅      |          |           | `BSGN` (Birth signs) |
 | ✅      | ✅     |          |           | `MISC` (Miscellaneous items) |
 | ✅      |        |          |           | `WEAP` (Weapons) |
-|        |        |          |           | `CONT` (Containers) |
+| ✅      |        |          |           | `CONT` (Containers) |
 | ✅      | ✅     |          |           | `SPEL` (Spells) |
 | ✅      |        |          |           | `ENCH` (Enchantments) |
 |        |        |          |           | `NPC_` (NPCs) |

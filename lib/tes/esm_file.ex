@@ -82,6 +82,7 @@ defmodule Tes.EsmFile do
     record_list_map_value(list, "REFS", name, value)
   end
 
+  defp record_value(list, "CONT", "NPCO", value), do: record_list(list, "ITEM", value)
   defp record_value(list, "FACT", "RNAM", value), do: record_list(list, "RNAM", value)
 
   defp record_value(list, "FACT", "ANAM", value), do: record_pair_key(list, "ANAM/INTV", value)
@@ -187,6 +188,12 @@ defmodule Tes.EsmFile do
     enchantment_points::short>>) do
     %{type: type, weight: float(weight), value: value, enchantment_points: enchantment_points}
   end
+
+  defp format_value("CONT", "CNDT", <<value::lfloat>>), do: value
+  defp format_value("CONT", "FLAG", <<value::long>>) do
+    parse_bitmask(value, [organic: 0x0001, respawns: 0x0002])
+  end
+  defp format_value("CONT", "NPCO", <<count::long, name::binary>>), do: {count, strip_null(name)}
 
   defp format_value("DIAL", "DATA", <<type::integer-8, _rest::binary>>), do: type
   defp format_value("DIAL", "DELE", <<type::long>>), do: type == 0

@@ -216,6 +216,16 @@ defmodule Tes.EsmFormatter do
     }
   end
 
+  def build_record("CONT", %{"NAME" => id, "FNAM" => name, "FLAG" => flags}=raw_data) do
+    { :container,
+      %{id: id,
+        name: name,
+        capacity: Map.get(raw_data, "CNDT"),
+        items: Map.get(raw_data, "ITEM", []),
+        model: Map.get(raw_data, "MODL")}
+      |> Map.merge(flags)}
+  end
+
   def build_record("DIAL", %{"NAME" => id, "DATA" => 4}) do
     { :journal, %{id: id, infos: []} }
   end
