@@ -64,3 +64,8 @@ Some of these won't be handled at all, but the list is here for completeness
 - `SNDG` (Sound generators)
 - `ACTI` (Activators)
 - `LEVC` (Levelled creatures)
+
+### Other
+
+- `DOOR` (Doors)
+- `CREA` (Creatures and animals)

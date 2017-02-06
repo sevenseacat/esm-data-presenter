@@ -213,14 +213,14 @@ defmodule Tes.EsmFormatter do
     { :dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []} }
   end
 
-  def build_record("ENCH", %{"NAME" => id, "ENAM" => enam, "ENDT" => data}) do
+  def build_record("ENCH", %{"NAME" => id, "ENDT" => data} = raw_data) do
     {
       :enchantment,
       data
       |> Map.update!(:type, &(@enchantment_types[&1]))
       |> Map.merge(%{
         id: id,
-        effects: format_magic_effects(enam)
+        effects: Map.get(raw_data, "ENAM", []) |> format_magic_effects
       })
     }
   end
