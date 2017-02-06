@@ -2,6 +2,10 @@ defmodule Tes.EsmFormatter do
   # Hardcoded things - there's a few of them
   @apparatus_types %{0 => :mortar_pestle, 1 => :alembic, 2 => :calcinator, 3 => :retort}
 
+  @armor_types %{0 => :helmet, 1 => :cuirass, 2 => :left_pauldron, 3 => :right_pauldron,
+    4 => :greaves, 5 => :boots, 6 => :left_gauntlet, 7 => :right_gauntlet, 8 => :shield,
+    9 => :left_bracer, 10 => :right_bracer}
+
   @clothing_types %{0 => :pants, 1 => :shoes, 2 => :shirt, 3 => :belt, 4 => :robe,
     5 => :right_glove, 6 => :left_glove, 7 => :skirt, 8 => :ring, 9 => :amulet}
 
@@ -122,14 +126,15 @@ defmodule Tes.EsmFormatter do
   def build_record("ARMO", %{"NAME" => id, "FNAM" => name, "AODT" => aodt} = raw_data) do
     {
       :armor,
-      %{
+      aodt
+      |> Map.update!(:type, &(@armor_types[&1]))
+      |> Map.merge(%{
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
         texture: Map.get(raw_data, "ITEX"),
         script: Map.get(raw_data, "SCRI")
-      }
-      |> Map.merge(aodt)
+      })
     }
   end
 
