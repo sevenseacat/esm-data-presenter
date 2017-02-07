@@ -1,5 +1,8 @@
 defmodule Tes.EsmFormatter do
-  # Hardcoded things - there's a few of them
+  @moduledoc """
+  Provides functions to format raw data parsed from ESM files, into more human-readable form.
+  """
+
   @apparatus_types %{0 => :mortar_pestle, 1 => :alembic, 2 => :calcinator, 3 => :retort}
 
   @armor_types %{0 => :helmet, 1 => :cuirass, 2 => :left_pauldron, 3 => :right_pauldron,
@@ -98,18 +101,34 @@ defmodule Tes.EsmFormatter do
     7 => :axe_1_hand, 8 => :axe_2_hand, 9 => :bow, 10 => :crossbow, 11 => :thrown, 12 => :arrow,
     13 => :bolt}
 
+  @doc """
+  Format a single record read from an ESM file into a human-readable form, ready for further
+  processing.
+
+  ## Examples
+
+      iex> Tes.EsmFormatter.build_record("ALCH", %{"ALDT" => %{autocalc: false, value: 500,
+        weight: 1.0}, "ENAM" => [%{area: 0, attribute_id: 4, duration: 60, effect_id: 79,
+        magnitude_max: 20, magnitude_min: 20, skill_id: nil, type: 0}], "FNAM" => "Skooma",
+        "MODL" => "n\\Potion_Skooma_01.NIF", "NAME" => "potion_skooma_01",
+        "TEXT" => "n\\Tx_skooma_01.tga"})
+      {:potion, %{autocalc: false, effects: [%{area: 0, attribute_id: 4, duration: 60,
+        effect_id: 79, magnitude_max: 20, magnitude_min: 20, skill_id: nil, type: :self}],
+        id: "potion_skooma_01", model: "n\\Potion_Skooma_01.NIF", name: "Skooma", script: nil,
+        texture: "n\\Tx_skooma_01.tga", value: 500, weight: 1.0}}
+  """
+  @spec build_record(type :: String.t, raw_data :: map()) :: {atom, map()}
   def build_record("ALCH", %{"NAME" => id, "FNAM" => name, "ALDT" => data} = raw_data) do
     {
       :potion,
       %{
         id: id,
         name: name,
-        effects: Map.get(raw_data, "ENAM") |> format_magic_effects,
+        effects: raw_data |> Map.get("ENAM") |> format_magic_effects,
         texture: Map.get(raw_data, "TEXT"),
         model: Map.get(raw_data, "MODL"),
         script: Map.get(raw_data, "SCRI")
-      }
-      |> Map.merge(data)
+      } |> Map.merge(data)
     }
   end
 
@@ -117,7 +136,7 @@ defmodule Tes.EsmFormatter do
     {
       :apparatus,
       data
-      |> Map.update!(:type, &(@apparatus_types[&1]))
+      |> Map.update!(:type, &(Map.get(@apparatus_types, &1)))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -128,11 +147,11 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("ARMO", %{"NAME" => id, "FNAM" => name, "AODT" => aodt} = raw_data) do
+  def build_record("ARMO", %{"NAME" => id, "FNAM" => name, "AODT" => data} = raw_data) do
     {
       :armor,
-      aodt
-      |> Map.update!(:type, &(@armor_types[&1]))
+      data
+      |> Map.update!(:type, &(Map.get(@armor_types, &1)))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -144,19 +163,19 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("BOOK", %{"NAME" => id, "MODL" => model, "FNAM" => name, "BKDT" => bkdt} = raw_data) do
+  def build_record("BOOK", %{"NAME" => id, "FNAM" => name, "BKDT" => data} = raw_data) do
     {
       :book,
       %{
         id: id,
         name: name,
-        model: model,
-        weight: Map.get(bkdt, :weight),
-        value: Map.get(bkdt, :value),
-        scroll: Map.get(bkdt, :scroll),
-        skill_id: Map.get(bkdt, :skill_id),
+        model: Map.get(raw_data, "MODL"),
+        weight: Map.get(data, :weight),
+        value: Map.get(data, :value),
+        scroll: Map.get(data, :scroll),
+        skill_id: Map.get(data, :skill_id),
         enchantment_name: Map.get(raw_data, "ENAM"),
-        enchantment_points: Map.get(bkdt, :enchantment),
+        enchantment_points: Map.get(data, :enchantment),
         script_name: Map.get(raw_data, "SCRI"),
         texture: Map.get(raw_data, "ITEX"),
         text: Map.get(raw_data, "TEXT")
@@ -164,46 +183,51 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("BSGN", %{"NAME" => id, "FNAM" => name, "DESC" => desc, "NPCS" => skills,
-    "TNAM" => texture}) do
+  def build_record("BSGN", %{"NAME" => id, "FNAM" => name} = raw_data) do
     {
       :birthsign,
       %{
         id: id,
         name: name,
-        description: desc,
-        skills: skills,
-        image: texture
+        description: Map.get(raw_data, "DESC"),
+        skills: Map.get(raw_data, "NPCS"),
+        image: Map.get(raw_data, "TNAM")
       }
     }
   end
 
-  def build_record("CELL", %{"NAME" => name}=raw_data) do
+  def build_record("CELL", %{"NAME" => name} = raw_data) do
     {
       :cell,
       %{
         name: (if name == "", do: Map.get(raw_data, "RGNN"), else: name),
         water_height: Map.get(raw_data, "WHGT"),
         map_color: Map.get(raw_data, "NAM5"),
-        references: Map.get(raw_data, "REFS", []) |> Enum.map(&format_cell_references/1) |> Enum.reverse
+        references: raw_data
+          |> Map.get("REFS", [])
+          |> Enum.map(&format_cell_references/1)
+          |> Enum.reverse
       }
       |> Map.merge(Map.get(raw_data, "DATA", %{}))
       |> Map.merge(Map.get(raw_data, "AMBI", %{}))
     }
   end
 
-  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => cldt}=raw_data) do
-    { :class,
-      %{id: id,
+  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => data} = raw_data) do
+    {
+      :class,
+      %{
+        id: id,
         name: name,
-        description: Map.get(raw_data, "DESC")}
-      |> Map.merge(cldt)
+        description: Map.get(raw_data, "DESC")
+      } |> Map.merge(data)
     }
   end
 
-  def build_record("CLOT", %{"NAME" => id, "FNAM" => name, "CTDT" => ctdt} = raw_data) do
-    { :clothing,
-      ctdt
+  def build_record("CLOT", %{"NAME" => id, "FNAM" => name, "CTDT" => data} = raw_data) do
+    {
+      :clothing,
+      data
       |> Map.update!(:type, &(Map.get(@clothing_types, &1)))
       |> Map.merge(%{
         id: id,
@@ -216,56 +240,59 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("CONT", %{"NAME" => id, "FNAM" => name, "FLAG" => flags}=raw_data) do
-    { :container,
-      %{id: id,
+  def build_record("CONT", %{"NAME" => id, "FNAM" => name, "FLAG" => flags} = raw_data) do
+    {
+      :container,
+      %{
+        id: id,
         name: name,
         capacity: Map.get(raw_data, "CNDT"),
         items: Map.get(raw_data, "ITEM", []),
-        model: Map.get(raw_data, "MODL")}
-      |> Map.merge(flags)}
+        model: Map.get(raw_data, "MODL")
+      } |> Map.merge(flags)
+    }
   end
 
   def build_record("DIAL", %{"NAME" => id, "DATA" => 4}) do
-    { :journal, %{id: id, infos: []} }
+    {:journal, %{id: id, infos: []}}
   end
 
   def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
-    { :dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []} }
+    {:dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []}}
   end
 
   def build_record("ENCH", %{"NAME" => id, "ENDT" => data} = raw_data) do
     {
       :enchantment,
       data
-      |> Map.update!(:type, &(@enchantment_types[&1]))
+      |> Map.update!(:type, &(Map.get(@enchantment_types, &1)))
       |> Map.merge(%{
         id: id,
-        effects: Map.get(raw_data, "ENAM", []) |> format_magic_effects
+        effects: raw_data |> Map.get("ENAM", []) |> format_magic_effects
       })
     }
   end
 
-  def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => fadt} = raw_data) do
+  def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => data} = raw_data) do
     {
       :faction,
       %{
         id: id,
         name: name,
-        attribute_1_id: fadt |> Map.get(:attribute_ids) |> List.first,
-        attribute_2_id: fadt |> Map.get(:attribute_ids) |> List.last,
-        favorite_skill_ids: Map.get(fadt, :skill_ids),
-        reactions: raw_data |> Map.get("ANAM/INTV", []) |> map_faction_reactions,
-        hidden: Map.get(fadt, :flags) == 1,
+        attribute_ids: Map.get(data, :attribute_ids),
+        favorite_skill_ids: Map.get(data, :skill_ids),
+        reactions: raw_data |> Map.get("ANAM/INTV", []) |> Enum.map(&map_faction_reaction/1),
+        hidden: Map.get(data, :flags) == 1,
         ranks: []
       }
-      |> zip_faction_ranks(Map.get(raw_data, "RNAM", []), Map.get(fadt, :rankings))
+      |> zip_faction_ranks(Map.get(raw_data, "RNAM", []), Map.get(data, :rankings))
     }
   end
 
   # Journal dialogue entries.
   def build_record("INFO", %{"DATA" => index} = raw_data) when is_integer(index) do
-    { :info,
+    {
+      :info,
       raw_data
       |> common_dialogue_fields
       |> Map.merge(%{
@@ -279,7 +306,8 @@ defmodule Tes.EsmFormatter do
 
   # Non-journal dialogue entries
   def build_record("INFO", %{"DATA" => data} = raw_data) when is_map(data) do
-    { :info,
+    {
+      :info,
       raw_data
       |> common_dialogue_fields
       |> Map.merge(%{
@@ -292,7 +320,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("INGR", %{"NAME" => id, "FNAM" => name, "IRDT" => irdt}=raw_data) do
+  def build_record("INGR", %{"NAME" => id, "FNAM" => name, "IRDT" => data} = raw_data) do
     {
       :ingredient,
       %{
@@ -300,7 +328,7 @@ defmodule Tes.EsmFormatter do
         name: name,
         icon: Map.get(raw_data, "ITEX"),
         script: Map.get(raw_data, "SCRI")
-      } |> Map.merge(irdt)
+      } |> Map.merge(data)
     }
   end
 
@@ -316,7 +344,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("LOCK", %{"NAME" => id, "FNAM" => name, "LKDT" => data}=raw_data) do
+  def build_record("LOCK", %{"NAME" => id, "FNAM" => name, "LKDT" => data} = raw_data) do
     {
       :lockpick,
       %{
@@ -329,10 +357,10 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("MGEF", %{"INDX" => id, "MEDT" => medt} = raw_data) do
+  def build_record("MGEF", %{"INDX" => id, "MEDT" => data} = raw_data) do
     {
       :magic_effect,
-      medt
+      data
       |> Map.take([:base_cost, :red, :blue, :green, :speed, :size, :size_cap, :spellmaking,
         :enchanting, :negative])
       |> Map.merge(%{
@@ -349,12 +377,12 @@ defmodule Tes.EsmFormatter do
         bolt_sound: Map.get(raw_data, "BSND"),
         hit_sound: Map.get(raw_data, "HSND"),
         area_sound: Map.get(raw_data, "ASND"),
-        skill_id: Map.get(@magic_effect_schools, Map.get(medt, :school))
+        skill_id: Map.get(@magic_effect_schools, Map.get(data, :school))
       })
     }
   end
 
-  def build_record("MISC", %{"NAME" => id, "FNAM" => name, "MCDT" => data}=raw_data) do
+  def build_record("MISC", %{"NAME" => id, "FNAM" => name, "MCDT" => data} = raw_data) do
     {
       :misc_item,
       %{
@@ -368,7 +396,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("PROB", %{"NAME" => id, "FNAM" => name, "PBDT" => data}=raw_data) do
+  def build_record("PROB", %{"NAME" => id, "FNAM" => name, "PBDT" => data} = raw_data) do
     {
       :probe,
       %{
@@ -381,7 +409,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("RACE", %{"NAME" => id, "FNAM" => name, "RADT" => radt} = raw_data) do
+  def build_record("RACE", %{"NAME" => id, "FNAM" => name, "RADT" => data} = raw_data) do
     {
       :race,
       %{
@@ -390,11 +418,10 @@ defmodule Tes.EsmFormatter do
         description: Map.get(raw_data, "DESC"),
         spells: Map.get(raw_data, "NPCS")
       }
-      |> Map.merge(radt)
+      |> Map.merge(data)
     }
   end
 
-  # There are extra fields - BNAM = Sleep creature string and SNAM = Sound Records - not using them
   def build_record("REGN", %{"NAME" => id, "FNAM" => name, "WEAT" => weather, "CNAM" => color}) do
     {
       :region,
@@ -407,7 +434,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("REPA", %{"NAME" => id, "FNAM" => name, "RIDT" => data}=raw_data) do
+  def build_record("REPA", %{"NAME" => id, "FNAM" => name, "RIDT" => data} = raw_data) do
     {
       :repair,
       %{
@@ -441,7 +468,7 @@ defmodule Tes.EsmFormatter do
     }
   end
 
-  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "ENAM" => enam} = raw_data) do
+  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "ENAM" => data} = raw_data) do
     {
       :spell,
       raw_data
@@ -450,15 +477,15 @@ defmodule Tes.EsmFormatter do
       |> Map.merge(%{
         id: id,
         name: name,
-        effects: format_magic_effects(enam)
+        effects: format_magic_effects(data)
       })
     }
   end
 
-  def build_record("WEAP", %{"NAME" => id, "FNAM" => name, "WPDT" => wpdt} = raw_data) do
+  def build_record("WEAP", %{"NAME" => id, "FNAM" => name, "WPDT" => data} = raw_data) do
     {
       :weapon,
-      wpdt
+      data
       |> Map.update!(:type, &(Map.get(@weapon_types, &1)))
       |> Map.merge(%{
         id: id,
@@ -479,8 +506,8 @@ defmodule Tes.EsmFormatter do
     |> zip_faction_ranks(names, ranks)
   end
 
-  defp map_faction_reactions(tuples) do
-    Enum.map(tuples, fn({target, adjustment}) -> %{target_id: target, adjustment: adjustment} end)
+  defp map_faction_reaction({target, adjustment}) do
+    %{target_id: target, adjustment: adjustment}
   end
 
   defp common_dialogue_fields(raw_data) do
@@ -493,7 +520,7 @@ defmodule Tes.EsmFormatter do
   end
 
   defp readable_conditions(nil), do: []
-  defp readable_conditions(conditions), do: Enum.map(conditions, &condition/1) |> Enum.reverse
+  defp readable_conditions(conditions), do: conditions |> Enum.map(&condition/1) |> Enum.reverse
   defp condition({%{function: fun, index: index, name: name, operator: op}, value}) do
     %{
       index: String.to_integer(index),
@@ -510,7 +537,7 @@ defmodule Tes.EsmFormatter do
     end)
   end
 
-  def format_cell_references(reference) do
+  defp format_cell_references(reference) do
     %{
       index: Map.get(reference, "index"),
       name: Map.get(reference, "NAME"),

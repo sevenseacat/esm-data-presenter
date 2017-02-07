@@ -98,7 +98,7 @@ defmodule TesTest do
     # "other guild" and "my guild"
     assert length(factions) == 2
     assert List.first(factions) == %{id: "ym_guild", name: "My Guild", hidden: false,
-      attribute_1_id: 1, attribute_2_id: 2, favorite_skill_ids: [26, 25, 16, 5, 4, 3],
+      attribute_ids: [1, 2], favorite_skill_ids: [26, 25, 16, 5, 4, 3],
       reactions: [
         %{target_id: "ym_guild", adjustment: 5},
         %{target_id: "other_guild", adjustment: -5}

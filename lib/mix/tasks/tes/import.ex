@@ -1,10 +1,19 @@
 defmodule Mix.Tasks.Tes.Import do
+  @moduledoc """
+  Import different categories of data into the database.
+
+  ## Examples
+
+      $ mix tes.import skill
+  """
+
   use Mix.Task
   import Mix.Ecto
   alias Tes.{Repo, EsmFile, Filter}
 
   @supported_types ["skill", "book", "faction"]
 
+  @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do
     ensure_started Repo, []
     class = :"Elixir.Tes.#{String.capitalize(type)}"

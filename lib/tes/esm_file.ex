@@ -1,4 +1,10 @@
 defmodule Tes.EsmFile do
+  @moduledoc """
+  The main module providing functions for parsing an ESM file.
+
+  File format interpreted from http://www.uesp.net/morrow/tech/mw_esm.txt
+  """
+
   import Bitwise, only: [band: 2]
   import VariableSizes
   alias Tes.EsmFormatter
@@ -6,9 +12,16 @@ defmodule Tes.EsmFile do
   @default_file "data/Morrowind.esm"
 
   @doc """
-  iex> Tes.EsmFile.stream("data/Morrowind.esm") |> Stream.run
-  [{:book, %{...}}, {:weapon, %{...}}, ...]
+  Creates a stream of data parsed from the named ESM file.
+
+  Uses `Tes.EsmFormatter.build_record/2` for formatting each record in the stream when read.
+
+  ## Examples
+
+      iex> Tes.EsmFile.stream |> Stream.run
+      [{:book, %{...}}, {:weapon, %{...}}, ...]
   """
+  @spec stream(filename :: String.t()) :: %Stream{}
   def stream(filename \\ @default_file) do
     Stream.resource(
       fn -> File.open!(filename, [:binary]) end,
@@ -17,20 +30,6 @@ defmodule Tes.EsmFile do
     )
   end
 
-  # The ESM/ESP/ESS files are composed entirely of records with the following format:
-  #
-  # 4 bytes: char Name[4]
-  #    4-byte record name string (not null-terminated)
-  # 4 bytes: long Size
-  #   Size of the record not including the 16 bytes of header data.
-  # 4 bytes: long Header1
-  # 4 bytes: long Flags
-  # ? bytes: SubRecords[]
-  #   All records are composed of a variable number of sub-records. There
-  #   is no sub-record count, just use the record Size value to determine
-  #   when to stop reading a record.
-  #
-  # File format taken from http://www.uesp.net/morrow/tech/mw_esm.txt
   defp next_record(file) do
     case IO.binread(file, 16) do
       :eof -> {:halt, file}
@@ -40,17 +39,6 @@ defmodule Tes.EsmFile do
     end
   end
 
-  # All records, as shown above, are again composed entirely of a variable number of
-  # sub-records with a similar format, as given below:
-  #
-  # 4 bytes: char Name[4]
-  #   4-byte sub-record name string (not null-terminated)
-  # 4 bytes: long Size
-  #   Size of the sub-record not including the 8 bytes of header data.
-  # ? bytes: Sub-Record data.
-  #   Format depends on the sub-record type (see below).
-  #
-  # File format taken from http://www.uesp.net/morrow/tech/mw_esm.txt
   defp parse_sub_records("", _type, list), do: list
   defp parse_sub_records(<<name::binary-4, size::long, rest::binary>>, type, list) do
     # Split the "rest" out into the content for this sub-record, and the rest
@@ -155,7 +143,7 @@ defmodule Tes.EsmFile do
   defp format_value("CELL", "AMBI", <<ambient::binary-4, sunlight::binary-4, fog_color::binary-4,
     density::lfloat>>) do
     %{ambient: parse_colorref(ambient), sunlight: parse_colorref(sunlight),
-      fog: parse_colorref(fog_color) |> Map.put(:density, float(density))}
+      fog: fog_color |> parse_colorref |> Map.put(:density, float(density))}
   end
   defp format_value("CELL", "WHGT", <<value::lfloat>>), do: value
   defp format_value("CELL", "DATA", <<flags::long, _grid_x::long, _grid_y::long>>) do
@@ -392,12 +380,12 @@ defmodule Tes.EsmFile do
     race_skills(rest, [%{skill_id: skill, bonus: bonus} | list])
   end
 
-  def zip_ingredient_effects(effects, skills, attributes) do
+  defp zip_ingredient_effects(effects, skills, attributes) do
     zip_ingredient_effects(effects, skills, attributes, [])
   end
-  def zip_ingredient_effects("", "", "", parsed), do: Enum.reverse(parsed)
-  def zip_ingredient_effects(<<-1::long, _rest::binary>>, _, _, parsed), do: Enum.reverse(parsed)
-  def zip_ingredient_effects(<<effect::long, effects::binary>>, <<skill::long, skills::binary>>,
+  defp zip_ingredient_effects("", "", "", parsed), do: Enum.reverse(parsed)
+  defp zip_ingredient_effects(<<-1::long, _rest::binary>>, _, _, parsed), do: Enum.reverse(parsed)
+  defp zip_ingredient_effects(<<effect::long, effects::binary>>, <<skill::long, skills::binary>>,
     <<attribute::long, attributes::binary>>, parsed) do
     parsed_effect = %{effect_id: effect, skill_id: nil_if_negative(skill),
       attribute_id: nil_if_negative(attribute)}
