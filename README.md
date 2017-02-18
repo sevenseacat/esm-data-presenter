@@ -1,6 +1,7 @@
 # The Elder Scrolls III: Morrowind data presenter
 
 [![Build Status](https://travis-ci.org/sevenseacat/esm-data-presenter.svg?branch=master)](https://travis-ci.org/sevenseacat/esm-data-presenter)
+[![Ebert](https://ebertapp.io/github/sevenseacat/esm-data-presenter.svg)](https://ebertapp.io/github/sevenseacat/esm-data-presenter)
 
 The end goal is to create a read-only webapp to present game data used in Morrowind.
 
