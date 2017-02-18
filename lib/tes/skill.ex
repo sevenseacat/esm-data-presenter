@@ -1,4 +1,16 @@
 defmodule Tes.Skill do
+  @moduledoc """
+  There are 27 hardcoded skills within the in-game world. Each character has a numerical value for
+  each of the skills - this represents their proficiency in the skill.
+
+  For magic-related skills, having a higher skill means that casting a related spell has a higher
+  success chance. For weapon-related skills, having a higher skill means that using the weapon will
+  have a higher chance of connecting.
+
+  Skills level up by using them, eg. by casting spells or by picking locks, or by paying trainer
+  NPCs to increase them.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -13,6 +25,7 @@ defmodule Tes.Skill do
     belongs_to :specialization, Tes.Specialization
   end
 
+  @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Tes.Skill{}
     |> cast(params, @required_fields)

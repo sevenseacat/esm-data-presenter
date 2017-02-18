@@ -1,4 +1,14 @@
 defmodule Tes.Faction do
+  @moduledoc """
+  Factions, including guilds and Great Houses, are NPC organisations in the in-game world.
+
+  Typically a character will join one or more factions during a playthrough, and level up through
+  the ranks of the faction by doing quests for specific guest-givers in that faction.
+
+  Some factions in the game are not visible to the player, such as the Twin Lamps, but can still be
+  joined and faction reputation points awarded.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -16,6 +26,7 @@ defmodule Tes.Faction do
     many_to_many :favorite_skills, Tes.Skill, join_through: :faction_favorite_skills
   end
 
+  @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Tes.Faction{}
     |> cast(params, @required_fields)

@@ -1,4 +1,16 @@
 defmodule Tes.Faction.Rank do
+  @moduledoc """
+  A faction rank represents the level of prestige and power of a character, within a given faction.
+
+  Specific ranks are often used as a requirement for starting various quests, or receiving various
+  pieces of dialogue, eg. the second set of quests from Ajira in the Mages Guild cannot be started
+  until the player achieves the rank of Warlock in the guild.
+
+  To achieve a rank, the player must have met the requirements of that rank - the level of the
+  favorite attributes and skills of the guild, and a certain number of faction reputation points,
+  mainly awarded from completing quests.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -17,6 +29,7 @@ defmodule Tes.Faction.Rank do
     belongs_to :faction, Tes.Faction, type: :string
   end
 
+  @spec changeset(%Tes.Faction.Rank{}, map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(schema, params) do
     schema
     |> cast(params, @required_params)

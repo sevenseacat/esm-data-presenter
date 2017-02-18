@@ -1,8 +1,12 @@
 defmodule Tes do
+  @moduledoc false
+
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
+  # @spec taken from documentiation to make Credo happy :)
+  @spec start(app :: term, type :: term) :: :ok | {:error, term}
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 

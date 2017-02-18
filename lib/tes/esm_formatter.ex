@@ -363,20 +363,10 @@ defmodule Tes.EsmFormatter do
       data
       |> Map.take([:base_cost, :red, :blue, :green, :speed, :size, :size_cap, :spellmaking,
         :enchanting, :negative])
+      |> Map.merge(map_magic_effect_fields(raw_data))
       |> Map.merge(%{
         id: id,
         name: Map.get(@magic_effect_names, id),
-        description: Map.get(raw_data, "DESC"),
-        icon_texture: Map.get(raw_data, "ITEX"),
-        particle_texture: Map.get(raw_data, "PTEX"),
-        cast_visual: Map.get(raw_data, "CVFX"),
-        bolt_visual: Map.get(raw_data, "BVFX"),
-        hit_visual: Map.get(raw_data, "HVFX"),
-        area_visual: Map.get(raw_data, "AVFX"),
-        cast_sound: Map.get(raw_data, "CSND"),
-        bolt_sound: Map.get(raw_data, "BSND"),
-        hit_sound: Map.get(raw_data, "HSND"),
-        area_sound: Map.get(raw_data, "ASND"),
         skill_id: Map.get(@magic_effect_schools, Map.get(data, :school))
       })
     }
@@ -508,6 +498,16 @@ defmodule Tes.EsmFormatter do
 
   defp map_faction_reaction({target, adjustment}) do
     %{target_id: target, adjustment: adjustment}
+  end
+
+  defp map_magic_effect_fields(data) do
+    mappings = %{
+      description: "DESC", icon_texture: "ITEX", particle_texture: "PTEX", cast_visual: "CVFX",
+      bolt_visual: "BVFX", hit_visual: "HVFX", area_visual: "AVFX", cast_sound: "CSND",
+      bolt_sound: "BSND", hit_sound: "HSND", area_sound: "ASND"
+    }
+
+    for {key, value} <- mappings, into: %{}, do: {key, data[value]}
   end
 
   defp common_dialogue_fields(raw_data) do
