@@ -1,4 +1,9 @@
 defmodule TesTest do
+  @moduledoc """
+  These tests really test the EsmFile, EsmFormatter and Filter modules altogether - as such they've
+  been lumped together into a common TesTest module.
+  """
+
   use ExUnit.Case
   alias Tes.{EsmFile, Filter}
 
@@ -7,7 +12,7 @@ defmodule TesTest do
   end
 
   test "can read Apparatus data", %{stream: stream} do
-    apparatuses = Filter.by_type(stream, :apparatus) |> Enum.to_list
+    apparatuses = stream |> Filter.by_type(:apparatus) |> Enum.to_list
 
     assert length(apparatuses) == 1
     assert List.first(apparatuses) == %{id: "noob_tool", name: "Noob Tool", type: :mortar_pestle,
@@ -16,25 +21,25 @@ defmodule TesTest do
   end
 
   test "can read Birthsign data", %{stream: stream} do
-    birthsigns = Filter.by_type(stream, :birthsign) |> Enum.to_list
+    birthsigns = stream |> Filter.by_type(:birthsign) |> Enum.to_list
 
     assert length(birthsigns) == 1
     assert List.first(birthsigns) == %{id: "steed", name: "Sign of the Cross",
-      description: "The name of the rose", image: "_land_default.dds", skills: ["pewpew"] }
+      description: "The name of the rose", image: "_land_default.dds", skills: ["pewpew"]}
   end
 
   test "can read Book data", %{stream: stream} do
-    books = Filter.by_type(stream, :book) |> Enum.to_list
+    books = stream |> Filter.by_type(:book) |> Enum.to_list
 
     assert length(books) == 1
     assert List.first(books) == %{id: "Argonian Maid", name: "The Lusty Argonian Maid, Part 3",
-      enchantment_points: 100, weight: 1.5, value: 50000, model: "bam\\a_bonemold_bracers.nif",
+      enchantment_points: 100, weight: 1.5, value: 50_000, model: "bam\\a_bonemold_bracers.nif",
       scroll: true, skill_id: 9, enchantment_name: nil, script_name: nil,
       texture: "m\\tx_gold_001.dds", text: "Something about polishing spears goes here."}
   end
 
   test "can read Cell data", %{stream: stream} do
-    cells = Filter.by_type(stream, :cell) |> Enum.to_list
+    cells = stream |> Filter.by_type(:cell) |> Enum.to_list
 
     assert length(cells) == 1
     assert List.first(cells) == %{name: "Bedroom", water: true, interior: true, water_height: 5.0,
@@ -48,7 +53,7 @@ defmodule TesTest do
   end
 
   test "can read Class data", %{stream: stream} do
-    classes = Filter.by_type(stream, :class) |> Enum.to_list
+    classes = stream |> Filter.by_type(:class) |> Enum.to_list
 
     assert length(classes) == 1
     assert List.first(classes) == %{id: "stuff", name: "Something",
@@ -61,7 +66,7 @@ defmodule TesTest do
   end
 
   test "can read Dialogue data", %{stream: stream} do
-    dialogues = Tes.Filter.by_type(stream, :dialogue) |> Enum.to_list
+    dialogues = stream |> Filter.by_type(:dialogue) |> Enum.to_list
     assert length(dialogues) == 28 # Two I created, and lots of predefined ones
 
     goofed = Enum.find(dialogues, &(&1[:id] == "goofed"))
@@ -93,7 +98,7 @@ defmodule TesTest do
   end
 
   test "can read Faction data", %{stream: stream} do
-    factions = Tes.Filter.by_type(stream, :faction) |> Enum.to_list
+    factions = stream |> Filter.by_type(:faction) |> Enum.to_list
 
     # "other guild" and "my guild"
     assert length(factions) == 2
@@ -113,7 +118,7 @@ defmodule TesTest do
   end
 
   test "can read Ingredient data", %{stream: stream} do
-    ingredients = Filter.by_type(stream, :ingredient) |> Enum.to_list
+    ingredients = stream |> Filter.by_type(:ingredient) |> Enum.to_list
 
     assert length(ingredients) == 1
     assert List.first(ingredients) == %{id: "skooma", name: "Skooma", weight: 0.1, value: 500,
@@ -124,7 +129,7 @@ defmodule TesTest do
   end
 
   test "can read Journal data", %{stream: stream} do
-    journals = Filter.by_type(stream, :journal) |> Enum.to_list
+    journals = stream |> Filter.by_type(:journal) |> Enum.to_list
 
     assert length(journals) == 1
     # Because it's a pattern match to ensure the unknown data is correct, it has to be on the LHS of
@@ -151,7 +156,7 @@ defmodule TesTest do
   end
 
   test "can read Magic Effect data", %{stream: stream} do
-    effect = Filter.by_type(stream, :magic_effect) |> Enum.find(&(&1[:name] == "Mark"))
+    effect = stream |> Filter.by_type(:magic_effect) |> Enum.find(&(&1[:name] == "Mark"))
     assert effect == %{id: 60, name: "Mark", skill_id: 14, base_cost: 15.0, spellmaking: true,
       enchanting: false, description: "Mark, then recall, for great justice.", negative: true,
       cast_sound: "Alteration Cast", cast_visual: "VFX_DefaultArea",
@@ -163,7 +168,7 @@ defmodule TesTest do
   end
 
   test "can read Misc Item data", %{stream: stream} do
-    misc_items = Filter.by_type(stream, :misc_item) |> Enum.to_list
+    misc_items = stream |> Filter.by_type(:misc_item) |> Enum.to_list
 
     assert length(misc_items) == 1
     assert List.first(misc_items) == %{id: "Misc_SoulGem_Petty", name: "Pretty Soul Gem",
@@ -184,7 +189,7 @@ defmodule TesTest do
   end
 
   test "can read Region data", %{stream: stream} do
-    regions = Filter.by_type(stream, :region) |> Enum.to_list
+    regions = stream |> Filter.by_type(:region) |> Enum.to_list
 
     assert length(regions) == 1
     assert List.first(regions) == %{id: "House", name: "My House", weather:
@@ -198,7 +203,7 @@ defmodule TesTest do
   end
 
   test "can read Script data", %{stream: stream} do
-    scripts = Filter.by_type(stream, :script) |> Enum.to_list
+    scripts = stream |> Filter.by_type(:script) |> Enum.to_list
 
     assert length(scripts) == 2 # ToolScript and DaughterOfFargoth
     assert List.first(scripts) == %{name: "DaughterOfFargoth",
@@ -206,13 +211,13 @@ defmodule TesTest do
   end
 
   test "can read Skill data", %{stream: stream} do
-    skill = Filter.by_type(stream, :skill) |> Enum.find(&(&1[:name] == "Marksman"))
+    skill = stream |> Filter.by_type(:skill) |> Enum.find(&(&1[:name] == "Marksman"))
     assert skill == %{id: 23, name: "Marksman", attribute_id: 3, specialization_id: 2,
       description: "Hello world"}
   end
 
   test "can read Spell data", %{stream: stream} do
-    spells = Filter.by_type(stream, :spell) |> Enum.to_list
+    spells = stream |> Filter.by_type(:spell) |> Enum.to_list
 
     assert length(spells) == 1
     assert List.first(spells) == %{id: "pewpew", name: "Pew! Pew!", type: :spell, autocalc: true,
