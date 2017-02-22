@@ -253,6 +253,15 @@ defmodule Tes.EsmFile do
     %{weight: float(weight), value: value}
   end
 
+  defp format_value("NPC_", "AIDT", <<hello::byte, _::byte, fight::byte, flee::byte, alarm::byte,
+    _::byte, _::byte, _::byte, flags::long>>) do
+    %{hello: hello, fight: fight, flee: flee, alarm: alarm,
+      flags: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
+        books: 0x00008, ingredients: 0x00010, picks: 0x00020, probes: 0x00040, lights: 0x00080,
+        apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spells: 0x00800, magic_items: 0x01000,
+        potions: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
+        repair_item: 0x20000])}
+  end
   defp format_value("NPC_", name, <<value::binary>>) when name in ["ANAM", "BNAM", "RNAM", "KNAM"] do
     value |> strip_null |> nil_if_empty
   end
@@ -262,17 +271,20 @@ defmodule Tes.EsmFile do
       skeleton_blood: 0x0400, metal_blood: 0x0800])
   end
   defp format_value("NPC_", "NPCO", <<count::long, name::binary>>), do: {count, strip_null(name)}
-  defp format_value("NPC_", "NPDT", <<level::short, disposition::byte, faction_id::byte, rank::byte,
-    _::byte, _::byte, _::byte, gold::long>>) do
-    %{level: level, disposition: disposition, faction_id: faction_id, rank: rank, gold: gold}
+  defp format_value("NPC_", "NPDT", <<level::short, disposition::byte, _faction_id::byte,
+    rank::byte, _::byte, _::byte, _::byte, gold::long>>) do
+    %{level: level, disposition: disposition, rank: rank, gold: gold}
   end
+  # Disable one check until this issue is fixed.
+  # https://github.com/rrrene/credo/issues/144
+  @lint {Credo.Check.Consistency.SpaceAroundOperators, false}
   defp format_value("NPC_", "NPDT", <<level::short, str::byte, int::byte, wil::byte, agi::byte,
     spd::byte, endr::byte, per::byte, luk::byte, skills::binary-27, reputation::byte,
     health::short, magicka::short, fatigue::short, disposition::byte, _faction_id::byte, rank::byte,
-    _::byte, _gold::long>>) do
+    _::byte, gold::long>>) do
     %{level: level, attributes: %{0 => str, 1 => int, 2 => wil, 3 => agi, 4 => spd, 5 => endr,
       6 => per, 7 => luk}, skills: parse_npc_skills(skills), reputation: reputation, health: health,
-      magicka: magicka, fatigue: fatigue, disposition: disposition, rank: rank}
+      magicka: magicka, fatigue: fatigue, disposition: disposition, rank: rank, gold: gold}
   end
 
   # Exactly the same as "LOCK"/"LKDT".
