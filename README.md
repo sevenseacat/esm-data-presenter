@@ -37,7 +37,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✅      |        |          |           | `CONT` (Containers) |
 | ✅      | ✅     |          |           | `SPEL` (Spells) |
 | ✅      |        |          |           | `ENCH` (Enchantments) |
-|        |        |          |           | `NPC_` (NPCs) |
+| ✅      |        |          |           | `NPC_` (NPCs) |
 | ✅      |        |          |           | `ARMO` (Armour) |
 | ✅      |        |          |           | `CLOT` (Clothing) |
 | ✅      |        |          |           | `REPA` (Repair items) |
