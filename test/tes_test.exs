@@ -176,8 +176,19 @@ defmodule TesTest do
       texture: "m\\tx_soulgem_petty.tga", enchantment: nil, script: nil}
   end
 
-  @tag :pending
-  test "can read NPC data", %{stream: _stream} do
+  test "can read NPC data", %{stream: stream} do
+    npcs = stream |> Filter.by_type(:npc) |> Enum.to_list
+
+    assert length(npcs) == 1
+    assert List.first(npcs) == %{id: "fargoth", name: "Son of Fargoth", script: "DaughterOfFargoth",
+      race: "other", female: false, class: "stuff", level: 17, faction: "ym_guild", rank: 1,
+      essential: true, corpses_persist: false, respawn: false, autocalc: true,
+      attributes: %{1 => 100, 2 => 50, 3 => 60, 4 => 50, 5 => 50, 6 => 50, 7 => 50, 8 => 60},
+      health: 123, magicka: 100, fatigue: 260, disposition: 50, reputation: 4, skeleton_blood: true,
+      metal_blood: false, skills: %{0 => 46, 1 => 46, 2 => 46, 3 => 31, 4 => 46, 5 => 31, 6 => 31,
+      7 => 31, 8 => 31, 9 => 7, 10 => 7, 11 => 7, 12 => 7, 13 => 7, 14 => 7, 15 => 7, 16 => 7,
+      17 => 7, 18 => 7, 19 => 7, 20 => 7, 21 => 7, 22 => 7, 23 => 7, 24 => 46, 25 => 7, 26 => 7},
+      items: [{1, "Argonian Maid"}]}
   end
 
   @tag :pending

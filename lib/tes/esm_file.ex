@@ -83,6 +83,8 @@ defmodule Tes.EsmFile do
   defp record_value(list, "LEVI", "INAM", value), do: record_pair_key(list, "ENTR", value)
   defp record_value(list, "LEVI", "INTV", value), do: record_pair_value(list, "ENTR", value)
 
+  defp record_value(list, "NPC_", "NPCO", value), do: record_list(list, "NPCO", value)
+
   defp record_value(list, _type, "NPCS", value), do: record_list(list, "NPCS", value)
   defp record_value(list, type, "ENAM", value) when type in ["ALCH", "ENCH", "SPEL"] do
     record_list(list, "ENAM", value)
@@ -183,7 +185,7 @@ defmodule Tes.EsmFile do
   end
   defp format_value("CONT", "NPCO", <<count::long, name::binary>>), do: {count, strip_null(name)}
 
-  defp format_value("DIAL", "DATA", <<type::integer-8, _rest::binary>>), do: type
+  defp format_value("DIAL", "DATA", <<type::byte, _rest::binary>>), do: type
   defp format_value("DIAL", "DELE", <<type::long>>), do: type == 0
 
   defp format_value("ENCH", "ENDT", <<type::long, cost::long, charge::long, autocalc::long>>) do
@@ -249,6 +251,28 @@ defmodule Tes.EsmFile do
 
   defp format_value("MISC", "MCDT", <<weight::lfloat, value::long, _::binary>>) do
     %{weight: float(weight), value: value}
+  end
+
+  defp format_value("NPC_", name, <<value::binary>>) when name in ["ANAM", "BNAM", "RNAM", "KNAM"] do
+    value |> strip_null |> nil_if_empty
+  end
+  defp format_value("NPC_", "CNAM", <<value::binary>>), do: value |> strip_null
+  defp format_value("NPC_", "FLAG", <<value::long>>) do
+    parse_bitmask(value, [female: 0x0001, essential: 0x0002, respawn: 0x0004, autocalc: 0x0010,
+      skeleton_blood: 0x0400, metal_blood: 0x0800])
+  end
+  defp format_value("NPC_", "NPCO", <<count::long, name::binary>>), do: {count, strip_null(name)}
+  defp format_value("NPC_", "NPDT", <<level::short, disposition::byte, faction_id::byte, rank::byte,
+    _::byte, _::byte, _::byte, gold::long>>) do
+    %{level: level, disposition: disposition, faction_id: faction_id, rank: rank, gold: gold}
+  end
+  defp format_value("NPC_", "NPDT", <<level::short, str::byte, int::byte, wil::byte, agi::byte,
+    spd::byte, endr::byte, per::byte, luk::byte, skills::binary-27, reputation::byte,
+    health::short, magicka::short, fatigue::short, disposition::byte, _faction_id::byte, rank::byte,
+    _::byte, _gold::long>>) do
+    %{level: level, attributes: %{0 => str, 1 => int, 2 => wil, 3 => agi, 4 => spd, 5 => endr,
+      6 => per, 7 => luk}, skills: parse_npc_skills(skills), reputation: reputation, health: health,
+      magicka: magicka, fatigue: fatigue, disposition: disposition, rank: rank}
   end
 
   # Exactly the same as "LOCK"/"LKDT".
@@ -350,6 +374,12 @@ defmodule Tes.EsmFile do
 
   defp parse_colorref(<<red::integer-8, green::integer-8, blue::integer-8, _rest>>) do
     %{red: red, green: green, blue: blue}
+  end
+
+  defp parse_npc_skills(skills), do: parse_npc_skills(skills, %{}, 0)
+  defp parse_npc_skills("", skills, _), do: skills
+  defp parse_npc_skills(<<value::byte, rest::binary>>, skills, count) do
+    parse_npc_skills(rest, Map.put(skills, count, value), count + 1)
   end
 
   defp nil_if_empty(value) when value == "", do: nil

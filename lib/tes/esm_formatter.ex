@@ -382,7 +382,27 @@ defmodule Tes.EsmFormatter do
         texture: Map.get(raw_data, "ITEX"),
         enchantment: Map.get(raw_data, "ENAM"),
         script: Map.get(raw_data, "SCRI")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
+    }
+  end
+
+  def build_record("NPC_", %{"NAME" => id, "FNAM" => name, "FLAG" => flags, "NPDT" => data} = raw_data) do
+    # TODO: Fill in autocalc values based on formulae here
+    # http://www.uesp.net/wiki/Morrowind_talk:NPCs if autocalc is on
+    {
+      :npc,
+      %{
+        id: id,
+        name: name,
+        class: Map.get(raw_data, "CNAM"),
+        race: Map.get(raw_data, "RNAM"),
+        faction: Map.get(raw_data, "ANAM"),
+        script: Map.get(raw_data, "SCRI"),
+        items: Map.get(raw_data, "NPCO"),
+      }
+      |> Map.merge(data)
+      |> Map.merge(flags)
     }
   end
 
