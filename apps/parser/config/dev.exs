@@ -1,10 +1,9 @@
 use Mix.Config
 
-# Configure your database
-config :tes, Tes.Repo,
+config :parser, Tes.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "tes_test",
+  database: "tes_dev",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool_size: 10

@@ -1,4 +1,4 @@
-defmodule Tes do
+defmodule Parser do
   @moduledoc false
 
   use Application
