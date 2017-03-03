@@ -1,4 +1,4 @@
-defmodule Tes.Attribute do
+defmodule Codex.Attribute do
   @moduledoc """
   The hardcoded set of eight attributes that represent a character's basic statistics.
 

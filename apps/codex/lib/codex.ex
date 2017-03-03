@@ -1,4 +1,4 @@
-defmodule Parser do
+defmodule Codex do
   @moduledoc false
 
   use Application
@@ -14,12 +14,12 @@ defmodule Parser do
     children = [
       # Starts a worker by calling: Sample.Worker.start_link(arg1, arg2, arg3)
       # worker(Sample.Worker, [arg1, arg2, arg3]),
-      supervisor(Tes.Repo, [])
+      supervisor(Codex.Repo, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Tes.Supervisor]
+    opts = [strategy: :one_for_one, name: Codex.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

@@ -1,7 +1,7 @@
 use Mix.Config
 
 # Configure your database
-config :parser, Tes.Repo,
+config :codex, Codex.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",

@@ -1,4 +1,4 @@
-defmodule Tes.Repo.Migrations.CreateFactions do
+defmodule Codex.Repo.Migrations.CreateFactions do
   use Ecto.Migration
 
   def change do

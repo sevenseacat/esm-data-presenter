@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Tes.Import do
+defmodule Mix.Tasks.Parser.Import do
   @moduledoc """
   Import different categories of data into the database.
 
@@ -9,7 +9,8 @@ defmodule Mix.Tasks.Tes.Import do
 
   use Mix.Task
   import Mix.Ecto
-  alias Tes.{Repo, EsmFile, Filter}
+  alias Codex.Repo
+  alias Tes.{EsmFile, Filter}
 
   @supported_types ["skill", "book", "faction"]
 

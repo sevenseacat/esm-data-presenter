@@ -1,4 +1,4 @@
-defmodule Tes.Faction do
+defmodule Codex.Faction do
   @moduledoc """
   Factions, including guilds and Great Houses, are NPC organisations in the in-game world.
 
@@ -19,16 +19,16 @@ defmodule Tes.Faction do
     field :name
     field :hidden, :boolean
 
-    belongs_to :attribute_1, Tes.Attribute
-    belongs_to :attribute_2, Tes.Attribute
-    has_many :ranks, Tes.Faction.Rank
-    has_many :reactions, Tes.Faction.Reaction, foreign_key: :source_id
-    many_to_many :favorite_skills, Tes.Skill, join_through: :faction_favorite_skills
+    belongs_to :attribute_1, Codex.Attribute
+    belongs_to :attribute_2, Codex.Attribute
+    has_many :ranks, Codex.Faction.Rank
+    has_many :reactions, Codex.Faction.Reaction, foreign_key: :source_id
+    many_to_many :favorite_skills, Codex.Skill, join_through: :faction_favorite_skills
   end
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
-    %Tes.Faction{}
+    %Codex.Faction{}
     |> cast(params, @required_fields)
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:attribute_1_id)

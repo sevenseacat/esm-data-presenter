@@ -1,4 +1,4 @@
-defmodule Tes.Repo.Migrations.CreateAttributes do
+defmodule Codex.Repo.Migrations.CreateAttributes do
   use Ecto.Migration
 
   def change do

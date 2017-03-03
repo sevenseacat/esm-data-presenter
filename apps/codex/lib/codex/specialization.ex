@@ -1,4 +1,4 @@
-defmodule Tes.Specialization do
+defmodule Codex.Specialization do
   @moduledoc """
   Each Skill belongs to one of the three hardcoded specializations - Combat, Magic and Stealth.
 

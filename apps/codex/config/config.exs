@@ -10,16 +10,17 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :tes, key: :value
+#     config :codex, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:tes, :key)
+#     Application.get_env(:codex, :key)
 #
 # Or configure a 3rd-party app:
 #
 #     config :logger, level: :info
 #
+config :codex, ecto_repos: [Codex.Repo]
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
@@ -27,4 +28,4 @@ use Mix.Config
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 
-# import_config "#{Mix.env}.exs"
+import_config "#{Mix.env}.exs"

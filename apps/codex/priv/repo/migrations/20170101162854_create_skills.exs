@@ -1,4 +1,4 @@
-defmodule Tes.Repo.Migrations.CreateSkills do
+defmodule Codex.Repo.Migrations.CreateSkills do
   use Ecto.Migration
 
   def change do

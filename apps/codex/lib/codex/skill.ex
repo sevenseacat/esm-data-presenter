@@ -1,4 +1,4 @@
-defmodule Tes.Skill do
+defmodule Codex.Skill do
   @moduledoc """
   There are 27 hardcoded skills within the in-game world. Each character has a numerical value for
   each of the skills - this represents their proficiency in the skill.
@@ -21,13 +21,13 @@ defmodule Tes.Skill do
     field :name
     field :description
 
-    belongs_to :attribute, Tes.Attribute
-    belongs_to :specialization, Tes.Specialization
+    belongs_to :attribute, Codex.Attribute
+    belongs_to :specialization, Codex.Specialization
   end
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
-    %Tes.Skill{}
+    %Codex.Skill{}
     |> cast(params, @required_fields)
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:attribute_id)

@@ -1,4 +1,4 @@
-defmodule Tes.Faction.Rank do
+defmodule Codex.Faction.Rank do
   @moduledoc """
   A faction rank represents the level of prestige and power of a character, within a given faction.
 
@@ -26,10 +26,10 @@ defmodule Tes.Faction.Rank do
     field :skill_2, :integer
     field :reputation, :integer
 
-    belongs_to :faction, Tes.Faction, type: :string
+    belongs_to :faction, Codex.Faction, type: :string
   end
 
-  @spec changeset(%Tes.Faction.Rank{}, map) :: %Ecto.Changeset{valid?: boolean}
+  @spec changeset(%Codex.Faction.Rank{}, map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(schema, params) do
     schema
     |> cast(params, @required_params)

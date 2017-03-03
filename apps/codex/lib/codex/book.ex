@@ -1,4 +1,4 @@
-defmodule Tes.Book do
+defmodule Codex.Book do
   @moduledoc """
   Represents a physical book or scroll object placed within the game world. This includes single-use
   spell scrolls.
@@ -24,12 +24,12 @@ defmodule Tes.Book do
     field :texture
     field :text
 
-    belongs_to :skill, Tes.Skill
+    belongs_to :skill, Codex.Skill
   end
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
-    %Tes.Book{}
+    %Codex.Book{}
     |> cast(params, @required_fields ++ [:scroll, :enchantment_name, :enchantment_points,
         :texture, :text])
     |> validate_required(@required_fields)

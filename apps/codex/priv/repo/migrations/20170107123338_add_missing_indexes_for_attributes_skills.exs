@@ -1,4 +1,4 @@
-defmodule Tes.Repo.Migrations.AddMissingIndexesForAttributesSkills do
+defmodule Codex.Repo.Migrations.AddMissingIndexesForAttributesSkills do
   use Ecto.Migration
 
   def change do

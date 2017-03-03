@@ -1,4 +1,4 @@
-defmodule Tes.Birthsign do
+defmodule Codex.Birthsign do
   @moduledoc """
   Represents the astrological birthsign a player chooses upon starting a new character.
 
