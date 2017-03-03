@@ -1,4 +1,4 @@
-defmodule Tes.EsmFormatter do
+defmodule Parser.EsmFormatter do
   @moduledoc """
   Provides functions to format raw data parsed from ESM files, into more human-readable form.
   """
@@ -107,7 +107,7 @@ defmodule Tes.EsmFormatter do
 
   ## Examples
 
-      iex> Tes.EsmFormatter.build_record("ALCH", %{"ALDT" => %{autocalc: false, value: 500,
+      iex> Parser.EsmFormatter.build_record("ALCH", %{"ALDT" => %{autocalc: false, value: 500,
         weight: 1.0}, "ENAM" => [%{area: 0, attribute_id: 4, duration: 60, effect_id: 79,
         magnitude_max: 20, magnitude_min: 20, skill_id: nil, type: 0}], "FNAM" => "Skooma",
         "MODL" => "n\\Potion_Skooma_01.NIF", "NAME" => "potion_skooma_01",

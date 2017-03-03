@@ -4,20 +4,20 @@ defmodule Mix.Tasks.Parser.Import do
 
   ## Examples
 
-      $ mix tes.import skill
+      $ mix parser.import skill
   """
 
   use Mix.Task
   import Mix.Ecto
   alias Codex.Repo
-  alias Tes.{EsmFile, Filter}
+  alias Parser.{EsmFile, Filter}
 
   @supported_types ["skill", "book", "faction"]
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do
     ensure_started Repo, []
-    class = :"Elixir.Tes.#{String.capitalize(type)}"
+    class = :"Elixir.Codex.#{String.capitalize(type)}"
 
     Mix.shell.info("Deleting old #{type} records...")
     Repo.delete_all(class)
@@ -30,6 +30,6 @@ defmodule Mix.Tasks.Parser.Import do
   end
 
   def run(_args) do
-    Mix.shell.error("Please specify a type of object to import, eg. `mix tes.import skill`")
+    Mix.shell.error("Please specify a type of object to import, eg. `mix parser.import skill`")
   end
 end

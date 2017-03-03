@@ -1,4 +1,4 @@
-defmodule Tes.EsmFile do
+defmodule Parser.EsmFile do
   @moduledoc """
   The main module providing functions for parsing an ESM file.
 
@@ -7,18 +7,18 @@ defmodule Tes.EsmFile do
 
   import Bitwise, only: [band: 2]
   import VariableSizes
-  alias Tes.EsmFormatter
+  alias Parser.EsmFormatter
 
   @default_file "data/Morrowind.esm"
 
   @doc """
   Creates a stream of data parsed from the named ESM file.
 
-  Uses `Tes.EsmFormatter.build_record/2` for formatting each record in the stream when read.
+  Uses `Parser.EsmFormatter.build_record/2` for formatting each record in the stream when read.
 
   ## Examples
 
-      iex> Tes.EsmFile.stream |> Stream.run
+      iex> Parser.EsmFile.stream |> Stream.run
       [{:book, %{...}}, {:weapon, %{...}}, ...]
   """
   @spec stream(filename :: String.t()) :: %Stream{}

@@ -1,4 +1,4 @@
-defmodule Tes.Filter do
+defmodule Parser.Filter do
   @moduledoc """
   A helper module for filtering the stream of records parsed with `Tes.EsmFile`.
   """

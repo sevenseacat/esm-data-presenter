@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :tes, key: :value
+#     config :parser, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:tes, :key)
+#     Application.get_env(:parser, :key)
 #
 # Or configure a 3rd-party app:
 #

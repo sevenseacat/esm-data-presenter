@@ -1,11 +1,11 @@
-defmodule TesTest do
+defmodule ParserTest do
   @moduledoc """
   These tests really test the EsmFile, EsmFormatter and Filter modules altogether - as such they've
-  been lumped together into a common TesTest module.
+  been lumped together into a common ParserTest module.
   """
 
   use ExUnit.Case
-  alias Tes.{EsmFile, Filter}
+  alias Parser.{EsmFile, Filter}
 
   setup do
     {:ok, stream: EsmFile.stream("test/fixtures/Test.esm")}
