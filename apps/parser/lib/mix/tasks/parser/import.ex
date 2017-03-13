@@ -11,6 +11,7 @@ defmodule Mix.Tasks.Parser.Import do
   import Mix.Ecto
   alias Codex.Repo
   alias Parser.{EsmFile, Filter}
+  alias Ecto.Multi
 
   @supported_types ["skill", "book", "faction"]
 
@@ -23,13 +24,17 @@ defmodule Mix.Tasks.Parser.Import do
     Repo.delete_all(class)
 
     Mix.shell.info("Importing new #{type} records...")
+
     EsmFile.stream
     |> Filter.by_type(String.to_atom(type))
     |> Stream.map(&(apply(class, :changeset, [&1])))
-    |> Enum.map(&Repo.insert!/1)
+    |> Enum.reduce(Multi.new, fn changeset, transaction ->
+      Multi.insert(transaction, changeset.changes.id, changeset)
+    end)
+    |> Repo.transaction
   end
 
   def run(_args) do
-    Mix.shell.error("Please specify a type of object to import, eg. `mix parser.import skill`")
+    Enum.map(@supported_types, fn type -> run([type]) end)
   end
 end
