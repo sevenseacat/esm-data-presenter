@@ -9,7 +9,7 @@ defmodule Parser.EsmFile do
   import VariableSizes
   alias Parser.EsmFormatter
 
-  @default_file "data/Morrowind.esm"
+  @source_file Application.app_dir(:parser, "priv/Morrowind.esm")
 
   @doc """
   Creates a stream of data parsed from the named ESM file.
@@ -22,7 +22,7 @@ defmodule Parser.EsmFile do
       [{:book, %{...}}, {:weapon, %{...}}, ...]
   """
   @spec stream(filename :: String.t()) :: %Stream{}
-  def stream(filename \\ @default_file) do
+  def stream(filename \\ @source_file) do
     Stream.resource(
       fn -> File.open!(filename, [:binary]) end,
       fn(file) -> next_record(file) end,
