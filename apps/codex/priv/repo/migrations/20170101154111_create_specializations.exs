@@ -3,7 +3,7 @@ defmodule Codex.Repo.Migrations.CreateSpecializations do
 
   def change do
     create table(:specializations) do
-      add :name, :string
+      add :name, :string, null: false
     end
   end
 end

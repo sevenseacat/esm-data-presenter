@@ -3,7 +3,7 @@ defmodule Codex.Repo.Migrations.CreateAttributes do
 
   def change do
     create table(:attributes) do
-      add :name, :string
+      add :name, :string, null: false
     end
   end
 end

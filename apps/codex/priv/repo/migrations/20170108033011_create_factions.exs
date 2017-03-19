@@ -10,6 +10,9 @@ defmodule Codex.Repo.Migrations.CreateFactions do
       add :attribute_2_id, references(:attributes), null: false
     end
 
+    create index(:factions, :attribute_1_id)
+    create index(:factions, :attribute_2_id)
+
     create table(:faction_favorite_skills) do
       add :faction_id, references(:factions, type: :string, on_delete: :delete_all), null: false
       add :favorite_skill_id, references(:skills)
