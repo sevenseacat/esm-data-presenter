@@ -145,7 +145,7 @@ defmodule Parser.EsmFile do
   defp format_value("CELL", "AMBI", <<ambient::binary-4, sunlight::binary-4, fog_color::binary-4,
     density::lfloat>>) do
     %{ambient: parse_colorref(ambient), sunlight: parse_colorref(sunlight),
-      fog: fog_color |> parse_colorref |> Map.put(:density, float(density))}
+      fog_color: parse_colorref(fog_color), fog_density: float(density)}
   end
   defp format_value("CELL", "WHGT", <<value::lfloat>>), do: value
   defp format_value("CELL", "DATA", <<flags::long, _grid_x::long, _grid_y::long>>) do
@@ -164,14 +164,15 @@ defmodule Parser.EsmFile do
   defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
     minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
     minor_4::long, major_4::long, minor_5::long, major_5::long, playable::long, flags::long>>) do
-    %{attributes: [attribute_1, attribute_2], specialization: specialization,
-      major_skills: [major_1, major_2, major_3, major_4, major_5],
-      minor_skills: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
-      autocalc: parse_bitmask(flags, [weapon: 0x00001, armor: 0x00002, clothing: 0x00004,
-        book: 0x00008, ingredient: 0x00010, pick: 0x00020, probe: 0x00040, light: 0x00080,
-        apparatus: 0x00100, repair: 0x00200, misc: 0x00400, spell: 0x00800, magic_item: 0x01000,
-        potion: 0x02000, training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
-        repair_item: 0x20000])}
+    %{attribute_ids: [attribute_1, attribute_2], specialization_id: specialization,
+      major_skill_ids: [major_1, major_2, major_3, major_4, major_5],
+      minor_skill_ids: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
+      vendors: parse_bitmask(flags, [weapons: 0x00001, armor: 0x00002, clothing: 0x00004,
+        books: 0x00008, ingredients: 0x00010, picks: 0x00020, probes: 0x00040, lights: 0x00080,
+        apparatus: 0x00100, repair_items: 0x00200, misc: 0x00400, spells: 0x00800,
+        magic_items: 0x01000, potions: 0x02000]),
+      services: parse_bitmask(flags, [training: 0x04000, spellmaking: 0x08000, enchanting: 0x10000,
+        repairing: 0x20000])}
   end
 
   defp format_value("CLOT", "CTDT", <<type::long, weight::lfloat, value::short,
@@ -208,9 +209,9 @@ defmodule Parser.EsmFile do
     value |> strip_null |> nil_if_empty
   end
   defp format_value("INFO", name, <<value::8>>) when name in ["QSTN", "QSTF", "QSTR"], do: value
-  defp format_value("INFO", "SCVR", <<index::binary-1, type::binary-1, function::binary-2,
+  defp format_value("INFO", "SCVR", <<_index::binary-1, type::binary-1, function::binary-2,
     operator::binary-1, name::binary>>) do
-    %{index: index, type: type, function: function, operator: operator, name: name}
+    %{type: type, function: function, operator: operator, name: name}
   end
   defp format_value("INFO", "INTV", <<value::long>>), do: value
   defp format_value("INFO", "FLTV", <<value::lfloat>>), do: value
@@ -244,7 +245,7 @@ defmodule Parser.EsmFile do
   end
   defp format_value("MGEF", "MEDT", <<school::long, base_cost::lfloat, flags::long, red::long,
     green::long, blue::long, speed::lfloat, size::lfloat, size_cap::lfloat>>) do
-    %{school: school, base_cost: float(base_cost), red: red, blue: blue, green: green,
+    %{school: school, base_cost: float(base_cost), color: parse_colorref({red, green, blue}),
       speed: float(speed), size: float(size), size_cap: float(size_cap)}
     |> Map.merge(parse_bitmask(flags, [spellmaking: 0x0200, enchanting: 0x0400, negative: 0x0800]))
   end
@@ -305,7 +306,13 @@ defmodule Parser.EsmFile do
   end
 
   defp format_value("REGN", "CNAM", <<red::integer, green::integer, blue::integer, _::integer>>) do
-    %{red: red, green: green, blue: blue}
+    parse_colorref({red, green, blue})
+  end
+
+  defp format_value("REGN", "WEAT", <<clear::integer, cloudy::integer, foggy::integer,
+    overcast::integer, rain::integer, thunder::integer, ash::integer, blight::integer>>) do
+    %{clear: clear, cloudy: cloudy, foggy: foggy, overcast: overcast, rain: rain, thunder: thunder,
+      ash: ash, blight: blight, snow: 0, blizzard: 0}
   end
 
   defp format_value("REGN", "WEAT", <<clear::integer, cloudy::integer, foggy::integer,
@@ -346,7 +353,7 @@ defmodule Parser.EsmFile do
     %{weight: weight, value: value, type: type, health: health, speed: float(speed), reach: reach,
       enchantment_points: enchantment_points, chop_min: chop_min, chop_max: chop_max,
       slash_min: slash_min, slash_max: slash_max, thrust_min: thrust_min, thrust_max: thrust_max,
-      ignore_weapon_resistance: flags == 1}
+      ignore_resistance: flags == 1}
   end
 
   defp format_value(_type, _name, value), do: value
@@ -385,8 +392,9 @@ defmodule Parser.EsmFile do
   end
 
   defp parse_colorref(<<red::integer-8, green::integer-8, blue::integer-8, _rest>>) do
-    %{red: red, green: green, blue: blue}
+    parse_colorref({red, green, blue})
   end
+  defp parse_colorref({red, green, blue}), do: "#" <> Base.encode16(<<red, green, blue>>)
 
   defp parse_npc_skills(skills), do: parse_npc_skills(skills, %{}, 0)
   defp parse_npc_skills("", skills, _), do: skills

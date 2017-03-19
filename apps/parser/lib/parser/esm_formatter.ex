@@ -125,9 +125,9 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         effects: raw_data |> Map.get("ENAM") |> format_magic_effects,
-        texture: Map.get(raw_data, "TEXT"),
+        icon: Map.get(raw_data, "TEXT"),
         model: Map.get(raw_data, "MODL"),
-        script: Map.get(raw_data, "SCRI")
+        script_id: Map.get(raw_data, "SCRI")
       } |> Map.merge(data)
     }
   end
@@ -141,8 +141,8 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI")
+        icon: Map.get(raw_data, "ITEX"),
+        script_id: Map.get(raw_data, "SCRI")
       })
     }
   end
@@ -156,9 +156,9 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI"),
-        enchantment: Map.get(raw_data, "ENAM")
+        icon: Map.get(raw_data, "ITEX"),
+        script_id: Map.get(raw_data, "SCRI"),
+        enchantment_id: Map.get(raw_data, "ENAM")
       })
     }
   end
@@ -174,10 +174,10 @@ defmodule Parser.EsmFormatter do
         value: Map.get(data, :value),
         scroll: Map.get(data, :scroll),
         skill_id: Map.get(data, :skill_id),
-        enchantment_name: Map.get(raw_data, "ENAM"),
+        enchantment_id: Map.get(raw_data, "ENAM"),
         enchantment_points: Map.get(data, :enchantment),
-        script_name: Map.get(raw_data, "SCRI"),
-        texture: Map.get(raw_data, "ITEX"),
+        script_id: Map.get(raw_data, "SCRI"),
+        icon: Map.get(raw_data, "ITEX"),
         text: Map.get(raw_data, "TEXT")
       }
     }
@@ -190,7 +190,7 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         description: Map.get(raw_data, "DESC"),
-        skills: Map.get(raw_data, "NPCS"),
+        skill_ids: Map.get(raw_data, "NPCS"),
         image: Map.get(raw_data, "TNAM")
       }
     }
@@ -233,9 +233,9 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        enchantment: Map.get(raw_data, "ENAM"),
-        script: Map.get(raw_data, "SCRI")
+        icon: Map.get(raw_data, "ITEX"),
+        enchantment_id: Map.get(raw_data, "ENAM"),
+        script_id: Map.get(raw_data, "SCRI")
       })
     }
   end
@@ -281,7 +281,7 @@ defmodule Parser.EsmFormatter do
         name: name,
         attribute_ids: Map.get(data, :attribute_ids),
         favorite_skill_ids: Map.get(data, :skill_ids),
-        reactions: raw_data |> Map.get("ANAM/INTV", []) |> Enum.map(&map_faction_reaction/1),
+        reactions: raw_data |> Map.get("ANAM/INTV", []) |> Enum.map(&format_faction_reaction/1),
         hidden: Map.get(data, :flags) == 1,
         ranks: []
       }
@@ -311,10 +311,11 @@ defmodule Parser.EsmFormatter do
       raw_data
       |> common_dialogue_fields
       |> Map.merge(%{
-        race: Map.get(raw_data, "RNAM"),
-        faction: Map.get(raw_data, "FNAM"),
+        race_id: Map.get(raw_data, "RNAM"),
+        faction_id: Map.get(raw_data, "FNAM"),
         conditions: raw_data |> Map.get("CONDS") |> readable_conditions,
-        script: Map.get(raw_data, "BNAM")
+        script: Map.get(raw_data, "BNAM"),
+        npc_id: Map.get(raw_data, "ONAM")
       })
       |> Map.merge(data)
     }
@@ -327,7 +328,7 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         icon: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI")
+        script_id: Map.get(raw_data, "SCRI")
       } |> Map.merge(data)
     }
   end
@@ -338,7 +339,7 @@ defmodule Parser.EsmFormatter do
       %{
         id: id,
         length: length,
-        items: entries,
+        items: Enum.map(entries, fn {item, count} -> %{item_id: item, count: count} end),
         chance_none: none
       }
     }
@@ -351,8 +352,8 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI")
+        icon: Map.get(raw_data, "ITEX"),
+        script_id: Map.get(raw_data, "SCRI")
       } |> Map.merge(data)
     }
   end
@@ -361,8 +362,8 @@ defmodule Parser.EsmFormatter do
     {
       :magic_effect,
       data
-      |> Map.take([:base_cost, :red, :blue, :green, :speed, :size, :size_cap, :spellmaking,
-        :enchanting, :negative])
+      |> Map.take([:base_cost, :color, :speed, :size, :size_cap, :spellmaking, :enchanting,
+        :negative])
       |> Map.merge(map_magic_effect_fields(raw_data))
       |> Map.merge(%{
         id: id,
@@ -379,27 +380,30 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        enchantment: Map.get(raw_data, "ENAM"),
-        script: Map.get(raw_data, "SCRI")
+        icon: Map.get(raw_data, "ITEX"),
+        enchantment_id: Map.get(raw_data, "ENAM"),
+        script_id: Map.get(raw_data, "SCRI")
       }
       |> Map.merge(data)
     }
   end
 
-  def build_record("NPC_", %{"NAME" => id, "FNAM" => name, "FLAG" => flags, "NPDT" => data} = raw_data) do
+  def build_record("NPC_", %{"NAME" => id, "FNAM" => name, "FLAG" => flags, "NPDT" => data} =
+    raw_data) do
     # TODO: Figure out where the Corpses Persist boolean is stored.
     {
       :npc,
       %{
         id: id,
         name: name,
-        class: Map.get(raw_data, "CNAM"),
-        race: Map.get(raw_data, "RNAM"),
-        faction: Map.get(raw_data, "ANAM"),
-        script: Map.get(raw_data, "SCRI"),
-        items: Map.get(raw_data, "NPCO", []),
-        spells: Map.get(raw_data, "NPCS", [])
+        class_id: Map.get(raw_data, "CNAM"),
+        race_id: Map.get(raw_data, "RNAM"),
+        faction_id: Map.get(raw_data, "ANAM"),
+        script_id: Map.get(raw_data, "SCRI"),
+        items: raw_data
+          |> Map.get("NPCO", [])
+          |> Enum.map(fn {count, id} -> %{id: id, count: count} end),
+        spell_ids: Map.get(raw_data, "NPCS", [])
       }
       |> Map.merge(data)
       |> Map.merge(flags)
@@ -413,8 +417,8 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI")
+        icon: Map.get(raw_data, "ITEX"),
+        script_id: Map.get(raw_data, "SCRI")
       } |> Map.merge(data)
     }
   end
@@ -426,7 +430,7 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         description: Map.get(raw_data, "DESC"),
-        spells: Map.get(raw_data, "NPCS")
+        spell_ids: Map.get(raw_data, "NPCS")
       }
       |> Map.merge(data)
     }
@@ -451,8 +455,8 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         model: Map.get(raw_data, "MODL"),
-        texture: Map.get(raw_data, "ITEX"),
-        script: Map.get(raw_data, "SCRI")
+        icon: Map.get(raw_data, "ITEX"),
+        script_id: Map.get(raw_data, "SCRI")
       } |> Map.merge(data)
     }
   end
@@ -500,8 +504,8 @@ defmodule Parser.EsmFormatter do
       |> Map.merge(%{
         id: id,
         name: name,
-        enchantment: Map.get(raw_data, "ENAM"),
-        texture: Map.get(raw_data, "ITEX"),
+        enchantment_id: Map.get(raw_data, "ENAM"),
+        icon: Map.get(raw_data, "ITEX"),
         model: Map.get(raw_data, "MODL")
       })
     }
@@ -516,8 +520,8 @@ defmodule Parser.EsmFormatter do
     |> zip_faction_ranks(names, ranks)
   end
 
-  defp map_faction_reaction({target, adjustment}) do
-    %{target_id: target, adjustment: adjustment}
+  defp format_faction_reaction({faction, adjustment}) do
+    %{faction_id: faction, adjustment: adjustment}
   end
 
   defp map_magic_effect_fields(data) do
@@ -534,16 +538,15 @@ defmodule Parser.EsmFormatter do
     %{
       id: Map.get(raw_data, "INAM"),
       text: Map.get(raw_data, "NAME"),
-      previous: Map.get(raw_data, "PNAM"),
-      next: Map.get(raw_data, "NNAM")
+      previous_id: Map.get(raw_data, "PNAM"),
+      next_id: Map.get(raw_data, "NNAM")
     }
   end
 
   defp readable_conditions(nil), do: []
   defp readable_conditions(conditions), do: conditions |> Enum.map(&condition/1) |> Enum.reverse
-  defp condition({%{function: fun, index: index, name: name, operator: op}, value}) do
+  defp condition({%{function: fun, name: name, operator: op}, value}) do
     %{
-      index: String.to_integer(index),
       function: Map.fetch!(@dialogue_functions, fun),
       name: name,
       operator: Map.fetch!(@dialogue_operations, op),
@@ -559,11 +562,10 @@ defmodule Parser.EsmFormatter do
 
   defp format_cell_references(reference) do
     %{
-      index: Map.get(reference, "index"),
       name: Map.get(reference, "NAME"),
-      key: Map.get(reference, "KNAM"),
-      trap: Map.get(reference, "TNAM"),
-      owner: Map.get(reference, "ANAM")
+      key_id: Map.get(reference, "KNAM"),
+      trap_id: Map.get(reference, "TNAM"),
+      owner_id: Map.get(reference, "ANAM")
     }
   end
 end
