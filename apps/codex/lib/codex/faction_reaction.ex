@@ -22,7 +22,8 @@ defmodule Codex.Faction.Reaction do
   @spec changeset(%Codex.Faction.Reaction{}, map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(schema, params) do
     schema
-    |> cast(params, @required_fields)
+    |> cast(params, [:adjustment])
+    |> put_change(:target_id, Map.get(params, :faction_id))
     |> validate_required(@required_fields)
   end
 end
