@@ -160,7 +160,7 @@ defmodule ParserTest do
       bolt_sound: "Alteration Bolt", bolt_visual: nil,
       hit_sound: "Alteration Hit", hit_visual: nil,
       area_sound: "Alteration Area", area_visual: "VFX_DefaultCast",
-      icon_texture: "n\\tx_adamantium.dds", speed: 0.9, size: 1.0, size_cap: 25.0,
+      icon: "n\\tx_adamantium.dds", speed: 0.9, size: 1.0, size_cap: 25.0,
       particle_texture: nil, color: "#214263"}
   end
 

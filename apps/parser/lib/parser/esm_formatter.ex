@@ -526,7 +526,7 @@ defmodule Parser.EsmFormatter do
 
   defp map_magic_effect_fields(data) do
     mappings = %{
-      description: "DESC", icon_texture: "ITEX", particle_texture: "PTEX", cast_visual: "CVFX",
+      description: "DESC", icon: "ITEX", particle_texture: "PTEX", cast_visual: "CVFX",
       bolt_visual: "BVFX", hit_visual: "HVFX", area_visual: "AVFX", cast_sound: "CSND",
       bolt_sound: "BSND", hit_sound: "HSND", area_sound: "ASND"
     }

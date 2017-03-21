@@ -13,19 +13,19 @@ defmodule Mix.Tasks.Parser.Import do
   alias Parser.{EsmFile, Filter}
   alias Ecto.Multi
 
-  @supported_types ["skill", "faction"]
+  @supported_types ["skill", "faction", "magic_effect"]
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do
     ensure_started Repo, []
-    class = :"Elixir.Codex.#{String.capitalize(type)}"
+    class = :"Elixir.Codex.#{to_module_name(type)}"
 
     shiny_output(type, class, fn ->
       EsmFile.stream
       |> Filter.by_type(String.to_atom(type))
       |> Stream.map(&(apply(class, :changeset, [&1])))
       |> Enum.reduce(Multi.new, fn changeset, transaction ->
-        Multi.insert(transaction, changeset.changes.id, changeset)
+        Multi.insert(transaction, changeset.changes.name, changeset)
       end)
       |> Repo.transaction
     end)
@@ -68,5 +68,10 @@ defmodule Mix.Tasks.Parser.Import do
   defp display_result({:error, _failed_operation, failed_value, _changes_so_far}) do
     Mix.shell.error("Error when processing #{inspect(failed_value)}")
     exit(:error)
+  end
+
+  # Converts underscore-form names such as "magic_effect" to module names like "MagicEffect".
+  defp to_module_name(value) do
+    value |> String.split("_") |> Enum.map(&(String.capitalize(&1))) |> Enum.join
   end
 end
