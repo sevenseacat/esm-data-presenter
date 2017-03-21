@@ -20,31 +20,49 @@ defmodule Mix.Tasks.Parser.Import do
     ensure_started Repo, []
     class = :"Elixir.Codex.#{String.capitalize(type)}"
 
-    Mix.shell.info("Deleting old #{type} records...")
-    Repo.delete_all(class)
-
-    Mix.shell.info("Importing new #{type} records...")
-
-    EsmFile.stream
-    |> Filter.by_type(String.to_atom(type))
-    |> Stream.map(&(apply(class, :changeset, [&1])))
-    |> Enum.reduce(Multi.new, fn changeset, transaction ->
-      Multi.insert(transaction, changeset.changes.id, changeset)
+    shiny_output(type, class, fn ->
+      EsmFile.stream
+      |> Filter.by_type(String.to_atom(type))
+      |> Stream.map(&(apply(class, :changeset, [&1])))
+      |> Enum.reduce(Multi.new, fn changeset, transaction ->
+        Multi.insert(transaction, changeset.changes.id, changeset)
+      end)
+      |> Repo.transaction
     end)
-    |> Repo.transaction
-    |> display_result
   end
 
   def run([]) do
-    Enum.map(@supported_types, fn type -> run([type]) end)
+    Enum.each(@supported_types, fn type -> run([type]) end)
   end
 
-  def run(args) do
-    Mix.shell.error("Unknown data type: #{hd(args)}")
+  def run([arg]) do
+    Mix.shell.error("Unknown data type: #{arg}")
+  end
+
+  # Adds a lot of nice formatting things like silent SQL logs, spinners, and other shiny.
+  defp shiny_output(type, class, func) do
+    Logger.configure(level: :info)
+    spinner_format = [frames: :braille, spinner_color: IO.ANSI.blue, done: :remove]
+
+    Mix.shell.info("==> #{type}")
+    spinner_format
+    |> Keyword.merge([
+        text: "Deleting old records...",
+        done: [IO.ANSI.green, "✓ ", IO.ANSI.reset, "Deleted old records."]
+      ])
+    |> ProgressBar.render_spinner(fn -> Repo.delete_all(class) end)
+
+    spinner_format
+    |> Keyword.merge([text: "Importing new records..."])
+    |> ProgressBar.render_spinner(fn -> func.() end)
+    |> display_result
   end
 
   defp display_result({:ok, records}) do
-    Mix.shell.info("#{map_size(records)} records inserted successfully.")
+    Mix.shell.info([
+      IO.ANSI.green, "✓ ", IO.ANSI.reset,
+      "#{map_size(records)} records imported successfully.\n"
+    ])
   end
 
   defp display_result({:error, _failed_operation, failed_value, _changes_so_far}) do

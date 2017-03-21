@@ -32,7 +32,8 @@ defmodule Parser.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:codex, in_umbrella: true}
+      {:codex, in_umbrella: true},
+      {:progress_bar, "> 0.0.0"}
     ]
   end
 end
