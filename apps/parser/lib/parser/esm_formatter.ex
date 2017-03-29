@@ -268,7 +268,7 @@ defmodule Parser.EsmFormatter do
       |> Map.update!(:type, &(Map.get(@enchantment_types, &1)))
       |> Map.merge(%{
         id: id,
-        effects: raw_data |> Map.get("ENAM", []) |> format_magic_effects
+        enchantment_effects: raw_data |> Map.get("ENAM", []) |> format_magic_effects
       })
     }
   end

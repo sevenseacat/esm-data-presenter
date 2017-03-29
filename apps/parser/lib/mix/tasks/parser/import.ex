@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Parser.Import do
   alias Parser.{EsmFile, Filter}
   alias Ecto.Multi
 
-  @supported_types ["skill", "faction", "magic_effect"]
+  @supported_types ["skill", "faction", "magic_effect", "enchantment"]
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do
@@ -24,9 +24,10 @@ defmodule Mix.Tasks.Parser.Import do
       EsmFile.stream
       |> Filter.by_type(String.to_atom(type))
       |> Stream.map(&(apply(class, :changeset, [&1])))
-      |> Enum.reduce(Multi.new, fn changeset, transaction ->
-        Multi.insert(transaction, changeset.changes.name, changeset)
+      |> Enum.reduce({0, Multi.new}, fn changeset, {index, transaction} ->
+        {index + 1, Multi.insert(transaction, index, changeset)}
       end)
+      |> elem(1)
       |> Repo.transaction
     end)
   end

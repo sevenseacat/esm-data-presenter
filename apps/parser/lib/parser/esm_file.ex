@@ -343,8 +343,9 @@ defmodule Parser.EsmFile do
 
   defp format_value(name, "ENAM", <<effect::short, skill::byte, attribute::byte, type::long,
     area::long, duration::long, min::long, max::long>>) when name in ["ALCH", "SPEL", "ENCH"] do
-    %{effect_id: effect, skill_id: nil_if_negative(skill), attribute_id: nil_if_negative(attribute),
-      type: type, area: area, duration: duration, magnitude_min: min, magnitude_max: max}
+    %{magic_effect_id: effect, skill_id: nil_if_negative(skill),
+      attribute_id: nil_if_negative(attribute), type: type, area: area, duration: duration,
+      magnitude_min: min, magnitude_max: max}
   end
 
   defp format_value("WEAP", "WPDT", <<weight::lfloat, value::long, type::short, health::short,

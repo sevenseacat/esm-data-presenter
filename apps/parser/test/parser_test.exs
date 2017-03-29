@@ -225,9 +225,9 @@ defmodule ParserTest do
     assert length(spells) == 1
     assert List.first(spells) == %{id: "pewpew", name: "Pew! Pew!", type: :spell, autocalc: true,
       starting_spell: true, always_succeeds: false, cost: 0, effects: [
-        %{effect_id: 85, attribute_id: 3, type: :target, area: 5, duration: 10, magnitude_min: 5,
-          magnitude_max: 5, skill_id: nil},
-        %{effect_id: 25, attribute_id: nil, type: :self, area: 0, duration: 2, magnitude_min: 1,
-          magnitude_max: 10, skill_id: nil}]}
+        %{magic_effect_id: 85, attribute_id: 3, type: :target, area: 5, duration: 10,
+          magnitude_min: 5, magnitude_max: 5, skill_id: nil},
+        %{magic_effect_id: 25, attribute_id: nil, type: :self, area: 0, duration: 2,
+          magnitude_min: 1, magnitude_max: 10, skill_id: nil}]}
   end
 end

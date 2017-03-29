@@ -3,7 +3,7 @@ defmodule Codex.Repo.Migrations.CreateMagicEffects do
 
   def change do
     create table(:magic_effects, primary_key: false) do
-      add :id, :integer, null: false
+      add :id, :integer, primary_key: true
       add :name, :string, null: false
       add :base_cost, :float, null: false
       add :color, :string, null: false
