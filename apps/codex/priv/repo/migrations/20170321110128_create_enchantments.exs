@@ -23,5 +23,10 @@ defmodule Codex.Repo.Migrations.CreateEnchantments do
       add :magic_effect_id, references(:magic_effects)
       add :skill_id, references(:skills)
     end
+
+    create index(:enchantment_effects, :enchantment_id)
+    create index(:enchantment_effects, :attribute_id)
+    create index(:enchantment_effects, :magic_effect_id)
+    create index(:enchantment_effects, :skill_id)
   end
 end

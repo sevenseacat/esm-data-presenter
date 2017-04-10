@@ -27,5 +27,7 @@ defmodule Codex.Repo.Migrations.CreateMagicEffects do
       add :hit_sound, :string
       add :hit_visual, :string
     end
+
+    create index(:magic_effects, :skill_id)
   end
 end
