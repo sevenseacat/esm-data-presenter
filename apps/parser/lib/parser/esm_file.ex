@@ -331,6 +331,11 @@ defmodule Parser.EsmFile do
     %{name: strip_null(name)}
   end
 
+  defp format_value("SCPT", "SCTX", value) do
+    value
+    |> String.replace(<<146>>, "’") # Smart single quote
+  end
+
   defp format_value("SPEL", "SPDT", <<type::long, cost::long, flags::long>>) do
     # flags is a bitmask - 1 = autocalc, 2 = starting spell, 4 = always succeeds
     %{type: type, cost: cost}

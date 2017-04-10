@@ -209,7 +209,7 @@ defmodule ParserTest do
     scripts = stream |> Filter.by_type(:script) |> Enum.to_list
 
     assert length(scripts) == 2 # ToolScript and DaughterOfFargoth
-    assert List.first(scripts) == %{name: "DaughterOfFargoth",
+    assert List.first(scripts) == %{id: "DaughterOfFargoth",
       text: "begin DaughterOfFargoth\r\n; does something?\r\nend"}
   end
 

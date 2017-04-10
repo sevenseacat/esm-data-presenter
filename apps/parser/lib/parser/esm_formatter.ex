@@ -465,7 +465,7 @@ defmodule Parser.EsmFormatter do
   def build_record("SCPT", %{"SCHD" => header, "SCTX" => text}) do
     {
       :script,
-      %{name: Map.get(header, :name), text: text}
+      %{id: Map.get(header, :name), text: text}
     }
   end
 
