@@ -333,15 +333,17 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("LEVI", %{"NAME" => id, "INDX" => length, "ENTR" => entries, "NNAM" => none}) do
+  def build_record("LEVI", %{"NAME" => id, "INDX" => length, "ENTR" => entries} = raw_data) do
     {
       :levelled_item,
-      %{
+      raw_data
+      |> Map.get("DATA")
+      |> Map.merge(%{
         id: id,
         length: length,
-        items: Enum.map(entries, fn {item, count} -> %{item_id: item, count: count} end),
-        chance_none: none
-      }
+        entries: Enum.map(entries, fn {item, level} -> %{item_id: item, pc_level: level} end),
+        chance_none: Map.get(raw_data, "NNAM")
+      })
     }
   end
 
@@ -504,6 +506,7 @@ defmodule Parser.EsmFormatter do
       |> Map.merge(%{
         id: id,
         name: name,
+        script_id: Map.get(raw_data, "SCRI"),
         enchantment_id: Map.get(raw_data, "ENAM"),
         icon: Map.get(raw_data, "ITEX"),
         model: Map.get(raw_data, "MODL")
@@ -544,7 +547,7 @@ defmodule Parser.EsmFormatter do
   end
 
   defp readable_conditions(nil), do: []
-  defp readable_conditions(conditions), do: conditions |> Enum.map(&condition/1) |> Enum.reverse
+  defp readable_conditions(conditions), do: conditions |> Enum.map(&condition/1)
   defp condition({%{function: fun, name: name, operator: op}, value}) do
     %{
       function: Map.fetch!(@dialogue_functions, fun),

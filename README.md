@@ -31,21 +31,21 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      |          |        |           | `REGN` (Regions) |
 | ✓      | ✓      |          |        |           | `BSGN` (Birth signs) |
 | ✓      | ✓      |          |        |           | `MISC` (Miscellaneous items) |
-| ✓      |        |          |        |           | `WEAP` (Weapons) |
-| ✓      |        |          |        |           | `CONT` (Containers) |
+| ✓      | ✓      |          |        |           | `WEAP` (Weapons) |
+| ✓      | ✓      |          |        |           | `CONT` (Containers) |
 | ✓      | ✓      |          |        |           | `SPEL` (Spells) |
-| ✓      |        | ✓        |        |           | `ENCH` (Enchantments) |
-| ✓      |        |          |        |           | `NPC_` (NPCs) |
-| ✓      |        |          |        |           | `ARMO` (Armour) |
-| ✓      |        |          |        |           | `CLOT` (Clothing) |
-| ✓      |        |          |        |           | `REPA` (Repair items) |
+| ✓      | ✓      | ✓        |        |           | `ENCH` (Enchantments) |
+| ✓      | ✓      |          |        |           | `NPC_` (NPCs) |
+| ✓      | ✓      |          |        |           | `ARMO` (Armour) |
+| ✓      | ✓      |          |        |           | `CLOT` (Clothing) |
+| ✓      | ✓      |          |        |           | `REPA` (Repair items) |
 | ✓      | ✓      |          |        |           | `APPA` (Alchemy apparatus) |
-| ✓      |        |          |        |           | `LOCK` (Lockpicking items) |
-| ✓      |        |          |        |           | `PROB` (Probe items) |
+| ✓      | ✓      |          |        |           | `LOCK` (Lockpicking items) |
+| ✓      | ✓      |          |        |           | `PROB` (Probe items) |
 | ✓      | ✓      |          |        |           | `INGR` (Ingredients) |
 | ✓      | ✓      | ✓        |        |           | `BOOK` (Books and papers) |
-| ✓      |        |          |        |           | `ALCH` (Potions?) |
-| ✓      |        |          |        |           | `LEVI` (Levelled items) |
+| ✓      | ✓      |          |        |           | `ALCH` (Potions?) |
+| ✓      | ✓      |          |        |           | `LEVI` (Levelled items) |
 | ✓      | ✓      |          |        |           | `CELL` (Cells) |
 | ✓      | ✓      |          |        |           | `DIAL` (Dialogue/journal topics) |
 | ✓      | ✓      |          |        |           | `INFO` (Dialogue records) |

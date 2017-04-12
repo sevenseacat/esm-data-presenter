@@ -97,11 +97,20 @@ defmodule Parser.EsmFile do
   # eg. some fields are null-terminated strings, some are bitmasks, some are little-endian integers
   ###############################
 
-  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS", "MODL",
-    "ITEX", "PTEX", "SCRI"] do
+  defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS", "ITEX",
+    "PTEX", "SCRI"] do
     strip_null(value)
   end
   defp format_value(_type, "INDX", <<id::long>>), do: id
+  defp format_value(_type, "MODL", value) do
+    value
+    |> strip_null
+    |> case do
+      "Add World Art" -> nil
+      "Add Art File" -> nil
+      other -> other
+    end
+  end
 
   defp format_value("ALCH", "TEXT", value), do: strip_null(value)
 
@@ -230,7 +239,9 @@ defmodule Parser.EsmFile do
       effects: zip_ingredient_effects(effects, skills, attributes)}
   end
 
-  defp format_value("LEVI", "DATA", <<value::long>>), do: value
+  defp format_value("LEVI", "DATA", <<value::long>>) do
+    parse_bitmask(value, [calculate_for_each_item: 1, calculate_for_all_levels: 2])
+  end
   defp format_value("LEVI", "NNAM", <<value::byte>>), do: value
   defp format_value("LEVI", "INAM", value), do: strip_null(value)
   defp format_value("LEVI", "INTV", <<value::short>>), do: value
@@ -358,8 +369,8 @@ defmodule Parser.EsmFile do
     slash_min::byte, slash_max::byte, thrust_min::byte, thrust_max::byte, flags::long>>) do
     %{weight: weight, value: value, type: type, health: health, speed: float(speed), reach: reach,
       enchantment_points: enchantment_points, chop_min: chop_min, chop_max: chop_max,
-      slash_min: slash_min, slash_max: slash_max, thrust_min: thrust_min, thrust_max: thrust_max,
-      ignore_resistance: flags == 1}
+      slash_min: slash_min, slash_max: slash_max, thrust_min: thrust_min, thrust_max: thrust_max}
+    |> Map.merge(parse_bitmask(flags, [ignore_resistance: 1, silver: 2]))
   end
 
   defp format_value(_type, _name, value), do: value
@@ -375,7 +386,7 @@ defmodule Parser.EsmFile do
   end
 
   defp record_pair_value(list, key, value) do
-    Map.update!(list, key, fn([{key, nil} | rest]) -> [{key, value} | rest] end)
+    Map.update!(list, key, fn([{key, nil} | rest]) -> rest ++ [{key, value}] end)
   end
 
   defp record_list(list, key, value) do

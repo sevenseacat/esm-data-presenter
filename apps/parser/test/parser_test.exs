@@ -20,6 +20,15 @@ defmodule ParserTest do
       model: "a\\A_Ebony_Boot_GND.nif", icon: "s\\B_Tx_S_fire_shield.dds"}
   end
 
+  test "can read Armor data", %{stream: stream} do
+    armor = stream |> Filter.by_type(:armor) |> Enum.to_list
+
+    assert length(armor) == 1
+    assert List.first(armor) == %{id: "hobs", name: "Helmet of Blinding Speed", type: :helmet,
+      weight: 5.0, armor: 7, health: 98, value: 1000, enchantment_points: 50,
+      enchantment_id: nil, icon: nil, script_id: nil, model: nil}
+  end
+
   test "can read Birthsign data", %{stream: stream} do
     birthsigns = stream |> Filter.by_type(:birthsign) |> Enum.to_list
 
@@ -63,6 +72,23 @@ defmodule ParserTest do
         misc: false, spells: false, magic_items: false, potions: false}}
   end
 
+  test "can read Clothing data", %{stream: stream} do
+    clothing = stream |> Filter.by_type(:clothing) |> Enum.to_list
+
+    assert length(clothing) == 1
+    assert List.first(clothing) == %{id: "tshirt", name: "My Favorite T-Shirt", type: :shirt,
+      enchantment_points: 300, weight: 2.0, value: 500, enchantment_id: "traveller", script_id: nil,
+      icon: nil, model: nil}
+  end
+
+  test "can read Container data", %{stream: stream} do
+    containers = stream |> Filter.by_type(:container) |> Enum.to_list
+
+    assert length(containers) == 1
+    assert List.first(containers) == %{id: "drawers", name: "T-Shirt Drawer", organic: true,
+      model: nil, respawns: true, capacity: 50.0, items: [{10, "tshirt"}, {1, "hobs"}]}
+  end
+
   test "can read Dialogue data", %{stream: stream} do
     dialogues = stream |> Filter.by_type(:dialogue) |> Enum.to_list
     assert length(dialogues) == 28 # Two I created, and lots of predefined ones
@@ -95,6 +121,21 @@ defmodule ParserTest do
         ]}]} = greeting
   end
 
+  test "can read Enchantment data", %{stream: stream} do
+    enchantments = stream |> Filter.by_type(:enchantment) |> Enum.to_list
+
+    assert length(enchantments) == 1
+    assert List.first(enchantments) == %{id: "traveller", type: :when_used, cost: 800,
+      charge: 150, autocalc: false, enchantment_effects: [
+        %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 63, magnitude_max: 1,
+          magnitude_min: 1, duration: 1, skill_id: nil, type: :self},
+        %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 62, magnitude_max: 1,
+          magnitude_min: 1, duration: 1, skill_id: nil, type: :self},
+        %{area: 5, attribute_id: nil, duration: 0, magic_effect_id: 89, magnitude_max: 3,
+          magnitude_min: 2, duration: 10, skill_id: 14, type: :touch}
+      ]}
+  end
+
   test "can read Faction data", %{stream: stream} do
     factions = stream |> Filter.by_type(:faction) |> Enum.to_list
 
@@ -103,7 +144,7 @@ defmodule ParserTest do
     assert List.first(factions) == %{id: "ym_guild", name: "My Guild", hidden: false,
       attribute_ids: [1, 2], favorite_skill_ids: [26, 25, 16, 5, 4, 3],
       reactions: [
-        %{faction_id: "ym_guild", adjustment: 5}, %{faction_id: "other_guild", adjustment: -5}
+        %{faction_id: "other_guild", adjustment: -5}, %{faction_id: "ym_guild", adjustment: 5}
       ],
       ranks: [
         %{number: 1, name: "Rank A", attribute_1: 10, attribute_2: 10, skill_1: 20, skill_2: 15,
@@ -148,8 +189,24 @@ defmodule ParserTest do
     } = List.first(journals)
   end
 
-  @tag :pending
-  test "can read Lockpick data", %{stream: _stream} do
+  test "can read Levelled Item data", %{stream: stream} do
+    levelled_items = stream |> Filter.by_type(:levelled_item) |> Enum.to_list
+
+    assert length(levelled_items) == 1
+    assert List.first(levelled_items) == %{id: "stuff5", length: 3, chance_none: 10,
+      calculate_for_all_levels: false, calculate_for_each_item: true, entries: [
+        %{pc_level: 5, item_id: "tshirt"},
+        %{pc_level: 10, item_id: "noob_tool"},
+        %{pc_level: 99, item_id: "Misc_SoulGem_Azura"}
+      ]}
+  end
+
+  test "can read Lockpick data", %{stream: stream} do
+    lockpicks = stream |> Filter.by_type(:lockpick) |> Enum.to_list
+
+    assert length(lockpicks) == 1
+    assert List.first(lockpicks) == %{id: "pick", name: "Picky McPickFace",
+      weight: 33.0, value: 44, uses: 55, quality: 22.0, icon: nil, model: nil, script_id: nil}
   end
 
   test "can read Magic Effect data", %{stream: stream} do
@@ -166,9 +223,10 @@ defmodule ParserTest do
 
   test "can read Misc Item data", %{stream: stream} do
     misc_items = stream |> Filter.by_type(:misc_item) |> Enum.to_list
+    assert length(misc_items) == 11
 
-    assert length(misc_items) == 1
-    assert List.first(misc_items) == %{id: "Misc_SoulGem_Petty", name: "Pretty Soul Gem",
+    soul_gem = Enum.find(misc_items, &(&1[:id] == "Misc_SoulGem_Petty"))
+    assert soul_gem == %{id: "Misc_SoulGem_Petty", name: "Pretty Soul Gem",
       weight: 0.25, value: 11, model: "m\\misc_soulgem_petty.nif",
       icon: "m\\tx_soulgem_petty.tga", enchantment_id: nil, script_id: nil}
   end
@@ -184,8 +242,25 @@ defmodule ParserTest do
       items: [%{count: 1, id: "Argonian Maid"}], gold: 0, spell_ids: []}
   end
 
-  @tag :pending
-  test "can read Probe data", %{stream: _stream} do
+  test "can read Potion data", %{stream: stream} do
+    potions = stream |> Filter.by_type(:potion) |> Enum.to_list
+
+    assert length(potions) == 1
+    assert List.first(potions) == %{id: "oops", name: "Not Skooma", script_id: "NotSkoomaScript",
+      weight: 0.25, autocalc: true, value: 0, icon: nil, model: nil, effects: [
+        %{magic_effect_id: 7, skill_id: nil, attribute_id: nil, duration: 5, magnitude_max: 20,
+          magnitude_min: 20, area: 0, type: :self},
+        %{magic_effect_id: 8, skill_id: nil, attribute_id: nil, duration: 10, magnitude_max: 30,
+          magnitude_min: 30, area: 0, type: :self}
+      ]}
+  end
+
+  test "can read Probe data", %{stream: stream} do
+    probes = stream |> Filter.by_type(:probe) |> Enum.to_list
+
+    assert length(probes) == 1
+    assert List.first(probes) == %{id: "thing", name: "It's a Thing.", weight: 5.0, value: 10,
+      uses: 73, quality: 1.18, icon: nil, model: nil, script_id: nil}
   end
 
   @tag :pending
@@ -201,14 +276,18 @@ defmodule ParserTest do
         snow: 5, blizzard: 0}}
   end
 
-  @tag :pending
-  test "can read Repair Item data", %{stream: _stream} do
+  test "can read Repair Item data", %{stream: stream} do
+    repair_items = stream |> Filter.by_type(:repair) |> Enum.to_list
+
+    assert length(repair_items) == 1
+    assert List.first(repair_items) == %{id: "fixit", name: "Mr. Fixit", weight: 2.0, value: 7,
+      uses: 11, quality: 1.0, icon: nil, model: "bab\\a_bear_boots.nif", script_id: nil}
   end
 
   test "can read Script data", %{stream: stream} do
     scripts = stream |> Filter.by_type(:script) |> Enum.to_list
 
-    assert length(scripts) == 2 # ToolScript and DaughterOfFargoth
+    assert length(scripts) == 3 # ToolScript, DaughterOfFargoth, NotSkoomaScript
     assert List.first(scripts) == %{id: "DaughterOfFargoth",
       text: "begin DaughterOfFargoth\r\n; does something?\r\nend"}
   end
@@ -229,5 +308,16 @@ defmodule ParserTest do
           magnitude_min: 5, magnitude_max: 5, skill_id: nil},
         %{magic_effect_id: 25, attribute_id: nil, type: :self, area: 0, duration: 2,
           magnitude_min: 1, magnitude_max: 10, skill_id: nil}]}
+  end
+
+  test "can read Weapon data", %{stream: stream} do
+    weapons = stream |> Filter.by_type(:weapon) |> Enum.to_list
+
+    assert length(weapons) == 1
+    assert List.first(weapons) == %{id: "pewpew2", name: "Axe of Pew Pew", type: :axe_2_hand,
+      script_id: "NotSkoomaScript", weight: 5.0, health: 72, value: 18, speed: 1.5, reach: 0.5,
+      silver: true, chop_min: 3, chop_max: 7, slash_min: 4, slash_max: 8, thrust_min: 5,
+      thrust_max: 9, ignore_resistance: true, enchantment_id: nil, enchantment_points: 500,
+      icon: nil, model: nil}
   end
 end
