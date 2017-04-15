@@ -12,7 +12,8 @@ defmodule Codex.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
-     deps: deps()]
+     deps: deps(),
+     elixirc_paths: elixirc_paths(Mix.env)]
   end
 
   # Configuration for the OTP application
@@ -23,6 +24,9 @@ defmodule Codex.Mixfile do
     [extra_applications: [:logger],
      mod: {Codex, []}]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Dependencies can be Hex packages:
   #
@@ -40,7 +44,8 @@ defmodule Codex.Mixfile do
   defp deps do
     [
       {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.1.2"}
+      {:ecto, "~> 2.1.2"},
+      {:ex_machina, "~> 2.0", only: :test}
     ]
   end
 

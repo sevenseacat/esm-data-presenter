@@ -8,3 +8,5 @@ config :codex, Codex.Repo,
   database: "tes_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :logger, level: :warn
