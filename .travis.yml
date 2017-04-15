@@ -4,3 +4,4 @@ otp_release: 19.2
 cache:
   directories:
     - deps
+    - _build
