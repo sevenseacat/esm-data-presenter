@@ -33,9 +33,10 @@ defmodule Parser.EsmFile do
   defp next_record(file) do
     case IO.binread(file, 16) do
       :eof -> {:halt, file}
-      <<type::binary-4, size::long, _header1::bytes-4, _flags::bytes-4>> ->
+      <<type::binary-4, size::long, _header1::bytes-4, flags::long>> ->
         subrecords = file |> IO.binread(size) |> parse_sub_records(type, %{})
-        {[EsmFormatter.build_record(type, subrecords)], file}
+        flags = parse_bitmask(flags, [blocked: 0x00002000, persistent: 0x00000400])
+        {[EsmFormatter.build_record(type, subrecords, flags)], file}
     end
   end
 

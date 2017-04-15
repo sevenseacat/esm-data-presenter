@@ -117,8 +117,8 @@ defmodule Parser.EsmFormatter do
         id: "potion_skooma_01", model: "n\\Potion_Skooma_01.NIF", name: "Skooma", script: nil,
         texture: "n\\Tx_skooma_01.tga", value: 500, weight: 1.0}}
   """
-  @spec build_record(type :: String.t, raw_data :: map()) :: {atom, map()}
-  def build_record("ALCH", %{"NAME" => id, "FNAM" => name, "ALDT" => data} = raw_data) do
+  @spec build_record(type :: String.t, raw_data :: map(), flags :: map()) :: {atom, map()}
+  def build_record("ALCH", %{"NAME" => id, "FNAM" => name, "ALDT" => data} = raw_data, _special) do
     {
       :potion,
       %{
@@ -132,7 +132,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("APPA", %{"NAME" => id, "FNAM" => name, "AADT" => data} = raw_data) do
+  def build_record("APPA", %{"NAME" => id, "FNAM" => name, "AADT" => data} = raw_data, _special) do
     {
       :apparatus,
       data
@@ -147,7 +147,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("ARMO", %{"NAME" => id, "FNAM" => name, "AODT" => data} = raw_data) do
+  def build_record("ARMO", %{"NAME" => id, "FNAM" => name, "AODT" => data} = raw_data, _special) do
     {
       :armor,
       data
@@ -163,7 +163,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("BOOK", %{"NAME" => id, "FNAM" => name, "BKDT" => data} = raw_data) do
+  def build_record("BOOK", %{"NAME" => id, "FNAM" => name, "BKDT" => data} = raw_data, _special) do
     {
       :book,
       %{
@@ -183,7 +183,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("BSGN", %{"NAME" => id, "FNAM" => name} = raw_data) do
+  def build_record("BSGN", %{"NAME" => id, "FNAM" => name} = raw_data, _special) do
     {
       :birthsign,
       %{
@@ -196,7 +196,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("CELL", %{"NAME" => name} = raw_data) do
+  def build_record("CELL", %{"NAME" => name} = raw_data, _special) do
     {
       :cell,
       %{
@@ -213,7 +213,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => data} = raw_data) do
+  def build_record("CLAS", %{"NAME" => id, "FNAM" => name, "CLDT" => data} = raw_data, _special) do
     {
       :class,
       %{
@@ -224,7 +224,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("CLOT", %{"NAME" => id, "FNAM" => name, "CTDT" => data} = raw_data) do
+  def build_record("CLOT", %{"NAME" => id, "FNAM" => name, "CTDT" => data} = raw_data, _special) do
     {
       :clothing,
       data
@@ -240,7 +240,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("CONT", %{"NAME" => id, "FNAM" => name, "FLAG" => flags} = raw_data) do
+  def build_record("CONT", %{"NAME" => id, "FNAM" => name, "FLAG" => flags} = raw_data, _special) do
     {
       :container,
       %{
@@ -253,15 +253,15 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("DIAL", %{"NAME" => id, "DATA" => 4}) do
+  def build_record("DIAL", %{"NAME" => id, "DATA" => 4}, _special) do
     {:journal, %{id: id, infos: []}}
   end
 
-  def build_record("DIAL", %{"NAME" => id, "DATA" => type}) do
+  def build_record("DIAL", %{"NAME" => id, "DATA" => type}, _special) do
     {:dialogue, %{id: id, type: Map.fetch!(@dialogue_types, type), infos: []}}
   end
 
-  def build_record("ENCH", %{"NAME" => id, "ENDT" => data} = raw_data) do
+  def build_record("ENCH", %{"NAME" => id, "ENDT" => data} = raw_data, _special) do
     {
       :enchantment,
       data
@@ -273,7 +273,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => data} = raw_data) do
+  def build_record("FACT", %{"NAME" => id, "FNAM" => name, "FADT" => data} = raw_data, _special) do
     {
       :faction,
       %{
@@ -290,7 +290,7 @@ defmodule Parser.EsmFormatter do
   end
 
   # Journal dialogue entries.
-  def build_record("INFO", %{"DATA" => index} = raw_data) when is_integer(index) do
+  def build_record("INFO", %{"DATA" => index} = raw_data, _special) when is_integer(index) do
     {
       :info,
       raw_data
@@ -305,7 +305,7 @@ defmodule Parser.EsmFormatter do
   end
 
   # Non-journal dialogue entries
-  def build_record("INFO", %{"DATA" => data} = raw_data) when is_map(data) do
+  def build_record("INFO", %{"DATA" => data} = raw_data, _special) when is_map(data) do
     {
       :info,
       raw_data
@@ -321,7 +321,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("INGR", %{"NAME" => id, "FNAM" => name, "IRDT" => data} = raw_data) do
+  def build_record("INGR", %{"NAME" => id, "FNAM" => name, "IRDT" => data} = raw_data, _special) do
     {
       :ingredient,
       %{
@@ -333,7 +333,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("LEVI", %{"NAME" => id, "INDX" => length, "ENTR" => entries} = raw_data) do
+  def build_record("LEVI", %{"NAME" => id, "INDX" => length, "ENTR" => entries} = raw_data, _special) do
     {
       :levelled_item,
       raw_data
@@ -347,7 +347,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("LOCK", %{"NAME" => id, "FNAM" => name, "LKDT" => data} = raw_data) do
+  def build_record("LOCK", %{"NAME" => id, "FNAM" => name, "LKDT" => data} = raw_data, _special) do
     {
       :lockpick,
       %{
@@ -360,7 +360,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("MGEF", %{"INDX" => id, "MEDT" => data} = raw_data) do
+  def build_record("MGEF", %{"INDX" => id, "MEDT" => data} = raw_data, _special) do
     {
       :magic_effect,
       data
@@ -375,7 +375,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("MISC", %{"NAME" => id, "FNAM" => name, "MCDT" => data} = raw_data) do
+  def build_record("MISC", %{"NAME" => id, "FNAM" => name, "MCDT" => data} = raw_data, _special) do
     {
       :misc_item,
       %{
@@ -391,8 +391,7 @@ defmodule Parser.EsmFormatter do
   end
 
   def build_record("NPC_", %{"NAME" => id, "FNAM" => name, "FLAG" => flags, "NPDT" => data} =
-    raw_data) do
-    # TODO: Figure out where the Corpses Persist boolean is stored.
+    raw_data, special) do
     {
       :npc,
       %{
@@ -409,10 +408,11 @@ defmodule Parser.EsmFormatter do
       }
       |> Map.merge(data)
       |> Map.merge(flags)
+      |> Map.merge(special)
     }
   end
 
-  def build_record("PROB", %{"NAME" => id, "FNAM" => name, "PBDT" => data} = raw_data) do
+  def build_record("PROB", %{"NAME" => id, "FNAM" => name, "PBDT" => data} = raw_data, _special) do
     {
       :probe,
       %{
@@ -425,7 +425,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("RACE", %{"NAME" => id, "FNAM" => name, "RADT" => data} = raw_data) do
+  def build_record("RACE", %{"NAME" => id, "FNAM" => name, "RADT" => data} = raw_data, _special) do
     {
       :race,
       %{
@@ -438,7 +438,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("REGN", %{"NAME" => id, "FNAM" => name, "WEAT" => weather, "CNAM" => color}) do
+  def build_record("REGN", %{"NAME" => id, "FNAM" => name, "WEAT" => weather, "CNAM" => color}, _special) do
     {
       :region,
       %{
@@ -450,7 +450,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("REPA", %{"NAME" => id, "FNAM" => name, "RIDT" => data} = raw_data) do
+  def build_record("REPA", %{"NAME" => id, "FNAM" => name, "RIDT" => data} = raw_data, _special) do
     {
       :repair,
       %{
@@ -464,14 +464,14 @@ defmodule Parser.EsmFormatter do
   end
 
   # Script data contains lots of compilation data, but we just want the raw text
-  def build_record("SCPT", %{"SCHD" => header, "SCTX" => text}) do
+  def build_record("SCPT", %{"SCHD" => header, "SCTX" => text}, _special) do
     {
       :script,
       %{id: Map.get(header, :name), text: text}
     }
   end
 
-  def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}) do
+  def build_record("SKIL", %{"INDX" => id, "SKDT" => skdt, "DESC" => desc}, _special) do
     {
       :skill,
       %{
@@ -484,7 +484,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "ENAM" => data} = raw_data) do
+  def build_record("SPEL", %{"NAME" => id, "FNAM" => name, "ENAM" => data} = raw_data, _special) do
     {
       :spell,
       raw_data
@@ -498,7 +498,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("WEAP", %{"NAME" => id, "FNAM" => name, "WPDT" => data} = raw_data) do
+  def build_record("WEAP", %{"NAME" => id, "FNAM" => name, "WPDT" => data} = raw_data, _special) do
     {
       :weapon,
       data
@@ -514,7 +514,7 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record(type, subrecords), do: {type, subrecords}
+  def build_record(type, subrecords, _special), do: {type, subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction
   defp zip_faction_ranks(faction, [name | names], [rank | ranks]) do

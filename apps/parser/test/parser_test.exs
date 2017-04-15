@@ -239,7 +239,8 @@ defmodule ParserTest do
       script_id: "DaughterOfFargoth", female: false, class_id: "stuff", level: 17,
       faction_id: "ym_guild", rank: 1, essential: true, respawn: false, autocalc: true,
       disposition: 50, skeleton_blood: true, metal_blood: false,
-      items: [%{count: 1, id: "Argonian Maid"}], gold: 0, spell_ids: []}
+      items: [%{count: 1, id: "Argonian Maid"}], gold: 0, spell_ids: [],
+      blocked: false, persistent: false}
   end
 
   test "can read Potion data", %{stream: stream} do
