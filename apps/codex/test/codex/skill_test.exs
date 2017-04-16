@@ -2,6 +2,10 @@ defmodule Codex.SkillTest do
   use Codex.ConnCase
   alias Codex.{Repo, Skill}
 
+  test "has a valid factory" do
+    assert insert(:skill)
+  end
+
   describe "changeset/1" do
     test "validates that an ID is provided" do
       assert {:id, "can't be blank"} in errors(Skill.changeset(%{}))

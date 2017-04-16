@@ -12,6 +12,13 @@ defmodule Codex.Factory do
     }
   end
 
+  def script_factory do
+    %Codex.Script{
+      id: "test_script",
+      text: "begin TestScript\r\n  ; script content\r\nend"
+    }
+  end
+
   def skill_factory do
     %Codex.Skill{
       id: sequence(:id, &(&1)),
