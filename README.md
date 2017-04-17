@@ -23,7 +23,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | :---:  | :---:  | :---:    | :---:  | :---:     |------|
 |        |        |          |        |           | `TES3` (Main header record) |
 | ✓      | ✓      |          |        |           | `CLAS` (Classes) |
-| ✓      | ✓      | ✓        |        |           | `FACT` (Factions) |
+| ✓      | ✓      | ✓        | ✓      |           | `FACT` (Factions) |
 | ✓      |        |          |        |           | `RACE` (Races) |
 | ✓      | ✓      | ✓        | ✓      |           | `SKIL` (Skills) - "use values" are ignored |
 | ✓      | ✓      | ✓        | ✓      |           | `MGEF` (Magic effects) |

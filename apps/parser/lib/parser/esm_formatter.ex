@@ -279,7 +279,8 @@ defmodule Parser.EsmFormatter do
       %{
         id: id,
         name: name,
-        attribute_ids: Map.get(data, :attribute_ids),
+        attribute_1_id: Map.get(data, :attribute_1_id),
+        attribute_2_id: Map.get(data, :attribute_2_id),
         favorite_skill_ids: Map.get(data, :skill_ids),
         reactions: raw_data |> Map.get("ANAM/INTV", []) |> Enum.map(&format_faction_reaction/1),
         hidden: Map.get(data, :flags) == 1,

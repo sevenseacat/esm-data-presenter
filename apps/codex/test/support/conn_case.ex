@@ -6,7 +6,7 @@ defmodule Codex.ConnCase do
   """
 
   alias Codex.{Factory, Repo}
-  alias Ecto.Adapters.SQL.Sandbox
+  alias Ecto.{Adapters.SQL.Sandbox, Changeset}
   use ExUnit.CaseTemplate
 
   using do
@@ -25,9 +25,15 @@ defmodule Codex.ConnCase do
     {:ok, []}
   end
 
-  @spec errors(Ecto.Changeset.t) :: [{atom, string}]
+  @spec errors(Ecto.Changeset.t) :: [{atom, String.t}]
   def errors(changeset) do
-    changeset.errors
-    |> Enum.map(fn {field, {message, _rule}} -> {field, message} end)
+    changeset
+    |> Changeset.traverse_errors(fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+    |> Map.to_list
+    |> Enum.map(fn {field, [message]} -> {field, message} end)
   end
 end

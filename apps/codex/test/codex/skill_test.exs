@@ -26,9 +26,7 @@ defmodule Codex.SkillTest do
     test "validates that the attribute ID provided is valid" do
       params = params_with_assocs(:skill)
       {:error, changeset} = params |> Map.put(:attribute_id, -1) |> Skill.changeset |> Repo.insert
-
       assert {:attribute_id, "does not exist"} in errors(changeset)
-      assert {:ok, _skill} = params |> Skill.changeset |> Repo.insert
     end
 
     test "validates that a specialization ID is provided" do
@@ -39,9 +37,7 @@ defmodule Codex.SkillTest do
       params = params_with_assocs(:skill)
       {:error, changeset} = params |> Map.put(:specialization_id, -1) |> Skill.changeset
         |> Repo.insert
-
       assert {:specialization_id, "does not exist"} in errors(changeset)
-      assert {:ok, _skill} = params |> Skill.changeset |> Repo.insert
     end
   end
 end

@@ -13,7 +13,7 @@ defmodule Codex.Faction do
   import Ecto.Changeset
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :hidden]
+  @required_fields [:id, :name, :hidden, :attribute_1_id, :attribute_2_id]
 
   schema "factions" do
     field :name
@@ -28,13 +28,9 @@ defmodule Codex.Faction do
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
-    [attribute_1_id, attribute_2_id] = params[:attribute_ids]
-
     %Codex.Faction{}
     |> cast(params, @required_fields)
-    |> put_change(:attribute_1_id, attribute_1_id)
-    |> put_change(:attribute_2_id, attribute_2_id)
-    |> validate_required([:attribute_1_id, :attribute_2_id | @required_fields])
+    |> validate_required(@required_fields)
     |> foreign_key_constraint(:attribute_1_id)
     |> foreign_key_constraint(:attribute_2_id)
     |> cast_assoc(:ranks)

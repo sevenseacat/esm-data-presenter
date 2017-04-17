@@ -22,9 +22,7 @@ defmodule Codex.MagicEffectTest do
     test "validates that the skill ID provided is valid" do
       params = params_with_assocs(:magic_effect)
       {:error, changeset} = params |> Map.put(:skill_id, -1) |> MagicEffect.changeset |> Repo.insert
-
       assert {:skill_id, "does not exist"} in errors(changeset)
-      assert {:ok, _effect} = params |> MagicEffect.changeset |> Repo.insert
     end
 
     test "validates that a base cost is provided" do

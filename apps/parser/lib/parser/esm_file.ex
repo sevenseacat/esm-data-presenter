@@ -206,9 +206,9 @@ defmodule Parser.EsmFile do
   defp format_value("FACT", "INTV", <<value::long>>), do: value
   # Rankings and skills are long and repeated - split them out into their own functions
   defp format_value("FACT", "FADT", <<attribute_1::long, attribute_2::long,
-    rankings::binary-200, skills::binary-24, unknown::long, flags::long>>) do
-    %{attribute_ids: [attribute_1, attribute_2], rankings: faction_rankings(rankings),
-      skill_ids: faction_skills(skills), unknown: unknown, flags: flags}
+    rankings::binary-200, skills::binary-24, _::long, flags::long>>) do
+    %{attribute_1_id: attribute_1, attribute_2_id: attribute_2,
+      rankings: faction_rankings(rankings), skill_ids: faction_skills(skills), flags: flags}
   end
 
   defp format_value("INFO", name, value) when name in ["INAM", "ONAM", "RNAM", "CNAM", "FNAM",

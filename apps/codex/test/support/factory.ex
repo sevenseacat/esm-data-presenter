@@ -12,6 +12,37 @@ defmodule Codex.Factory do
     }
   end
 
+  def faction_factory do
+    %Codex.Faction{
+      id: sequence(:id, &("my_faction_#{&1}")),
+      name: "My Faction",
+      attribute_1: build(:attribute),
+      attribute_2: build(:attribute),
+      hidden: false
+    }
+  end
+
+  def faction_rank_factory do
+    %Codex.Faction.Rank{
+      faction: build(:faction),
+      number: 1,
+      name: "Rank 1",
+      attribute_1: 10,
+      attribute_2: 10,
+      skill_1: 20,
+      skill_2: 5,
+      reputation: 10
+    }
+  end
+
+  def faction_reaction_factory do
+    %Codex.Faction.Reaction{
+      source: build(:faction),
+      target: build(:faction),
+      adjustment: 2
+    }
+  end
+
   def magic_effect_factory do
     %Codex.MagicEffect{
       id: 60,

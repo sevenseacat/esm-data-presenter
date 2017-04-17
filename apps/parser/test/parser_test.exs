@@ -142,7 +142,7 @@ defmodule ParserTest do
     # "other guild" and "my guild"
     assert length(factions) == 2
     assert List.first(factions) == %{id: "ym_guild", name: "My Guild", hidden: false,
-      attribute_ids: [1, 2], favorite_skill_ids: [26, 25, 16, 5, 4, 3],
+      attribute_1_id: 1, attribute_2_id: 2, favorite_skill_ids: [26, 25, 16, 5, 4, 3],
       reactions: [
         %{faction_id: "other_guild", adjustment: -5}, %{faction_id: "ym_guild", adjustment: 5}
       ],
