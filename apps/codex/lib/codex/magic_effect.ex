@@ -11,6 +11,7 @@ defmodule Codex.MagicEffect do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :id, autogenerate: false}
   @required_fields [:id, :name, :base_cost, :color, :icon, :enchanting, :spellmaking,
     :negative, :particle_texture, :skill_id, :speed, :size, :size_cap]
 

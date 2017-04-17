@@ -12,6 +12,25 @@ defmodule Codex.Factory do
     }
   end
 
+  def magic_effect_factory do
+    %Codex.MagicEffect{
+      id: 60,
+      name: "Mark",
+      skill: build(:skill),
+      base_cost: 15.0,
+      spellmaking: true,
+      enchanting: false,
+      description: "Mark, then recall, for great justice.",
+      negative: true,
+      icon: "n\\tx_adamantium.dds",
+      speed: 0.9,
+      size: 1.0,
+      size_cap: 25.0,
+      particle_texture: "a\\something.tga",
+      color: "#214263"
+    }
+  end
+
   def script_factory do
     %Codex.Script{
       id: "test_script",
