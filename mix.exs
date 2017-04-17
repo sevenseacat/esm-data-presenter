@@ -22,7 +22,8 @@ defmodule Tes.Mixfile do
   # and cannot be accessed from applications inside the apps folder
   defp deps do
     [
-      {:credo, "~> 0.6", only: [:dev, :test]},
+      # Use my fork of Credo until https://github.com/rrrene/credo/pull/362 is resolved.
+      {:credo, "~> 0.7", only: [:dev, :test], git: "https://github.com/sevenseacat/credo.git"},
       {:ex_doc, "~> 0.14", only: [:dev]}
     ]
   end

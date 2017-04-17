@@ -288,9 +288,6 @@ defmodule Parser.EsmFile do
     rank::byte, _::byte, _::byte, _::byte, gold::long>>) do
     %{level: level, disposition: disposition, rank: rank, gold: gold}
   end
-  # Disable one check until this issue is fixed.
-  # https://github.com/rrrene/credo/issues/144
-  @lint {Credo.Check.Consistency.SpaceAroundOperators, false}
   defp format_value("NPC_", "NPDT", <<level::short, str::byte, int::byte, wil::byte, agi::byte,
     spd::byte, endr::byte, per::byte, luk::byte, skills::binary-27, reputation::byte,
     health::short, magicka::short, fatigue::short, disposition::byte, _faction_id::byte, rank::byte,
