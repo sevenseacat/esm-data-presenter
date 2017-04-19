@@ -24,7 +24,8 @@ defmodule Tes.Mixfile do
     [
       # Use my fork of Credo until https://github.com/rrrene/credo/pull/362 is resolved.
       {:credo, "~> 0.7", only: [:dev, :test], git: "https://github.com/sevenseacat/credo.git"},
-      {:ex_doc, "~> 0.14", only: [:dev]}
+      {:ex_doc, "~> 0.14", only: [:dev]},
+      {:inch_ex, ">= 0.0.0", only: [:docs]}
     ]
   end
 end
