@@ -55,8 +55,11 @@ defmodule ParserTest do
       sleep_illegal: false, behave_like_exterior: false, map_color: nil,
       ambient: "#1C7347", sunlight: "#F2D9D9", fog_color: "#D2D955", fog_density: 0.5,
       references: [
-        %{name: "fargoth", key_id: nil, trap_id: nil, owner_id: nil},
-        %{name: "LootBag", key_id: nil, trap_id: nil, owner_id: nil}]}
+        %{name: "fargoth", key_id: nil, trap_id: nil, owner_id: nil, teleports_to: nil,
+          lock_level: nil},
+        %{name: "LootBag", key_id: nil, trap_id: nil, owner_id: nil, teleports_to: nil,
+          lock_level: nil}
+      ]}
   end
 
   test "can read Class data", %{stream: stream} do

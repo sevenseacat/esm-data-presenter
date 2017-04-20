@@ -569,7 +569,9 @@ defmodule Parser.EsmFormatter do
       name: Map.get(reference, "NAME"),
       key_id: Map.get(reference, "KNAM"),
       trap_id: Map.get(reference, "TNAM"),
-      owner_id: Map.get(reference, "ANAM")
+      owner_id: Map.get(reference, "ANAM"),
+      lock_level: Map.get(reference, "FLTV"),
+      teleports_to: Map.get(reference, "DNAM")
     }
   end
 end

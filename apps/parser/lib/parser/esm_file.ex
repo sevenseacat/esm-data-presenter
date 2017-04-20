@@ -167,7 +167,8 @@ defmodule Parser.EsmFile do
     %{x_pos: float(x_pos), y_pos: float(y_pos), z_pos: float(z_pos), x_rotate: x_rotate,
       y_rotate: y_rotate, z_rotate: z_rotate}
   end
-  defp format_value("CELL", "FRMR", <<value::long>>), do: value
+  defp format_value("CELL", name, <<value::long>>) when name in ["FRMR", "FLTV"], do: value
+  defp format_value("CELL", "DNAM", value), do: strip_null(value)
   defp format_value("CELL", "NAM5", <<color::binary-4>>), do: parse_colorref(color)
   defp format_value("CELL", name, value) when name in ["RGNN", "ANAM"], do: strip_null(value)
 
