@@ -131,11 +131,11 @@ defmodule ParserTest do
     assert List.first(enchantments) == %{id: "traveller", type: :when_used, cost: 800,
       charge: 150, autocalc: false, enchantment_effects: [
         %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 63, magnitude_max: 1,
-          magnitude_min: 1, duration: 1, skill_id: nil, type: :self},
+          magnitude_min: 1, skill_id: nil, type: :self},
         %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 62, magnitude_max: 1,
-          magnitude_min: 1, duration: 1, skill_id: nil, type: :self},
-        %{area: 5, attribute_id: nil, duration: 0, magic_effect_id: 89, magnitude_max: 3,
-          magnitude_min: 2, duration: 10, skill_id: 14, type: :touch}
+          magnitude_min: 1, skill_id: nil, type: :self},
+        %{area: 5, attribute_id: nil, duration: 10, magic_effect_id: 89, magnitude_max: 3,
+          magnitude_min: 2, skill_id: 14, type: :touch}
       ]}
   end
 
