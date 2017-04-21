@@ -3,42 +3,42 @@ defmodule Parser.EsmFormatter do
   Provides functions to format raw data parsed from ESM files, into more human-readable form.
   """
 
-  @apparatus_types %{0 => :mortar_pestle, 1 => :alembic, 2 => :calcinator, 3 => :retort}
+  @apparatus_types %{0 => "mortar_pestle", 1 => "alembic", 2 => "calcinator", 3 => "retort"}
 
-  @armor_types %{0 => :helmet, 1 => :cuirass, 2 => :left_pauldron, 3 => :right_pauldron,
-    4 => :greaves, 5 => :boots, 6 => :left_gauntlet, 7 => :right_gauntlet, 8 => :shield,
-    9 => :left_bracer, 10 => :right_bracer}
+  @armor_types %{0 => "helmet", 1 => "cuirass", 2 => "left_pauldron", 3 => "right_pauldron",
+    4 => "greaves", 5 => "boots", 6 => "left_gauntlet", 7 => "right_gauntlet", 8 => "shield",
+    9 => "left_bracer", 10 => "right_bracer"}
 
-  @clothing_types %{0 => :pants, 1 => :shoes, 2 => :shirt, 3 => :belt, 4 => :robe,
-    5 => :right_glove, 6 => :left_glove, 7 => :skirt, 8 => :ring, 9 => :amulet}
+  @clothing_types %{0 => "pants", 1 => "shoes", 2 => "shirt", 3 => "belt", 4 => "robe",
+    5 => "right_glove", 6 => "left_glove", 7 => "skirt", 8 => "ring", 9 => "amulet"}
 
-  @dialogue_types %{0 => :topic, 1 => :voice, 2 => :greeting, 3 => :persuasion, 4 => :journal}
+  @dialogue_types %{0 => "topic", 1 => "voice", 2 => "greeting", 3 => "persuasion", 4 => "journal"}
 
-  @dialogue_functions %{"00" => :rank_low, "01" => :rank_high, "02" => :rank_requirement,
-    "03" => :reputation, "04" => :health_percent, "05" => :pc_reputation, "06" => :pc_level,
-    "07" => :pc_health_percent, "08" => :pc_magicka, "09" => :pc_fatigue, "10" => :pc_strength,
-    "11" => :pc_block, "12" => :pc_armorer, "13" => :pc_medium_armor, "14" => :pc_heavy_armor,
-    "15" => :pc_blunt_weapon, "16" => :pc_long_blade, "17" => :pc_axe, "18" => :pc_spear,
-    "19" => :pc_athletics, "20" => :pc_enchant, "21" => :pc_destruction, "22" => :pc_alteration,
-    "23" => :pc_illusion, "24" => :pc_conjuration, "25" => :pc_mysticism,  "26" => :pc_restoration,
-    "27" => :pc_alchemy, "28" => :pc_unarmored, "29" => :pc_security, "30" => :pc_sneak,
-    "31" => :pc_acrobatics, "32" => :pc_light_armor, "33" => :pc_short_blade, "34" => :pc_marksman,
-    "35" => :pc_mercantile, "36" => :pc_speechcraft, "37" => :pc_hand_to_hand, "38" => :pc_gender,
-    "39" => :pc_expelled, "40" => :pc_common_disease, "41" => :pc_blight_disease,
-    "42" => :pc_clothing_modifier, "43" => :pc_crime_level, "44" => :same_gender,
-    "45" => :same_race, "46" => :same_faction, "47" => :faction_rank_diff, "48" => :detected,
-    "49" => :alarmed, "50" => :choice, "51" => :pc_intelligence, "52" => :pc_willpower,
-    "53" => :pc_agility, "54" => :pc_speed, "55" => :pc_endurance, "56" => :pc_personality,
-    "57" => :pc_luck, "58" => :pc_corprus, "59" => :weather, "60" => :pc_vampire, "61" => :level,
-    "62" => :attacked, "63" => :talked_to_pc, "64" => :pc_health, "65" => :creature_target,
-    "66" => :friend_hit, "67" => :fight, "69" => :hello, "69" => :alarm, "70" => :flee,
-    "71" => :should_attack, "sX" => :not_local, "JX" => :journal, "IX" => :item, "DX" => :dead,
-    "XX" => :not_id, "FX" => :not_faction, "CX" => :not_class, "RX" => :not_race, "LX" => :not_cell,
-    "fX" => :global}
+  @dialogue_functions %{"00" => "rank_low", "01" => "rank_high", "02" => "rank_requirement",
+    "03" => "reputation", "04" => "health_percent", "05" => "pc_reputation", "06" => "pc_level",
+    "07" => "pc_health_percent", "08" => "pc_magicka", "09" => "pc_fatigue", "10" => "pc_strength",
+    "11" => "pc_block", "12" => "pc_armorer", "13" => "pc_medium_armor", "14" => "pc_heavy_armor",
+    "15" => "pc_blunt_weapon", "16" => "pc_long_blade", "17" => "pc_axe", "18" => "pc_spear",
+    "19" => "pc_athletics", "20" => "pc_enchant", "21" => "pc_destruction", "22" => "pc_alteration",
+    "23" => "pc_illusion", "24" => "pc_conjuration", "25" => "pc_mysticism",  "26" => "pc_restoration",
+    "27" => "pc_alchemy", "28" => "pc_unarmored", "29" => "pc_security", "30" => "pc_sneak",
+    "31" => "pc_acrobatics", "32" => "pc_light_armor", "33" => "pc_short_blade", "34" => "pc_marksman",
+    "35" => "pc_mercantile", "36" => "pc_speechcraft", "37" => "pc_hand_to_hand", "38" => "pc_gender",
+    "39" => "pc_expelled", "40" => "pc_common_disease", "41" => "pc_blight_disease",
+    "42" => "pc_clothing_modifier", "43" => "pc_crime_level", "44" => "same_gender",
+    "45" => "same_race", "46" => "same_faction", "47" => "faction_rank_diff", "48" => "detected",
+    "49" => "alarmed", "50" => "choice", "51" => "pc_intelligence", "52" => "pc_willpower",
+    "53" => "pc_agility", "54" => "pc_speed", "55" => "pc_endurance", "56" => "pc_personality",
+    "57" => "pc_luck", "58" => "pc_corprus", "59" => "weather", "60" => "pc_vampire", "61" => "level",
+    "62" => "attacked", "63" => "talked_to_pc", "64" => "pc_health", "65" => "creature_target",
+    "66" => "friend_hit", "67" => "fight", "69" => "hello", "69" => "alarm", "70" => "flee",
+    "71" => "should_attack", "sX" => "not_local", "JX" => "journal", "IX" => "item", "DX" => "dead",
+    "XX" => "not_id", "FX" => "not_faction", "CX" => "not_class", "RX" => "not_race", "LX" => "not_cell",
+    "fX" => "global"}
 
   @dialogue_operations %{"0" => "=", "1" => "!=", "2" => ">", "3" => ">=", "4" => "<", "5" => "<="}
 
-  @enchantment_types %{0 => :once, 1 => :on_strike, 2 => :when_used, 3 => :constant_effect}
+  @enchantment_types %{0 => "once", 1 => "on_strike", 2 => "when_used", 3 => "constant_effect"}
 
   @magic_effect_names %{0 => "Water Breathing", 1 => "Swift Swim", 2 => "Water Walking",
     3 => "Shield", 4 => "Fire Shield", 5 => "Lightning Shield", 6 => "Frost Shield", 7 => "Burden",
@@ -92,14 +92,14 @@ defmodule Parser.EsmFormatter do
     21 => "Light Armor", 22 => "Short Blade", 23 => "Marksman", 24 => "Mercantile",
     25 => "Speechcraft", 26 => "Hand to Hand"}
 
-  @spell_effect_types %{0 => :self, 1 => :touch, 2 => :target}
+  @spell_effect_types %{0 => "self", 1 => "touch", 2 => "target"}
 
-  @spell_types %{0 => :spell, 1 => :ability, 2 => :blight, 3 => :disease, 4 => :curse, 5 => :power}
+  @spell_types %{0 => "spell", 1 => "ability", 2 => "blight", 3 => "disease", 4 => "curse", 5 => "power"}
 
-  @weapon_types %{0 => :short_blade_1_hand, 1 => :long_blade_1_hand, 2 => :long_blade_2_hand,
-    3 => :blunt_1_hand, 4 => :blunt_2_hand_close, 5 => :blunt_2_hand_wide, 6 => :spear,
-    7 => :axe_1_hand, 8 => :axe_2_hand, 9 => :bow, 10 => :crossbow, 11 => :thrown, 12 => :arrow,
-    13 => :bolt}
+  @weapon_types %{0 => "short_blade_1_hand", 1 => "long_blade_1_hand", 2 => "long_blade_2_hand",
+    3 => "blunt_1_hand", 4 => "blunt_2_hand_close", 5 => "blunt_2_hand_wide", 6 => "spear",
+    7 => "axe_1_hand", 8 => "axe_2_hand", 9 => "bow", 10 => "crossbow", 11 => "thrown", 12 => "arrow",
+    13 => "bolt"}
 
   @doc """
   Format a single record read from an ESM file into a human-readable form, ready for further
@@ -113,7 +113,7 @@ defmodule Parser.EsmFormatter do
         "MODL" => "n\\Potion_Skooma_01.NIF", "NAME" => "potion_skooma_01",
         "TEXT" => "n\\Tx_skooma_01.tga"})
       {:potion, %{autocalc: false, effects: [%{area: 0, attribute_id: 4, duration: 60,
-        effect_id: 79, magnitude_max: 20, magnitude_min: 20, skill_id: nil, type: :self}],
+        effect_id: 79, magnitude_max: 20, magnitude_min: 20, skill_id: nil, type: "self"}],
         id: "potion_skooma_01", model: "n\\Potion_Skooma_01.NIF", name: "Skooma", script: nil,
         texture: "n\\Tx_skooma_01.tga", value: 500, weight: 1.0}}
   """

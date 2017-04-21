@@ -15,7 +15,7 @@ defmodule ParserTest do
     apparatuses = stream |> Filter.by_type(:apparatus) |> Enum.to_list
 
     assert length(apparatuses) == 1
-    assert List.first(apparatuses) == %{id: "noob_tool", name: "Noob Tool", type: :mortar_pestle,
+    assert List.first(apparatuses) == %{id: "noob_tool", name: "Noob Tool", type: "mortar_pestle",
       script_id: "ToolScript", weight: 1.5, value: 12, quality: 2.7,
       model: "a\\A_Ebony_Boot_GND.nif", icon: "s\\B_Tx_S_fire_shield.dds"}
   end
@@ -24,7 +24,7 @@ defmodule ParserTest do
     armor = stream |> Filter.by_type(:armor) |> Enum.to_list
 
     assert length(armor) == 1
-    assert List.first(armor) == %{id: "hobs", name: "Helmet of Blinding Speed", type: :helmet,
+    assert List.first(armor) == %{id: "hobs", name: "Helmet of Blinding Speed", type: "helmet",
       weight: 5.0, armor: 7, health: 98, value: 1000, enchantment_points: 50,
       enchantment_id: nil, icon: nil, script_id: nil, model: nil}
   end
@@ -79,7 +79,7 @@ defmodule ParserTest do
     clothing = stream |> Filter.by_type(:clothing) |> Enum.to_list
 
     assert length(clothing) == 1
-    assert List.first(clothing) == %{id: "tshirt", name: "My Favorite T-Shirt", type: :shirt,
+    assert List.first(clothing) == %{id: "tshirt", name: "My Favorite T-Shirt", type: "shirt",
       enchantment_points: 300, weight: 2.0, value: 500, enchantment_id: "traveller", script_id: nil,
       icon: nil, model: nil}
   end
@@ -97,18 +97,18 @@ defmodule ParserTest do
     assert length(dialogues) == 28 # Two I created, and lots of predefined ones
 
     goofed = Enum.find(dialogues, &(&1[:id] == "goofed"))
-    assert %{id: "goofed", type: :topic, infos: [
+    assert %{id: "goofed", type: "topic", infos: [
       %{id: id_1, text: "Yes, I think you goofed.", previous_id: nil, next_id: id_2,
         disposition: 0, script: "; lol it worked!", gender: nil, npc_rank: nil,
         pc_rank: nil, faction_id: nil, race_id: nil, conditions: [
-          %{function: :item, name: "Gold_010", operator: "=", value: 10}
+          %{function: "item", name: "Gold_010", operator: "=", value: 10}
         ]},
       %{id: id_2, text: "Nah, you're cool, %PCName.", previous_id: id_1, next_id: id_3,
         disposition: 0, script: nil, gender: nil, npc_rank: nil,
         pc_rank: nil, faction_id: nil, race_id: nil, conditions: [
-          %{function: :dead, name: "fargoth", operator: "=", value: 1},
-          %{function: :journal, name: "test_j", operator: "!=", value: 200},
-          %{function: :not_faction, name: "ym_guild", operator: "=", value: 5}
+          %{function: "dead", name: "fargoth", operator: "=", value: 1},
+          %{function: "journal", name: "test_j", operator: "!=", value: 200},
+          %{function: "not_faction", name: "ym_guild", operator: "=", value: 5}
         ]},
       %{id: id_3, text: "Huh?", previous_id: id_2, next_id: nil,
         disposition: 100, script: nil, faction_id: "ym_guild", npc_rank: 0, gender: :male,
@@ -116,11 +116,11 @@ defmodule ParserTest do
     ]} = goofed
 
     greeting = Enum.find(dialogues, &(&1[:id] == "Greeting 0"))
-    assert %{id: "Greeting 0", type: :greeting, infos: [
+    assert %{id: "Greeting 0", type: "greeting", infos: [
       %{id: _, text: "Oh God, I think you goofed.", previous_id: nil, next_id: nil,
         disposition: 25, script: nil, gender: nil, npc_rank: nil,
         pc_rank: nil, faction_id: nil, race_id: "other", conditions: [
-          %{function: :not_id, name: "fargoth", operator: "=", value: 0}
+          %{function: "not_id", name: "fargoth", operator: "=", value: 0}
         ]}]} = greeting
   end
 
@@ -128,14 +128,14 @@ defmodule ParserTest do
     enchantments = stream |> Filter.by_type(:enchantment) |> Enum.to_list
 
     assert length(enchantments) == 1
-    assert List.first(enchantments) == %{id: "traveller", type: :when_used, cost: 800,
+    assert List.first(enchantments) == %{id: "traveller", type: "when_used", cost: 800,
       charge: 150, autocalc: false, enchantment_effects: [
         %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 63, magnitude_max: 1,
-          magnitude_min: 1, skill_id: nil, type: :self},
+          magnitude_min: 1, skill_id: nil, type: "self"},
         %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 62, magnitude_max: 1,
-          magnitude_min: 1, skill_id: nil, type: :self},
+          magnitude_min: 1, skill_id: nil, type: "self"},
         %{area: 5, attribute_id: nil, duration: 10, magic_effect_id: 89, magnitude_max: 3,
-          magnitude_min: 2, skill_id: 14, type: :touch}
+          magnitude_min: 2, skill_id: 14, type: "touch"}
       ]}
   end
 
@@ -253,9 +253,9 @@ defmodule ParserTest do
     assert List.first(potions) == %{id: "oops", name: "Not Skooma", script_id: "NotSkoomaScript",
       weight: 0.25, autocalc: true, value: 0, icon: nil, model: nil, effects: [
         %{magic_effect_id: 7, skill_id: nil, attribute_id: nil, duration: 5, magnitude_max: 20,
-          magnitude_min: 20, area: 0, type: :self},
+          magnitude_min: 20, area: 0, type: "self"},
         %{magic_effect_id: 8, skill_id: nil, attribute_id: nil, duration: 10, magnitude_max: 30,
-          magnitude_min: 30, area: 0, type: :self}
+          magnitude_min: 30, area: 0, type: "self"}
       ]}
   end
 
@@ -306,11 +306,11 @@ defmodule ParserTest do
     spells = stream |> Filter.by_type(:spell) |> Enum.to_list
 
     assert length(spells) == 1
-    assert List.first(spells) == %{id: "pewpew", name: "Pew! Pew!", type: :spell, autocalc: true,
+    assert List.first(spells) == %{id: "pewpew", name: "Pew! Pew!", type: "spell", autocalc: true,
       starting_spell: true, always_succeeds: false, cost: 0, effects: [
-        %{magic_effect_id: 85, attribute_id: 3, type: :target, area: 5, duration: 10,
+        %{magic_effect_id: 85, attribute_id: 3, type: "target", area: 5, duration: 10,
           magnitude_min: 5, magnitude_max: 5, skill_id: nil},
-        %{magic_effect_id: 25, attribute_id: nil, type: :self, area: 0, duration: 2,
+        %{magic_effect_id: 25, attribute_id: nil, type: "self", area: 0, duration: 2,
           magnitude_min: 1, magnitude_max: 10, skill_id: nil}]}
   end
 
@@ -318,7 +318,7 @@ defmodule ParserTest do
     weapons = stream |> Filter.by_type(:weapon) |> Enum.to_list
 
     assert length(weapons) == 1
-    assert List.first(weapons) == %{id: "pewpew2", name: "Axe of Pew Pew", type: :axe_2_hand,
+    assert List.first(weapons) == %{id: "pewpew2", name: "Axe of Pew Pew", type: "axe_2_hand",
       script_id: "NotSkoomaScript", weight: 5.0, health: 72, value: 18, speed: 1.5, reach: 0.5,
       silver: true, chop_min: 3, chop_max: 7, slash_min: 4, slash_max: 8, thrust_min: 5,
       thrust_max: 9, ignore_resistance: true, enchantment_id: nil, enchantment_points: 500,
