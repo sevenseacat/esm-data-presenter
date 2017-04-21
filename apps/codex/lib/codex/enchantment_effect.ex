@@ -13,7 +13,8 @@ defmodule Codex.Enchantment.Effect do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_fields [:area, :duration, :magnitude_min, :magnitude_max]
+  @required_fields [:area, :duration, :magnitude_min, :magnitude_max, :type, :enchantment_id,
+    :magic_effect_id]
   @effect_types ~w(self touch target)
 
   schema "enchantment_effects" do
@@ -30,14 +31,17 @@ defmodule Codex.Enchantment.Effect do
   end
 
   @spec changeset(%Codex.Enchantment.Effect{}, map) :: %Ecto.Changeset{valid?: boolean}
-  def changeset(schema, params) do
+  def changeset(schema \\ %Codex.Enchantment.Effect{}, params) do
     schema
-    |> cast(params, @required_fields ++ [:attribute_id, :magic_effect_id, :skill_id])
-    |> put_change(:type, Atom.to_string(params[:type]))
+    |> cast(params, [:attribute_id, :skill_id | @required_fields])
     |> validate_required(@required_fields)
     |> validate_inclusion(:type, @effect_types)
+    |> validate_number(:duration, greater_than_or_equal_to: 0)
+    |> validate_number(:magnitude_min, greater_than_or_equal_to: 0)
+    |> validate_number(:magnitude_max, greater_than_or_equal_to: 0)
+    |> foreign_key_constraint(:enchantment_id)
     |> foreign_key_constraint(:attribute_id)
-    |> foreign_key_constraint(:effect_id)
+    |> foreign_key_constraint(:magic_effect_id)
     |> foreign_key_constraint(:skill_id)
   end
 end

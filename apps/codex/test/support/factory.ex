@@ -12,6 +12,30 @@ defmodule Codex.Factory do
     }
   end
 
+  def enchantment_effect_factory do
+    %Codex.Enchantment.Effect{
+      enchantment: build(:enchantment),
+      attribute: build(:attribute),
+      magic_effect: build(:magic_effect),
+      skill: build(:skill),
+      type: "self",
+      area: 0,
+      duration: 10,
+      magnitude_max: 1,
+      magnitude_min: 10
+    }
+  end
+
+  def enchantment_factory do
+    %Codex.Enchantment{
+      id: "pew_pew",
+      type: "when_used",
+      cost: 100,
+      charge: 500,
+      autocalc: false
+    }
+  end
+
   def faction_factory do
     %Codex.Faction{
       id: sequence(:id, &("my_faction_#{&1}")),
@@ -36,17 +60,19 @@ defmodule Codex.Factory do
   end
 
   def faction_reaction_factory do
+    faction = insert(:faction)
+
     %Codex.Faction.Reaction{
-      source: build(:faction),
-      target: build(:faction),
+      source: faction,
+      target: faction,
       adjustment: 2
     }
   end
 
   def magic_effect_factory do
     %Codex.MagicEffect{
-      id: 60,
-      name: "Mark",
+      id: sequence(:id, &(&1)),
+      name: sequence(:name, &("Mark#{&1}")),
       skill: build(:skill),
       base_cost: 15.0,
       spellmaking: true,

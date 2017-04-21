@@ -20,7 +20,6 @@ defmodule Codex.Faction.RankTest do
     test "validates that a valid rank number is provided" do
       assert {:number, "can't be blank"} in errors(Rank.changeset(%{}))
       assert {:number, "must be greater than 0"} in errors(Rank.changeset(%{number: 0}))
-      assert {:number, "must be greater than 0"} in errors(Rank.changeset(%{number: -1}))
       assert {:number, "is invalid"} in errors(Rank.changeset(%{number: "a"}))
     end
 

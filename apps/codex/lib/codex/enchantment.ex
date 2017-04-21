@@ -11,7 +11,7 @@ defmodule Codex.Enchantment do
   import Ecto.Changeset
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :charge, :cost, :autocalc]
+  @required_fields [:id, :charge, :cost, :autocalc, :type]
   @enchantment_types ~w(once on_strike when_used constant_effect)
 
   schema "enchantments" do
@@ -27,9 +27,10 @@ defmodule Codex.Enchantment do
   def changeset(params) do
     %Codex.Enchantment{}
     |> cast(params, @required_fields)
-    |> put_change(:type, Atom.to_string(params[:type]))
     |> validate_required(@required_fields)
     |> validate_inclusion(:type, @enchantment_types)
+    |> validate_number(:cost, greater_than: 0)
+    |> validate_number(:charge, greater_than: 0)
     |> cast_assoc(:enchantment_effects)
   end
 end
