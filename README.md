@@ -44,7 +44,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      |          |        |           | `LOCK` (Lockpicking items) |
 | ✓      | ✓      |          |        |           | `PROB` (Probe items) |
 | ✓      | ✓      |          |        |           | `INGR` (Ingredients) |
-| ✓      | ✓      | ✓        |        |           | `BOOK` (Books and papers) |
+| ✓      | ✓      | ✓        | ✓      |           | `BOOK` (Books and papers) |
 | ✓      | ✓      |          |        |           | `ALCH` (Potions?) |
 | ✓      | ✓      |          |        |           | `LEVI` (Levelled items) |
 | ✓      | ✓      |          |        |           | `CELL` (Cells) |
