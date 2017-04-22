@@ -17,3 +17,6 @@ erl_crash.dump
 *.ez
 
 *.esm
+
+# Where Inch outputs docs
+apps/*/docs/

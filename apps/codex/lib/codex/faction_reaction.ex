@@ -19,6 +19,10 @@ defmodule Codex.Faction.Reaction do
     belongs_to :target, Codex.Faction, type: :string
   end
 
+  @doc """
+  This function is used when inserting faction reactions into the database directly, as opposed to
+  creating reactions as part of the parent faction record.
+  """
   @spec changeset(map) :: Ecto.Changeset.t
   def changeset(params) do
     %Codex.Faction.Reaction{}
@@ -27,6 +31,10 @@ defmodule Codex.Faction.Reaction do
     |> changeset(params)
   end
 
+  @doc """
+  This function is used when creating faction reactions as part of the parent faction record, as
+  opposed to inserting reactions directly.
+  """
   @spec changeset(%Codex.Faction.Reaction{}, map) :: Ecto.Changeset.t
   def changeset(schema, params) do
     schema

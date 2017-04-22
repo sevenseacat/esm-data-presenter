@@ -29,6 +29,10 @@ defmodule Codex.Faction.Rank do
     belongs_to :faction, Codex.Faction, type: :string
   end
 
+  @doc """
+  This function is used when inserting faction ranks into the database directly, as opposed to
+  creating ranks as part of the parent faction record.
+  """
   @spec changeset(map) :: Ecto.Changeset.t
   def changeset(params) do
     %Codex.Faction.Rank{}
@@ -37,6 +41,10 @@ defmodule Codex.Faction.Rank do
     |> changeset(params)
   end
 
+  @doc """
+  This function is used when creating faction ranks as part of the parent faction record, as opposed
+  to inserting ranks directly.
+  """
   @spec changeset(%Codex.Faction.Rank{}, map) :: Ecto.Changeset.t
   def changeset(schema, params) do
     schema

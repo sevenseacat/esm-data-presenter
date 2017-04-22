@@ -29,6 +29,10 @@ defmodule Codex.Enchantment.Effect do
     belongs_to :skill, Codex.Skill
   end
 
+  @doc """
+  This function is used when inserting enchantment effects into the database directly, as opposed to
+  creating effects as part of the parent enchantment record.
+  """
   @spec changeset(map) :: Ecto.Changeset.t
   def changeset(params) do
     %Codex.Enchantment.Effect{}
@@ -37,6 +41,10 @@ defmodule Codex.Enchantment.Effect do
     |> changeset(params)
   end
 
+  @doc """
+  This function is used when creating enchantment effects as part of the parent enchantment record,
+  as opposed to inserting effects directly.
+  """
   @spec changeset(%Codex.Enchantment.Effect{}, map) :: Ecto.Changeset.t
   def changeset(schema, params) do
     schema
