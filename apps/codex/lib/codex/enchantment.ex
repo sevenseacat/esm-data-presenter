@@ -29,8 +29,8 @@ defmodule Codex.Enchantment do
     |> cast(params, @required_fields)
     |> validate_required(@required_fields)
     |> validate_inclusion(:type, @enchantment_types)
-    |> validate_number(:cost, greater_than: 0)
-    |> validate_number(:charge, greater_than: 0)
+    |> validate_number(:cost, greater_than_or_equal_to: 0)
+    |> validate_number(:charge, greater_than_or_equal_to: 0)
     |> cast_assoc(:enchantment_effects)
   end
 end

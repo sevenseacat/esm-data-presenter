@@ -1,13 +1,12 @@
 defmodule Codex.EnchantmentEffectTest do
   use Codex.ConnCase
   alias Codex.{Enchantment.Effect, Repo}
+  doctest Codex.Enchantment.Effect
 
   test "has a valid factory" do
     assert insert(:enchantment_effect)
   end
 
-  # %{area: 0, attribute_id: nil, duration: 1, magic_effect_id: 63, magnitude_max: 1,
-  #   magnitude_min: 1, skill_id: nil, type: :self}
   describe "changeset/1" do
     test "validates that an attribute ID is not required" do
       refute {:attribute_id, "can't be blank"} in errors(Effect.changeset(%{}))

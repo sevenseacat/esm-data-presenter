@@ -1,6 +1,7 @@
 defmodule Codex.FactionTest do
   use Codex.ConnCase
   alias Codex.{Faction, Repo}
+  doctest Codex.Faction
 
   test "has a valid factory" do
     assert insert(:faction)

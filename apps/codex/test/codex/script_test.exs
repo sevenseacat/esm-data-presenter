@@ -1,6 +1,7 @@
 defmodule Codex.ScriptTest do
   use Codex.ConnCase
   alias Codex.Script
+  doctest Codex.Script
 
   test "has a valid factory" do
     assert insert(:script)

@@ -10,7 +10,7 @@ defmodule Codex.Faction.Reaction do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_fields [:source_id, :target_id, :adjustment]
+  @required_fields [:target_id, :adjustment]
 
   schema "faction_reactions" do
     field :adjustment, :integer
@@ -19,12 +19,20 @@ defmodule Codex.Faction.Reaction do
     belongs_to :target, Codex.Faction, type: :string
   end
 
-  @spec changeset(%Codex.Faction.Reaction{}, map) :: %Ecto.Changeset{valid?: boolean}
-  def changeset(schema \\ %Codex.Faction.Reaction{}, params) do
+  @spec changeset(map) :: Ecto.Changeset.t
+  def changeset(params) do
+    %Codex.Faction.Reaction{}
+    |> cast(params, [:source_id])
+    |> validate_required(:source_id)
+    |> changeset(params)
+  end
+
+  @spec changeset(%Codex.Faction.Reaction{}, map) :: Ecto.Changeset.t
+  def changeset(schema, params) do
     schema
     |> cast(params, [:adjustment])
     |> put_change(:target_id, Map.get(params, :faction_id))
     |> validate_required(@required_fields)
-    |> foreign_key_constraint(:source_id)
+    |> assoc_constraint(:source)
   end
 end

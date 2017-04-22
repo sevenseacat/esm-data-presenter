@@ -13,8 +13,7 @@ defmodule Codex.Enchantment.Effect do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_fields [:area, :duration, :magnitude_min, :magnitude_max, :type, :enchantment_id,
-    :magic_effect_id]
+  @required_fields [:area, :duration, :magnitude_min, :magnitude_max, :type, :magic_effect_id]
   @effect_types ~w(self touch target)
 
   schema "enchantment_effects" do
@@ -30,8 +29,16 @@ defmodule Codex.Enchantment.Effect do
     belongs_to :skill, Codex.Skill
   end
 
-  @spec changeset(%Codex.Enchantment.Effect{}, map) :: %Ecto.Changeset{valid?: boolean}
-  def changeset(schema \\ %Codex.Enchantment.Effect{}, params) do
+  @spec changeset(map) :: Ecto.Changeset.t
+  def changeset(params) do
+    %Codex.Enchantment.Effect{}
+    |> cast(params, [:enchantment_id])
+    |> validate_required(:enchantment_id)
+    |> changeset(params)
+  end
+
+  @spec changeset(%Codex.Enchantment.Effect{}, map) :: Ecto.Changeset.t
+  def changeset(schema, params) do
     schema
     |> cast(params, [:attribute_id, :skill_id | @required_fields])
     |> validate_required(@required_fields)

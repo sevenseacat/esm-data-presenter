@@ -12,6 +12,19 @@ defmodule Codex.Factory do
     }
   end
 
+  def book_factory do
+    %Codex.Book{
+      id: "argonian_maid",
+      name: "The Lusty Argonian Maid v3",
+      weight: 2,
+      model: "r\\argonian_maid.nif",
+      scroll: true,
+      value: 100,
+      enchantment_points: 100,
+      icon: "m\\gold_001.dds"
+    }
+  end
+
   def enchantment_effect_factory do
     %Codex.Enchantment.Effect{
       enchantment: build(:enchantment),

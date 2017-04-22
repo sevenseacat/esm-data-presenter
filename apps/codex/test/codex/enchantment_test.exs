@@ -1,6 +1,7 @@
 defmodule Codex.EnchantmentTest do
   use Codex.ConnCase
   alias Codex.Enchantment
+  doctest Codex.Enchantment
 
   test "has a valid factory" do
     assert insert(:enchantment)
@@ -20,13 +21,13 @@ defmodule Codex.EnchantmentTest do
     test "validates that a valid cost is provided" do
       assert {:cost, "can't be blank"} in errors(Enchantment.changeset(%{}))
       assert {:cost, "is invalid"} in errors(Enchantment.changeset(%{cost: "a"}))
-      assert {:cost, "must be greater than 0"} in errors(Enchantment.changeset(%{cost: 0}))
+      assert {:cost, "must be greater than or equal to 0"} in errors(Enchantment.changeset(%{cost: -1}))
     end
 
     test "validates that a valid charge is provided" do
       assert {:charge, "can't be blank"} in errors(Enchantment.changeset(%{}))
       assert {:charge, "is invalid"} in errors(Enchantment.changeset(%{charge: "a"}))
-      assert {:charge, "must be greater than 0"} in errors(Enchantment.changeset(%{charge: 0}))
+      assert {:charge, "must be greater than or equal to 0"} in errors(Enchantment.changeset(%{charge: -1}))
     end
 
     test "casts enchantment effects correctly" do

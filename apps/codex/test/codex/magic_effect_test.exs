@@ -1,6 +1,7 @@
 defmodule Codex.MagicEffectTest do
   use Codex.ConnCase
   alias Codex.{MagicEffect, Repo}
+  doctest Codex.MagicEffect
 
   test "has a valid factory" do
     assert insert(:magic_effect)

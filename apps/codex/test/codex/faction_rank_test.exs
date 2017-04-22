@@ -1,20 +1,19 @@
 defmodule Codex.Faction.RankTest do
   use Codex.ConnCase
   alias Codex.{Faction.Rank, Repo}
+  doctest Codex.Faction.Rank
 
   test "has a valid factory" do
     assert insert(:faction_rank)
   end
 
   describe "changeset/2" do
-    test "validates that a faction ID is provided" do
+    test "validates that the faction is valid" do
       assert {:faction_id, "can't be blank"} in errors(Rank.changeset(%{}))
-    end
 
-    test "validates that the faction ID is valid" do
-      params = params_with_assocs(:faction_rank)
-      {:error, changeset} = %Rank{faction_id: "nope"} |> Rank.changeset(params) |> Repo.insert
-      assert {:faction_id, "does not exist"} in errors(changeset)
+      params = :faction_rank |> params_with_assocs |> Map.put(:faction_id, "not valid")
+      {:error, changeset} = params |> Rank.changeset |> Repo.insert
+      assert {:faction, "does not exist"} in errors(changeset)
     end
 
     test "validates that a valid rank number is provided" do

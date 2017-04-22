@@ -29,12 +29,20 @@ defmodule Codex.Faction.Rank do
     belongs_to :faction, Codex.Faction, type: :string
   end
 
-  @spec changeset(%Codex.Faction.Rank{}, map) :: %Ecto.Changeset{valid?: boolean}
-  def changeset(schema \\ %Codex.Faction.Rank{}, params) do
+  @spec changeset(map) :: Ecto.Changeset.t
+  def changeset(params) do
+    %Codex.Faction.Rank{}
+    |> cast(params, [:faction_id])
+    |> validate_required(:faction_id)
+    |> changeset(params)
+  end
+
+  @spec changeset(%Codex.Faction.Rank{}, map) :: Ecto.Changeset.t
+  def changeset(schema, params) do
     schema
     |> cast(params, @required_params)
-    |> validate_required([:faction_id | @required_params])
-    |> foreign_key_constraint(:faction_id)
+    |> validate_required(@required_params)
+    |> assoc_constraint(:faction)
     |> validate_number(:number, greater_than: 0)
     |> validate_number(:attribute_1, greater_than_or_equal_to: 0)
     |> validate_number(:attribute_2, greater_than_or_equal_to: 0)

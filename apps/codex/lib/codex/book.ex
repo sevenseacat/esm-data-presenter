@@ -11,7 +11,7 @@ defmodule Codex.Book do
   import Ecto.Changeset
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model]
+  @required_fields [:id, :name, :weight, :value, :model, :scroll, :enchantment_points, :icon]
 
   schema "objects" do
     field :name
@@ -33,9 +33,12 @@ defmodule Codex.Book do
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.Book{}
-    |> cast(params, @required_fields ++ [:scroll, :enchantment_points, :icon, :text, :skill_id,
-      :enchantment_id, :script_id])
+    |> cast(params, [:text, :skill_id, :enchantment_id, :script_id | @required_fields])
     |> validate_required(@required_fields)
+    |> validate_number(:weight, greater_than_or_equal_to: 0)
+    |> validate_number(:value, greater_than_or_equal_to: 0)
+    |> validate_number(:enchantment_points, greater_than_or_equal_to: 0)
+    |> unique_constraint(:id, name: :objects_pkey)
     |> foreign_key_constraint(:skill_id)
     |> foreign_key_constraint(:enchantment_id)
     |> foreign_key_constraint(:script_id)
