@@ -1,6 +1,6 @@
 defmodule Codex.BookTest do
   use Codex.ConnCase
-  alias Codex.{Book, Repo}
+  alias Codex.Book
   doctest Codex.Book
 
   test "has a valid factory" do

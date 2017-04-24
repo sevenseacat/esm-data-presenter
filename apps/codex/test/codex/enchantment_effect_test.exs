@@ -1,6 +1,6 @@
 defmodule Codex.EnchantmentEffectTest do
   use Codex.ConnCase
-  alias Codex.{Enchantment.Effect, Repo}
+  alias Codex.Enchantment.Effect
   doctest Codex.Enchantment.Effect
 
   test "has a valid factory" do

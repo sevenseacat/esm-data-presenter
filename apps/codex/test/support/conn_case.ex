@@ -12,6 +12,7 @@ defmodule Codex.ConnCase do
   using do
     quote do
       import Codex.{ConnCase, Factory}
+      alias Codex.Repo
     end
   end
 

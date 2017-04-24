@@ -1,6 +1,6 @@
 defmodule Codex.SkillTest do
   use Codex.ConnCase
-  alias Codex.{Repo, Skill}
+  alias Codex.Skill
   doctest Codex.Skill
 
   test "has a valid factory" do

@@ -1,6 +1,6 @@
 defmodule Codex.FactionTest do
   use Codex.ConnCase
-  alias Codex.{Faction, Repo}
+  alias Codex.Faction
   doctest Codex.Faction
 
   test "has a valid factory" do
