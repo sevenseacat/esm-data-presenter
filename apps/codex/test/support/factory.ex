@@ -25,6 +25,20 @@ defmodule Codex.Factory do
     }
   end
 
+  def class_factory do
+    %Codex.Class{
+      id: sequence(:id, &("class_#{&1}")),
+      playable: true,
+      attribute_1: build(:attribute),
+      attribute_2: build(:attribute),
+      specialization: build(:specialization),
+      services: %{},
+      vendors: %{},
+      major_skills: insert_list(5, :skill),
+      minor_skills: insert_list(5, :skill)
+    }
+  end
+
   def enchantment_effect_factory do
     %Codex.Enchantment.Effect{
       enchantment: build(:enchantment),
@@ -123,5 +137,13 @@ defmodule Codex.Factory do
       id: sequence(:id, &(&1)),
       name: "Stealth/Magic/Combat/HARBINGER OF DOOM"
     }
+  end
+
+  def parsed_class_params do
+    params = params_with_assocs(:class)
+
+    params
+    |> Map.put(:major_skill_ids, Enum.map(params[:major_skills], &(&1.id)))
+    |> Map.put(:minor_skill_ids, Enum.map(params[:minor_skills], &(&1.id)))
   end
 end

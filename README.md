@@ -23,7 +23,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | Parsed | Tested | Imported | Tested | Displayed | Name |
 | :---:  | :---:  | :---:    | :---:  | :---:     |------|
 |        |        |          |        |           | `TES3` (Main header record) |
-| ✓      | ✓      |          |        |           | `CLAS` (Classes) |
+| ✓      | ✓      | ✓        | ✓      |           | `CLAS` (Classes) |
 | ✓      | ✓      | ✓        | ✓      |           | `FACT` (Factions) |
 | ✓      |        |          |        |           | `RACE` (Races) |
 | ✓      | ✓      | ✓        | ✓      |           | `SKIL` (Skills) - "use values" are ignored |

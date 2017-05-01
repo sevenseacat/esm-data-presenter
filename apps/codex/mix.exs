@@ -45,6 +45,7 @@ defmodule Codex.Mixfile do
     [
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1.2"},
+      {:poison, ">= 3.1.0"},
       {:ex_machina, "~> 2.0", only: :test}
     ]
   end

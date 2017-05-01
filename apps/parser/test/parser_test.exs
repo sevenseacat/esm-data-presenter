@@ -67,7 +67,7 @@ defmodule ParserTest do
 
     assert length(classes) == 1
     assert List.first(classes) == %{id: "stuff", name: "Something",
-      description: "A dummy class for test purposes.", attribute_ids: [7, 2], specialization_id: 1,
+      description: "A dummy class for test purposes.", attribute_1_id: 7, attribute_2_id: 2, specialization_id: 1,
       major_skill_ids: [0, 1, 2, 24, 4], minor_skill_ids: [5, 6, 7, 8, 3], playable: true,
       services: %{training: true, spellmaking: false, enchanting: false, repairing: false},
       vendors: %{weapons: true, armor: false, clothing: true, books: false, ingredients: false,

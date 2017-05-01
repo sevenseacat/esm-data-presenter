@@ -175,7 +175,7 @@ defmodule Parser.EsmFile do
   defp format_value("CLAS", "CLDT", <<attribute_1::long, attribute_2::long, specialization::long,
     minor_1::long, major_1::long, minor_2::long, major_2::long, minor_3::long, major_3::long,
     minor_4::long, major_4::long, minor_5::long, major_5::long, playable::long, flags::long>>) do
-    %{attribute_ids: [attribute_1, attribute_2], specialization_id: specialization,
+    %{attribute_1_id: attribute_1, attribute_2_id: attribute_2, specialization_id: specialization,
       major_skill_ids: [major_1, major_2, major_3, major_4, major_5],
       minor_skill_ids: [minor_1, minor_2, minor_3, minor_4, minor_5], playable: playable == 1,
       vendors: parse_bitmask(flags, [weapons: 0x00001, armor: 0x00002, clothing: 0x00004,
