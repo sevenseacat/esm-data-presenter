@@ -126,7 +126,7 @@ defmodule Parser.EsmFile do
   defp format_value("ARMO", "AODT", <<type::long, weight::lfloat, value::long, health::long,
     enchantment_points::long, armor::long>>) do
     %{type: type, weight: float(weight), value: value, health: health,
-      enchantment_points: enchantment_points, armor: armor}
+      enchantment_points: enchantment_points, armor_rating: armor}
   end
 
   defp format_value(type, "ENAM", value) when type in ["ARMO", "BOOK", "CLOT", "WEAP"] do

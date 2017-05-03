@@ -5,6 +5,21 @@ defmodule Codex.Factory do
 
   use ExMachina.Ecto, repo: Codex.Repo
 
+  def armor_factory do
+    %Codex.Armor{
+      id: "boots_of_blinding_speed",
+      name: "Boots of Blinding Speed",
+      weight: 5,
+      value: 500,
+      model: "r\\argonian_maid.nif",
+      icon: "m\\gold_001.dds",
+      type: "boots",
+      health: 25,
+      armor_rating: 13,
+      enchantment_points: 100
+    }
+  end
+
   def attribute_factory do
     %Codex.Attribute{
       id: sequence(:id, &(&1)),
@@ -17,11 +32,11 @@ defmodule Codex.Factory do
       id: "argonian_maid",
       name: "The Lusty Argonian Maid v3",
       weight: 2,
-      model: "r\\argonian_maid.nif",
-      scroll: true,
       value: 100,
-      enchantment_points: 100,
-      icon: "m\\gold_001.dds"
+      model: "r\\argonian_maid.nif",
+      icon: "m\\gold_001.dds",
+      scroll: true,
+      enchantment_points: 100
     }
   end
 

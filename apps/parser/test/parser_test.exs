@@ -25,7 +25,7 @@ defmodule ParserTest do
 
     assert length(armor) == 1
     assert List.first(armor) == %{id: "hobs", name: "Helmet of Blinding Speed", type: "helmet",
-      weight: 5.0, armor: 7, health: 98, value: 1000, enchantment_points: 50,
+      weight: 5.0, armor_rating: 7, health: 98, value: 1000, enchantment_points: 50,
       enchantment_id: nil, icon: nil, script_id: nil, model: nil}
   end
 
