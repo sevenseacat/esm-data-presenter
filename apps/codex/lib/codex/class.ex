@@ -9,6 +9,7 @@ defmodule Codex.Class do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
+  alias Codex.Repo
 
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :attribute_1_id, :attribute_2_id, :playable, :specialization_id, :services,
@@ -43,7 +44,7 @@ defmodule Codex.Class do
   defp add_class_skills(changeset, params, type) do
     skill_ids = Map.get(params, String.to_atom("#{type}_skill_ids"), [])
     assoc_name = String.to_atom("#{type}_skills")
-    skills = Codex.Repo.all(from s in Codex.Skill, where: s.id in ^skill_ids)
+    skills = Repo.all(from s in Codex.Skill, where: s.id in ^skill_ids)
 
     changeset
     |> put_assoc(assoc_name, skills)

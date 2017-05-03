@@ -1,4 +1,11 @@
 defmodule Codex.Armor do
+  @moduledoc """
+  Represents a piece of armor worn on the body of a character in the game world. Both NPCs and the
+  player character can equip armor.
+
+  Armor offers protection against attacks in combat, and comes in different types to cover different
+  body parts. It also has three weight classes - light, medium and heavy.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
