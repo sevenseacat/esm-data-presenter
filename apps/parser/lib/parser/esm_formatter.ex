@@ -329,7 +329,8 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         icon: Map.get(raw_data, "ITEX"),
-        script_id: Map.get(raw_data, "SCRI")
+        script_id: Map.get(raw_data, "SCRI"),
+        model: Map.get(raw_data, "MODL")
       } |> Map.merge(data)
     }
   end

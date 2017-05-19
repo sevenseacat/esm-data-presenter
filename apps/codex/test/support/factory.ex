@@ -111,6 +111,17 @@ defmodule Codex.Factory do
     }
   end
 
+  def ingredient_factory do
+    %Codex.Ingredient{
+      id: sequence(:id, &("ingredient_#{&1}")),
+      name: sequence(:name, &("Petal #{&1}")),
+      model: "c/petal.nif",
+      icon: "c/petal.dds",
+      value: 5,
+      weight: 0.2
+    }
+  end
+
   def magic_effect_factory do
     %Codex.MagicEffect{
       id: sequence(:id, &(&1)),
