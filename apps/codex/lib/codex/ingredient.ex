@@ -22,6 +22,7 @@ defmodule Codex.Ingredient do
     field :icon
 
     belongs_to :script, Codex.Script, type: :string
+    has_many :ingredient_effects, Codex.Ingredient.Effect
   end
 
   def changeset(params) do
@@ -32,5 +33,6 @@ defmodule Codex.Ingredient do
     |> validate_number(:value, greater_than_or_equal_to: 0)
     |> unique_constraint(:id, name: :objects_pkey)
     |> foreign_key_constraint(:script_id)
+    |> cast_assoc(:ingredient_effects)
   end
 end

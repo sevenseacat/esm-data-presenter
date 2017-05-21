@@ -238,7 +238,7 @@ defmodule Parser.EsmFile do
   defp format_value("INGR", "IRDT", <<weight::lfloat, value::long, effects::binary-16,
     skills::binary-16, attributes::binary-16>>) do
     %{weight: float(weight), value: value,
-      effects: zip_ingredient_effects(effects, skills, attributes)}
+      ingredient_effects: zip_ingredient_effects(effects, skills, attributes)}
   end
 
   defp format_value("LEVI", "DATA", <<value::long>>) do
@@ -453,7 +453,7 @@ defmodule Parser.EsmFile do
   defp zip_ingredient_effects(<<-1::long, _rest::binary>>, _, _, parsed), do: Enum.reverse(parsed)
   defp zip_ingredient_effects(<<effect::long, effects::binary>>, <<skill::long, skills::binary>>,
     <<attribute::long, attributes::binary>>, parsed) do
-    parsed_effect = %{effect_id: effect, skill_id: nil_if_negative(skill),
+    parsed_effect = %{magic_effect_id: effect, skill_id: nil_if_negative(skill),
       attribute_id: nil_if_negative(attribute)}
     zip_ingredient_effects(effects, skills, attributes, [parsed_effect | parsed])
   end

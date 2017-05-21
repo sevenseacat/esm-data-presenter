@@ -57,9 +57,7 @@ defmodule Codex.Factory do
   def enchantment_effect_factory do
     %Codex.Enchantment.Effect{
       enchantment: build(:enchantment),
-      attribute: build(:attribute),
       magic_effect: build(:magic_effect),
-      skill: build(:skill),
       type: "self",
       area: 0,
       duration: 10,
@@ -119,6 +117,13 @@ defmodule Codex.Factory do
       icon: "c/petal.dds",
       value: 5,
       weight: 0.2
+    }
+  end
+
+  def ingredient_effect_factory do
+    %Codex.Ingredient.Effect{
+      ingredient: build(:ingredient),
+      magic_effect: build(:magic_effect)
     }
   end
 

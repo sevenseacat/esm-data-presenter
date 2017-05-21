@@ -46,5 +46,12 @@ defmodule Codex.IngredientTest do
         |> Ingredient.changeset |> Repo.insert
       assert {:script_id, "does not exist"} in errors(changeset)
     end
+
+    test "casts ingredient effects correctly" do
+      changeset = Ingredient.changeset(%{ingredient_effects: [%{}]})
+
+      assert length(changeset.changes[:ingredient_effects]) == 1
+      assert Enum.all?(changeset.changes[:ingredient_effects], &(match?(%Ecto.Changeset{}, &1)))
+    end
   end
 end

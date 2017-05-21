@@ -61,5 +61,11 @@ defmodule Codex.EnchantmentEffectTest do
       assert {:type, "is invalid"} in errors(Effect.changeset(%{type: "not_valid"}))
       refute Keyword.has_key?(errors(Effect.changeset(%{type: "self"})), :type)
     end
+
+    test "validates that only one of a skill or attribute is provided" do
+      changeset = :enchantment_effect |> params_with_assocs |> Map.put(:skill_id, 1)
+        |> Map.put(:attribute_id, 2) |> Effect.changeset
+      assert {:skill_id, "must be nil if an attribute ID is also provided"} in errors(changeset)
+    end
   end
 end
