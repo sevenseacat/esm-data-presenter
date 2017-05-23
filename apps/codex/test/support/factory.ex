@@ -123,7 +123,9 @@ defmodule Codex.Factory do
   def ingredient_effect_factory do
     %Codex.Ingredient.Effect{
       ingredient: build(:ingredient),
-      magic_effect: build(:magic_effect)
+      magic_effect: build(:magic_effect),
+      attribute: build(:attribute),
+      skill: build(:skill)
     }
   end
 
@@ -176,5 +178,15 @@ defmodule Codex.Factory do
     params
     |> Map.put(:major_skill_ids, Enum.map(params[:major_skills], &(&1.id)))
     |> Map.put(:minor_skill_ids, Enum.map(params[:minor_skills], &(&1.id)))
+  end
+
+  def attribute_effect(effect) do
+    insert(:magic_effect, id: 17)
+    Map.put(effect, :magic_effect_id, 17)
+  end
+
+  def skill_effect(effect) do
+    insert(:magic_effect, id: 21)
+    Map.put(effect, :magic_effect_id, 21)
   end
 end

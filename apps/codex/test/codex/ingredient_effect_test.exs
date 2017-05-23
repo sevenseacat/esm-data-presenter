@@ -13,7 +13,8 @@ defmodule Codex.IngredientEffectTest do
     end
 
     test "validates that a provided attribute ID is valid" do
-      params = :ingredient_effect |> params_with_assocs |> Map.put(:attribute_id, -1)
+      params = :ingredient_effect |> params_with_assocs |> attribute_effect
+        |> Map.put(:attribute_id, -1)
       {:error, changeset} = params |> Effect.changeset |> Repo.insert
       assert {:attribute_id, "does not exist"} in errors(changeset)
     end
@@ -33,15 +34,9 @@ defmodule Codex.IngredientEffectTest do
     end
 
     test "validates that a provided skill ID is valid" do
-      params = :ingredient_effect |> params_with_assocs |> Map.put(:skill_id, -1)
+      params = :ingredient_effect |> params_with_assocs |> skill_effect |> Map.put(:skill_id, -1)
       {:error, changeset} = params |> Effect.changeset |> Repo.insert
       assert {:skill_id, "does not exist"} in errors(changeset)
-    end
-
-    test "validates that only one of a skill or attribute is provided" do
-      changeset = :ingredient_effect |> params_with_assocs |> Map.put(:skill_id, 1)
-        |> Map.put(:attribute_id, 2) |> Effect.changeset
-      assert {:skill_id, "must be nil if an attribute ID is also provided"} in errors(changeset)
     end
   end
 end

@@ -62,12 +62,12 @@ defmodule Codex.Ingredient.Effect do
 
   defp ensure_only_one_association_specified(changeset), do: changeset
 
-  defp strip_invalid_params(%{magic_effect_id: effect, skill_id: skill, attribute_id: attribute})
+  defp strip_invalid_params(%{magic_effect_id: effect, skill_id: _skill, attribute_id: attribute})
     when effect in @attribute_magic_effect_ids do
     %{magic_effect_id: effect, skill_id: nil, attribute_id: attribute}
   end
 
-  defp strip_invalid_params(%{magic_effect_id: effect, skill_id: skill, attribute_id: attribute})
+  defp strip_invalid_params(%{magic_effect_id: effect, skill_id: skill, attribute_id: _attribute})
     when effect in @skill_magic_effect_ids do
     %{magic_effect_id: effect, skill_id: skill, attribute_id: nil}
   end
@@ -75,4 +75,6 @@ defmodule Codex.Ingredient.Effect do
   defp strip_invalid_params(%{magic_effect_id: effect} = params) do
     %{magic_effect_id: effect, skill_id: nil, attribute_id: nil}
   end
+
+  defp strip_invalid_params(params), do: params
 end
