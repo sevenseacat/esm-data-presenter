@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Parser.Import do
   alias Ecto.Multi
 
   @supported_types ["skill", "faction", "magic_effect", "enchantment", "script", "book", "class",
-    "armor"]
+    "armor", "ingredient"]
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do

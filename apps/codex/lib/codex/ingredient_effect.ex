@@ -14,6 +14,8 @@ defmodule Codex.Ingredient.Effect do
   import Ecto.Changeset
 
   @required_fields [:magic_effect_id]
+  @attribute_magic_effect_ids [17, 22, 74, 79, 85]
+  @skill_magic_effect_ids [21, 26, 78, 83, 89]
 
   schema "ingredient_effects" do
     belongs_to :ingredient, Codex.Ingredient, type: :string
@@ -40,6 +42,8 @@ defmodule Codex.Ingredient.Effect do
   """
   @spec changeset(%Codex.Ingredient.Effect{}, map) :: Ecto.Changeset.t
   def changeset(schema, params) do
+    params = strip_invalid_params(params)
+
     schema
     |> cast(params, [:attribute_id, :skill_id | @required_fields])
     |> validate_required(@required_fields)
@@ -57,4 +61,18 @@ defmodule Codex.Ingredient.Effect do
   end
 
   defp ensure_only_one_association_specified(changeset), do: changeset
+
+  defp strip_invalid_params(%{magic_effect_id: effect, skill_id: skill, attribute_id: attribute})
+    when effect in @attribute_magic_effect_ids do
+    %{magic_effect_id: effect, skill_id: nil, attribute_id: attribute}
+  end
+
+  defp strip_invalid_params(%{magic_effect_id: effect, skill_id: skill, attribute_id: attribute})
+    when effect in @skill_magic_effect_ids do
+    %{magic_effect_id: effect, skill_id: skill, attribute_id: nil}
+  end
+
+  defp strip_invalid_params(%{magic_effect_id: effect} = params) do
+    %{magic_effect_id: effect, skill_id: nil, attribute_id: nil}
+  end
 end
