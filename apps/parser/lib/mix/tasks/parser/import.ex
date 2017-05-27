@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Parser.Import do
 
   use Mix.Task
   import Mix.Ecto
-  alias Codex.Repo
+  alias Codex.{Repo, Object}
   alias Parser.{EsmFile, Filter}
   alias Ecto.Multi
 
@@ -19,7 +19,7 @@ defmodule Mix.Tasks.Parser.Import do
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do
     ensure_started Repo, []
-    class = :"Elixir.Codex.#{to_module_name(type)}"
+    class = Object.schema_module(type)
 
     shiny_output(type, class, fn ->
       EsmFile.stream
@@ -70,10 +70,5 @@ defmodule Mix.Tasks.Parser.Import do
   defp display_result({:error, _failed_operation, failed_value, _changes_so_far}) do
     Mix.shell.error("Error when processing #{inspect(failed_value)}")
     exit(:error)
-  end
-
-  # Converts underscore-form names such as "magic_effect" to module names like "MagicEffect".
-  defp to_module_name(value) do
-    value |> String.split("_") |> Enum.map(&(String.capitalize(&1))) |> Enum.join
   end
 end
