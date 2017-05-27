@@ -14,17 +14,17 @@ defmodule Mix.Tasks.Parser.Import do
   alias Ecto.Multi
 
   @supported_types ["skill", "faction", "magic_effect", "enchantment", "script", "book", "class",
-    "armor", "ingredient"]
+    "armor", "ingredient", "probe", "lockpick"]
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do
     ensure_started Repo, []
-    class = Object.schema_module(type)
+    module = to_internal_module(type)
 
-    shiny_output(type, class, fn ->
+    shiny_output(type, module, fn ->
       EsmFile.stream
       |> Filter.by_type(String.to_atom(type))
-      |> Stream.map(&(apply(class, :changeset, [&1])))
+      |> Stream.map(&(apply(module, :changeset, [&1])))
       |> Enum.reduce({0, Multi.new}, fn changeset, {index, transaction} ->
         {index + 1, Multi.insert(transaction, index, changeset)}
       end)
@@ -41,8 +41,18 @@ defmodule Mix.Tasks.Parser.Import do
     Mix.shell.error("Unknown data type: #{arg}")
   end
 
+  defp to_internal_module(type) do
+    type = case type do
+      "probe"    -> "tool"
+      "lockpick" -> "tool"
+      type       -> type
+    end
+
+    Object.schema_module(type)
+  end
+
   # Adds a lot of nice formatting things like silent SQL logs, spinners, and other shiny.
-  defp shiny_output(type, class, func) do
+  defp shiny_output(type, module, func) do
     Logger.configure(level: :info)
     spinner_format = [frames: :braille, spinner_color: IO.ANSI.blue, done: :remove]
 
@@ -52,7 +62,7 @@ defmodule Mix.Tasks.Parser.Import do
         text: "Deleting old records...",
         done: [IO.ANSI.green, "✓ ", IO.ANSI.reset, "Deleted old records."]
       ])
-    |> ProgressBar.render_spinner(fn -> Repo.delete_all(class) end)
+    |> ProgressBar.render_spinner(fn -> Repo.delete_all(module) end)
 
     spinner_format
     |> Keyword.merge([text: "Importing new records..."])

@@ -41,8 +41,8 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      |          |        |           | `CLOT` (Clothing) |
 | ✓      | ✓      |          |        |           | `REPA` (Repair items) |
 | ✓      | ✓      |          |        |           | `APPA` (Alchemy apparatus) |
-| ✓      | ✓      |          |        |           | `LOCK` (Lockpicking items) |
-| ✓      | ✓      |          |        |           | `PROB` (Probe items) |
+| ✓      | ✓      | ✓        | ✓      |           | `LOCK` (Lockpicking items) |
+| ✓      | ✓      | ✓        | ✓      |           | `PROB` (Probe items) |
 | ✓      | ✓      | ✓        | ✓      |           | `INGR` (Ingredients) |
 | ✓      | ✓      | ✓        | ✓      |           | `BOOK` (Books and papers) |
 | ✓      | ✓      |          |        |           | `ALCH` (Potions?) |

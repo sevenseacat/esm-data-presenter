@@ -172,6 +172,20 @@ defmodule Codex.Factory do
     }
   end
 
+  def tool_factory do
+    %Codex.Tool{
+      type: "probe",
+      id: "journeyman_probe",
+      name: "Journeyman's Probe",
+      weight: 0.1,
+      value: 10,
+      model: "r\\journeyman_probe.nif",
+      icon: "m\\probe.dds",
+      quality: 0.1,
+      uses: 25
+    }
+  end
+
   def parsed_class_params do
     params = params_with_assocs(:class)
 
