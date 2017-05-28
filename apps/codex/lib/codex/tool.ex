@@ -11,7 +11,7 @@ defmodule Codex.Tool do
 
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :name, :weight, :value, :model, :icon, :type, :quality, :uses]
-  @tool_types ~w(probe lockpick)
+  @tool_types ~w(probe lockpick repair)
 
   schema "objects" do
     field :name

@@ -39,7 +39,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      |          |        |           | `NPC_` (NPCs) |
 | ✓      | ✓      | ✓        | ✓      |           | `ARMO` (Armour) |
 | ✓      | ✓      |          |        |           | `CLOT` (Clothing) |
-| ✓      | ✓      |          |        |           | `REPA` (Repair items) |
+| ✓      | ✓      | ✓        | ✓      |           | `REPA` (Repair items) |
 | ✓      | ✓      |          |        |           | `APPA` (Alchemy apparatus) |
 | ✓      | ✓      | ✓        | ✓      |           | `LOCK` (Lockpicking items) |
 | ✓      | ✓      | ✓        | ✓      |           | `PROB` (Probe items) |
