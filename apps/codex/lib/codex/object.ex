@@ -10,6 +10,7 @@ defmodule Codex.Object do
   use Ecto.Schema
 
   @primary_key {:id, :string, autogenerate: false}
+  @callback all() :: Ecto.Query.t
 
   schema "objects" do
     field :name

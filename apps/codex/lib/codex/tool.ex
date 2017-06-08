@@ -7,7 +7,10 @@ defmodule Codex.Tool do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
+
+  @behaviour Codex.Object
+  @object_type "tool"
 
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :name, :weight, :value, :model, :icon, :type, :quality, :uses]
@@ -17,7 +20,7 @@ defmodule Codex.Tool do
     field :name
     field :weight, :decimal
     field :value, :integer
-    field :object_type, :string, default: "tool"
+    field :object_type, :string, default: @object_type
     field :model
     field :icon
 
@@ -25,6 +28,8 @@ defmodule Codex.Tool do
     field :quality, :decimal
     field :uses, :integer
   end
+
+  def all, do: from o in __MODULE__, where: o.object_type == @object_type
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do

@@ -30,6 +30,17 @@ defmodule Parser.Filter do
   end
 
   @doc """
+  Filter the stream of records parsed with `Tes.EsmFile` to only those of particular types, eg.
+  `:book` or `:apparatus`.
+
+  The resulting stream will be consist of {type, %{data}} tuples.
+  """
+  @spec by_types(stream :: %Stream{}, types :: [atom]) :: %Stream{}
+  def by_types(stream, types) when is_list(types) do
+    Stream.filter(stream, fn {type, _record} -> Enum.member?(types, type) end)
+  end
+
+  @doc """
   Check if a given dialogue topic has any info records that use a given condition value.
 
   ## Examples
