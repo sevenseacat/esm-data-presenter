@@ -42,6 +42,8 @@ defmodule Codex.MagicEffect do
     belongs_to :skill, Codex.Skill
   end
 
+  def all, do: __MODULE__
+
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.MagicEffect{}

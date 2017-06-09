@@ -7,11 +7,12 @@ defmodule Codex.Armor do
   body parts. It also has three weight classes - light, medium and heavy.
   """
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :name, :weight, :value, :model, :icon, :enchantment_points, :type,
     :armor_rating, :health]
+  @object_type "armor"
   @armor_types ~w(helmet cuirass left_pauldron right_pauldron greaves boots left_gauntlet
     right_gauntlet shield left_bracer right_bracer)
 
@@ -19,7 +20,7 @@ defmodule Codex.Armor do
     field :name
     field :weight, :decimal
     field :value, :integer
-    field :object_type, :string, default: "armor"
+    field :object_type, :string, default: @object_type
     field :model
     field :icon
 
@@ -32,6 +33,8 @@ defmodule Codex.Armor do
     belongs_to :enchantment, Codex.Enchantment, type: :string
     belongs_to :script, Codex.Script, type: :string
   end
+
+  def all, do: from o in __MODULE__, where: o.object_type == @object_type
 
   def weight_class(%{type: type, weight: weight}) when type in @armor_types do
     [medium, heavy] = %{

@@ -23,6 +23,8 @@ defmodule Codex.Enchantment do
     has_many :enchantment_effects, Codex.Enchantment.Effect
   end
 
+  def all, do: __MODULE__
+
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.Enchantment{}

@@ -6,7 +6,8 @@ defmodule Tes.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps(),
-     preferred_cli_env: [inch: :docs]]
+     preferred_cli_env: [inch: :docs],
+     aliases: aliases()]
   end
 
   # Dependencies can be Hex packages:
@@ -26,6 +27,12 @@ defmodule Tes.Mixfile do
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:ex_doc, "~> 0.14", only: [:dev]},
       {:inch_ex, ">= 0.0.0", only: [:docs]}
+    ]
+  end
+
+  defp aliases do
+    [
+      "parser.import": ["compile", "parser.import"]
     ]
   end
 end

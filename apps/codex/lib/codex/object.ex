@@ -10,7 +10,6 @@ defmodule Codex.Object do
   use Ecto.Schema
 
   @primary_key {:id, :string, autogenerate: false}
-  @callback all() :: Ecto.Query.t
 
   schema "objects" do
     field :name
@@ -26,7 +25,7 @@ defmodule Codex.Object do
   end
 
   def schema_module(type) do
-    :"Elixir.Codex.#{type |> String.split("_") |> Enum.map(&(String.capitalize(&1))) |> Enum.join}"
+    :"Elixir.Codex.#{type}"
   end
 
   defp as_reference(object) do

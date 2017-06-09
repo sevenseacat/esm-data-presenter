@@ -9,11 +9,9 @@ defmodule Codex.Tool do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
 
-  @behaviour Codex.Object
-  @object_type "tool"
-
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :name, :weight, :value, :model, :icon, :type, :quality, :uses]
+  @object_type "tool"
   @tool_types ~w(probe lockpick repair)
 
   schema "objects" do

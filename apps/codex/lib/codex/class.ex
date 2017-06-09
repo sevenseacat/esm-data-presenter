@@ -30,6 +30,8 @@ defmodule Codex.Class do
     many_to_many :major_skills, Codex.Skill, join_through: "major_class_skills"
   end
 
+  def all, do: __MODULE__
+
   def changeset(params) do
     %Codex.Class{}
     |> cast(params, [:description, :name | @required_fields])

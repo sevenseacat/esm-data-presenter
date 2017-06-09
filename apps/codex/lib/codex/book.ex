@@ -8,16 +8,17 @@ defmodule Codex.Book do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :name, :weight, :value, :model, :scroll, :enchantment_points, :icon]
+  @object_type "book"
 
   schema "objects" do
     field :name
     field :weight, :decimal
     field :value, :integer
-    field :object_type, :string, default: "book"
+    field :object_type, :string, default: @object_type
     field :model
     field :icon
 
@@ -29,6 +30,8 @@ defmodule Codex.Book do
     belongs_to :enchantment, Codex.Enchantment, type: :string
     belongs_to :script, Codex.Script, type: :string
   end
+
+  def all, do: from o in __MODULE__, where: o.object_type == @object_type
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do

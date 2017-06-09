@@ -26,6 +26,8 @@ defmodule Codex.Faction do
     many_to_many :favorite_skills, Codex.Skill, join_through: :faction_favorite_skills
   end
 
+  def all, do: __MODULE__
+
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.Faction{}

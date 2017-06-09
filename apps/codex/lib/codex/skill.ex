@@ -25,6 +25,8 @@ defmodule Codex.Skill do
     belongs_to :specialization, Codex.Specialization
   end
 
+  def all, do: __MODULE__
+
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.Skill{}

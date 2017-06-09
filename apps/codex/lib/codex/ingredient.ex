@@ -8,22 +8,25 @@ defmodule Codex.Ingredient do
   """
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
   @required_fields [:id, :name, :weight, :value, :model, :icon]
+  @object_type "ingredient"
 
   schema "objects" do
     field :name
     field :weight, :decimal
     field :value, :integer
-    field :object_type, :string, default: "ingredient"
+    field :object_type, :string, default: @object_type
     field :model
     field :icon
 
     belongs_to :script, Codex.Script, type: :string
     has_many :ingredient_effects, Codex.Ingredient.Effect
   end
+
+  def all, do: from o in __MODULE__, where: o.object_type == @object_type
 
   def changeset(params) do
     %Codex.Ingredient{}

@@ -1,4 +1,4 @@
-defmodule Parser.Import.Object do
+defmodule Parser.Import.RecordType do
   @moduledoc """
   Lists functions that must be defined by any record type that wants to be imported into the
   database. For the most part they will be very simple - using Parser.Filter and basic schema

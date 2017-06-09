@@ -17,6 +17,8 @@ defmodule Codex.Script do
     field :text, :string
   end
 
+  def all, do: __MODULE__
+
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.Script{}
