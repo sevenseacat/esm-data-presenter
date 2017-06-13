@@ -10,7 +10,7 @@ defmodule Codex.Tool do
   import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model, :icon, :type, :quality, :uses]
+  @required_fields ~w(id name weight value model icon type quality uses)a
   @object_type "tool"
   @tool_types ~w(probe lockpick repair)
 

@@ -12,8 +12,7 @@ defmodule Codex.Class do
   alias Codex.Repo
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :attribute_1_id, :attribute_2_id, :playable, :specialization_id, :services,
-    :vendors]
+  @required_fields ~w(id attribute_1_id attribute_2_id playable specialization_id services vendors)a
 
   schema "classes" do
     field :name

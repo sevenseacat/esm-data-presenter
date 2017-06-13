@@ -12,8 +12,8 @@ defmodule Codex.MagicEffect do
   import Ecto.Changeset
 
   @primary_key {:id, :id, autogenerate: false}
-  @required_fields [:id, :name, :base_cost, :color, :icon, :enchanting, :spellmaking,
-    :negative, :particle_texture, :skill_id, :speed, :size, :size_cap]
+  @required_fields ~w(id name base_cost color icon enchanting spellmaking negative particle_texture
+    skill_id speed size size_cap)a
 
   schema "magic_effects" do
     field :name
@@ -47,8 +47,8 @@ defmodule Codex.MagicEffect do
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do
     %Codex.MagicEffect{}
-    |> cast(params, @required_fields ++ [:description, :area_sound, :area_visual, :bolt_sound,
-      :bolt_visual, :cast_sound, :cast_visual, :hit_sound, :hit_visual])
+    |> cast(params, @required_fields ++ ~w(description area_sound area_visual bolt_sound bolt_visual
+      cast_sound cast_visual hit_sound hit_visual)a)
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:skill_id)
   end

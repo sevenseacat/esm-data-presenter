@@ -14,8 +14,7 @@ defmodule Codex.Faction.Rank do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_params [:number, :name, :attribute_1, :attribute_2, :skill_1,
-    :skill_2, :reputation]
+  @required_fields ~w(number name attribute_1 attribute_2 skill_1 skill_2 reputation)a
 
   schema "faction_ranks" do
     field :number, :integer
@@ -48,8 +47,8 @@ defmodule Codex.Faction.Rank do
   @spec changeset(%Codex.Faction.Rank{}, map) :: Ecto.Changeset.t
   def changeset(schema, params) do
     schema
-    |> cast(params, @required_params)
-    |> validate_required(@required_params)
+    |> cast(params, @required_fields)
+    |> validate_required(@required_fields)
     |> assoc_constraint(:faction)
     |> validate_number(:number, greater_than: 0)
     |> validate_number(:attribute_1, greater_than_or_equal_to: 0)

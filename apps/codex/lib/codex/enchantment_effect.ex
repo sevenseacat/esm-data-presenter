@@ -13,7 +13,7 @@ defmodule Codex.Enchantment.Effect do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_fields [:area, :duration, :magnitude_min, :magnitude_max, :type, :magic_effect_id]
+  @required_fields ~w(area duration magnitude_min magnitude_max type magic_effect_id)a
   @effect_types ~w(self touch target)
 
   schema "enchantment_effects" do

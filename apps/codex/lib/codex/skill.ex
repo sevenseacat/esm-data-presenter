@@ -15,7 +15,7 @@ defmodule Codex.Skill do
   import Ecto.Changeset
 
   @primary_key {:id, :id, autogenerate: false}
-  @required_fields [:id, :name, :description, :attribute_id, :specialization_id]
+  @required_fields ~w(id name description attribute_id specialization_id)a
 
   schema "skills" do
     field :name

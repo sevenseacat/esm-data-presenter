@@ -10,7 +10,7 @@ defmodule Codex.Clothing do
   import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model, :enchantment_points, :type]
+  @required_fields ~w(id name weight value model enchantment_points type)a
   @object_type "clothing"
   @armor_types ~w(amulet belt left_glove pants right_glove ring robe shirt shoes skirt)
 

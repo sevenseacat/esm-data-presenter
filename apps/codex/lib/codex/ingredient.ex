@@ -11,7 +11,7 @@ defmodule Codex.Ingredient do
   import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model, :icon]
+  @required_fields ~w(id name weight value model icon)a
   @object_type "ingredient"
 
   schema "objects" do

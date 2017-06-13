@@ -10,8 +10,7 @@ defmodule Codex.Armor do
   import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model, :icon, :enchantment_points, :type,
-    :armor_rating, :health]
+  @required_fields ~w(id name weight value model icon enchantment_points type armor_rating health)a
   @object_type "armor"
   @armor_types ~w(helmet cuirass left_pauldron right_pauldron greaves boots left_gauntlet
     right_gauntlet shield left_bracer right_bracer)
@@ -38,11 +37,11 @@ defmodule Codex.Armor do
 
   def weight_class(%{type: type, weight: weight}) when type in @armor_types do
     [medium, heavy] = %{
-      ["boots"] => [12.0, 18.0],
-      ["cuirass"] => [18.0, 27.0],
-      ["greaves", "shield"] => [9.0, 13.5],
-      ["left_bracer", "right_bracer", "left_gauntlet", "right_gauntlet", "helmet"] => [3.0, 4.5],
-      ["left_pauldron", "right_pauldron"] => [6.0, 9.0]
+      ~w(boots) => [12.0, 18.0],
+      ~w(cuirass) => [18.0, 27.0],
+      ~w(greaves shield) => [9.0, 13.5],
+      ~w(left_bracer right_bracer left_gauntlet right_gauntlet helmet) => [3.0, 4.5],
+      ~w(left_pauldron right_pauldron) => [6.0, 9.0]
     }
     |> Enum.find(fn {types, _} -> Enum.member?(types, type) end)
     |> elem(1)

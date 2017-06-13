@@ -13,8 +13,8 @@ defmodule Mix.Tasks.Parser.Import do
   alias Parser.EsmFile
   alias Ecto.Multi
 
-  @supported_types ["Skill", "Faction", "MagicEffect", "Enchantment", "Script", "Book", "Class",
-    "Armor", "Ingredient", "Tool", "Apparatus", "Clothing"]
+  @supported_types ~w(Skill Faction MagicEffect Enchantment Script Book Class Armor Ingredient Tool
+    Apparatus Clothing)
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do

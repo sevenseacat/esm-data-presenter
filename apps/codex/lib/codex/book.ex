@@ -11,7 +11,7 @@ defmodule Codex.Book do
   import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model, :scroll, :enchantment_points, :icon]
+  @required_fields ~w(id name weight value model scroll enchantment_points icon)a
   @object_type "book"
 
   schema "objects" do

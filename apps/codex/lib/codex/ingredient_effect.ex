@@ -13,7 +13,7 @@ defmodule Codex.Ingredient.Effect do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_fields [:magic_effect_id]
+  @required_fields ~w(magic_effect_id)a
   @attribute_magic_effect_ids [17, 22, 74, 79, 85]
   @skill_magic_effect_ids [21, 26, 78, 83, 89]
 
@@ -72,7 +72,7 @@ defmodule Codex.Ingredient.Effect do
     %{magic_effect_id: effect, skill_id: skill, attribute_id: nil}
   end
 
-  defp strip_invalid_params(%{magic_effect_id: effect} = params) do
+  defp strip_invalid_params(%{magic_effect_id: effect}) do
     %{magic_effect_id: effect, skill_id: nil, attribute_id: nil}
   end
 

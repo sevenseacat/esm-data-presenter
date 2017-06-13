@@ -10,7 +10,7 @@ defmodule Codex.Faction.Reaction do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @required_fields [:target_id, :adjustment]
+  @required_fields ~w(target_id adjustment)a
 
   schema "faction_reactions" do
     field :adjustment, :integer

@@ -10,7 +10,7 @@ defmodule Codex.Apparatus do
   import Ecto.{Changeset, Query}
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :weight, :value, :model, :icon, :type, :quality]
+  @required_fields ~w(id name weight value model icon type quality)a
   @object_type "apparatus"
   @apparatus_types ~w(mortar_pestle retort calcinator alembic)
 

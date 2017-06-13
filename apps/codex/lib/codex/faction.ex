@@ -13,7 +13,7 @@ defmodule Codex.Faction do
   import Ecto.Changeset
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :name, :hidden, :attribute_1_id, :attribute_2_id]
+  @required_fields ~w(id name hidden attribute_1_id attribute_2_id)a
 
   schema "factions" do
     field :name

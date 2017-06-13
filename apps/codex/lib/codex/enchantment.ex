@@ -11,7 +11,7 @@ defmodule Codex.Enchantment do
   import Ecto.Changeset
 
   @primary_key {:id, :string, autogenerate: false}
-  @required_fields [:id, :charge, :cost, :autocalc, :type]
+  @required_fields ~w(id charge cost autocalc type)a
   @enchantment_types ~w(once on_strike when_used constant_effect)
 
   schema "enchantments" do
