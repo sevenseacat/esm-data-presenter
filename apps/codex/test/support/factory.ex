@@ -5,6 +5,19 @@ defmodule Codex.Factory do
 
   use ExMachina.Ecto, repo: Codex.Repo
 
+  def apparatus_factory do
+    %Codex.Apparatus{
+      id: "masters_calcinator",
+      name: "Master's Calcinator",
+      weight: 15,
+      value: 5000,
+      model: "r\\calcinator.nif",
+      icon: "m\\calcinator.dds",
+      quality: 5.0,
+      type: "calcinator"
+    }
+  end
+
   def armor_factory do
     %Codex.Armor{
       id: "boots_of_blinding_speed",
