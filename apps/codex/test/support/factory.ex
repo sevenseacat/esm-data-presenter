@@ -67,6 +67,19 @@ defmodule Codex.Factory do
     }
   end
 
+  def clothing_factory do
+    %Codex.Clothing{
+      id: "expensive_robe",
+      name: "Expensive Robe",
+      type: "robe",
+      icon: "r\\robe.dds",
+      model: "m\\robe.nif",
+      enchantment_points: 50,
+      value: 45,
+      weight: 1.0
+    }
+  end
+
   def enchantment_effect_factory do
     %Codex.Enchantment.Effect{
       enchantment: build(:enchantment),
