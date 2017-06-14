@@ -223,6 +223,28 @@ defmodule Codex.Factory do
     }
   end
 
+  def weapon_factory do
+    %Codex.Weapon{
+      id: sequence(:id, &("sword_#{&1}")),
+      name: "Magebane",
+      type: "long_blade_2_hand",
+      model: "m\\magebane.nif",
+      icon: "r\\magebane.dds",
+      chop_min: 0,
+      chop_max: 0,
+      thrust_min: 5,
+      thrust_max: 9,
+      slash_min: 10,
+      slash_max: 15,
+      enchantment_points: 100,
+      health: 1000,
+      value: 250,
+      weight: 12,
+      speed: 1.0,
+      reach: 1.2
+    }
+  end
+
   def parsed_class_params do
     params = params_with_assocs(:class)
 

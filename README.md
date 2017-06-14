@@ -30,7 +30,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      |          |        |           | `REGN` (Regions) |
 | ✓      | ✓      |          |        |           | `BSGN` (Birth signs) |
 | ✓      | ✓      | ✓        | ✓      |           | `MISC` (Miscellaneous items) |
-| ✓      | ✓      |          |        |           | `WEAP` (Weapons) |
+| ✓      | ✓      | ✓        | ✓      |           | `WEAP` (Weapons) |
 | ✓      | ✓      |          |        |           | `CONT` (Containers) |
 | ✓      | ✓      |          |        |           | `SPEL` (Spells) |
 | ✓      | ✓      | ✓        | ✓      |           | `ENCH` (Enchantments) |
@@ -53,7 +53,6 @@ Some of these won't be handled at all, but the list is here for completeness
 ### Order of things to be done
 
 - Potion
-- Weapon
 - LevelledItem
 - Spell
 - Race
