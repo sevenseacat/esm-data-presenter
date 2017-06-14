@@ -6,8 +6,6 @@
 
 The end goal is to create a read-only webapp to present game data used in Morrowind.
 
-At the moment this is still in the "parse the ESM data file into something readable" stage.
-
 Using the amazing work of Dave Humphrey detailed here: http://www.uesp.net/morrow/tech/mw_esm.txt
 
 ## The Plan
@@ -31,7 +29,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      | ✓        | ✓      |           | `SCPT` (Scripts) |
 | ✓      | ✓      |          |        |           | `REGN` (Regions) |
 | ✓      | ✓      |          |        |           | `BSGN` (Birth signs) |
-| ✓      | ✓      |          |        |           | `MISC` (Miscellaneous items) |
+| ✓      | ✓      | ✓        | ✓      |           | `MISC` (Miscellaneous items) |
 | ✓      | ✓      |          |        |           | `WEAP` (Weapons) |
 | ✓      | ✓      |          |        |           | `CONT` (Containers) |
 | ✓      | ✓      |          |        |           | `SPEL` (Spells) |
@@ -51,6 +49,20 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      |          |        |           | `DIAL` (Dialogue/journal topics) |
 | ✓      | ✓      |          |        |           | `INFO` (Dialogue records) |
 | ✓      | ✓      |          |        |           | `INFO` (Journal records) |
+
+### Order of things to be done
+
+- Potion
+- Weapon
+- LevelledItem
+- Spell
+- Race
+- NPC
+- Dialogue
+- Journal
+- Region
+- Cell/Container
+- Birthsign
 
 ### Record types (probably) not going to be done
 

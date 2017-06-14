@@ -174,6 +174,17 @@ defmodule Codex.Factory do
     }
   end
 
+  def misc_item_factory do
+    %Codex.MiscItem{
+      id: sequence(:id, &("gold_#{&1}")),
+      name: "Gold",
+      value: 1,
+      weight: 0.1,
+      model: "r\\gold.nif",
+      icon: "m\\gold.dds"
+    }
+  end
+
   def script_factory do
     %Codex.Script{
       id: "test_script",
