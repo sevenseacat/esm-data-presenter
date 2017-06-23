@@ -31,10 +31,10 @@ defmodule Codex.EnchantmentTest do
     end
 
     test "casts enchantment effects correctly" do
-      changeset = Enchantment.changeset(%{enchantment_effects: [%{}]})
+      changeset = Enchantment.changeset(%{effects: [%{}]})
 
-      assert length(changeset.changes[:enchantment_effects]) == 1
-      assert Enum.all?(changeset.changes[:enchantment_effects], &(match?(%Ecto.Changeset{}, &1)))
+      assert length(changeset.changes[:effects]) == 1
+      assert Enum.all?(changeset.changes[:effects], &(match?(%Ecto.Changeset{}, &1)))
     end
   end
 end

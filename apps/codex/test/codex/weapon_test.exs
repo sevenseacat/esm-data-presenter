@@ -7,7 +7,7 @@ defmodule Codex.WeaponTest do
     assert insert(:weapon)
   end
 
-  describe "changeset/1" do
+  describe "changeset/2" do
     test "validates that a valid ID is present" do
       weapon = insert(:weapon)
 

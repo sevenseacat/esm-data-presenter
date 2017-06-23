@@ -18,6 +18,18 @@ defmodule Codex.Factory do
     }
   end
 
+  def applied_magic_effect_factory do
+    %Codex.AppliedMagicEffect{
+      enchantment: build(:enchantment),
+      magic_effect: build(:magic_effect),
+      type: "self",
+      area: 0,
+      duration: 10,
+      magnitude_max: 1,
+      magnitude_min: 10
+    }
+  end
+
   def armor_factory do
     %Codex.Armor{
       id: "boots_of_blinding_speed",
@@ -77,18 +89,6 @@ defmodule Codex.Factory do
       enchantment_points: 50,
       value: 45,
       weight: 1.0
-    }
-  end
-
-  def enchantment_effect_factory do
-    %Codex.Enchantment.Effect{
-      enchantment: build(:enchantment),
-      magic_effect: build(:magic_effect),
-      type: "self",
-      area: 0,
-      duration: 10,
-      magnitude_max: 1,
-      magnitude_min: 10
     }
   end
 

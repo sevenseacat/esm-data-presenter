@@ -20,7 +20,7 @@ defmodule Codex.Enchantment do
     field :cost, :integer
     field :autocalc, :boolean
 
-    has_many :enchantment_effects, Codex.Enchantment.Effect
+    has_many :effects, Codex.AppliedMagicEffect
   end
 
   def all, do: __MODULE__
@@ -33,6 +33,6 @@ defmodule Codex.Enchantment do
     |> validate_inclusion(:type, @enchantment_types)
     |> validate_number(:cost, greater_than_or_equal_to: 0)
     |> validate_number(:charge, greater_than_or_equal_to: 0)
-    |> cast_assoc(:enchantment_effects)
+    |> cast_assoc(:effects)
   end
 end
