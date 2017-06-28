@@ -185,6 +185,17 @@ defmodule Codex.Factory do
     }
   end
 
+  def potion_factory do
+    %Codex.Potion{
+      id: "super_potion",
+      name: "Super Potion!",
+      icon: "r\\potion.dds",
+      model: "m\\potion.nif",
+      value: 45,
+      weight: 1.0
+    }
+  end
+
   def script_factory do
     %Codex.Script{
       id: "test_script",
