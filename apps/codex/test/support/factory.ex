@@ -220,6 +220,15 @@ defmodule Codex.Factory do
     }
   end
 
+  def spell_factory do
+    %Codex.Spell{
+      id: sequence(:id, &("spell_#{&1}")),
+      name: "AWESOME SPELL",
+      type: "spell",
+      cost: 5000
+    }
+  end
+
   def tool_factory do
     %Codex.Tool{
       type: "probe",

@@ -32,7 +32,7 @@ Some of these won't be handled at all, but the list is here for completeness
 | ✓      | ✓      | ✓        | ✓      |           | `MISC` (Miscellaneous items) |
 | ✓      | ✓      | ✓        | ✓      |           | `WEAP` (Weapons) |
 | ✓      | ✓      |          |        |           | `CONT` (Containers) |
-| ✓      | ✓      |          |        |           | `SPEL` (Spells) |
+| ✓      | ✓      | ✓        | ✓      |           | `SPEL` (Spells) |
 | ✓      | ✓      | ✓        | ✓      |           | `ENCH` (Enchantments) |
 | ✓      | ✓      |          |        |           | `NPC_` (NPCs) |
 | ✓      | ✓      | ✓        | ✓      |           | `ARMO` (Armour) |
@@ -53,7 +53,6 @@ Some of these won't be handled at all, but the list is here for completeness
 ### Order of things to be done
 
 - LevelledItem
-- Spell
 - Race
 - NPC
 - Dialogue

@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Parser.Import do
   alias Ecto.Multi
 
   @supported_types ~w(Skill Faction MagicEffect Enchantment Script Book Class Armor Ingredient Tool
-    Apparatus Clothing MiscItem Weapon Potion)
+    Apparatus Clothing MiscItem Weapon Potion Spell)
 
   @spec run(type :: [String.t()]) :: any()
   def run([type]) when type in @supported_types do

@@ -100,7 +100,9 @@ defmodule Parser.EsmFile do
 
   defp format_value(_type, name, value) when name in ["NAME", "FNAM", "DESC", "NPCS", "ITEX",
     "PTEX", "SCRI"] do
-    strip_null(value)
+    value
+    |> strip_null
+    |> String.replace(<<146>>, "’")
   end
   defp format_value(_type, "INDX", <<id::long>>), do: id
   defp format_value(_type, "MODL", value) do

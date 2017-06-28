@@ -30,6 +30,7 @@ defmodule Codex.AppliedMagicEffect do
 
     belongs_to :enchantment, Codex.Enchantment, type: :string
     belongs_to :potion, Codex.Potion, type: :string
+    belongs_to :spell, Codex.Spell, type: :string
   end
 
   @spec changeset(%Codex.AppliedMagicEffect{}, map) :: Ecto.Changeset.t
