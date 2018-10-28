@@ -2,18 +2,19 @@ defmodule Codex.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :codex,
-     version: "0.1.0",
-     build_path: "../../_build",
-     config_path: "../../config/config.exs",
-     deps_path: "../../deps",
-     lockfile: "../../mix.lock",
-     elixir: "~> 1.4",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     aliases: aliases(),
-     deps: deps(),
-     elixirc_paths: elixirc_paths(Mix.env)]
+    [
+      app: :codex,
+      version: "0.1.0",
+      build_path: "../../_build",
+      config_path: "../../config/config.exs",
+      deps_path: "../../deps",
+      lockfile: "../../mix.lock",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
+      deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env())
+    ]
   end
 
   # Configuration for the OTP application
@@ -21,8 +22,7 @@ defmodule Codex.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger],
-     mod: {Codex, []}]
+    [extra_applications: [:logger], mod: {Codex, []}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
@@ -59,7 +59,7 @@ defmodule Codex.Mixfile do
   defp aliases do
     [
       "ecto.reset": ["ecto.drop", "ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

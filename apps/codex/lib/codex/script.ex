@@ -14,7 +14,7 @@ defmodule Codex.Script do
   @primary_key {:id, :string, autogenerate: false}
 
   schema "scripts" do
-    field :text, :string
+    field(:text, :string)
   end
 
   def all, do: __MODULE__

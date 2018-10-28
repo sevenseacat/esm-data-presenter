@@ -14,18 +14,18 @@ defmodule Codex.Potion do
   @object_type "potion"
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    belongs_to :script, Codex.Script, type: :string
-    has_many :effects, Codex.AppliedMagicEffect
+    belongs_to(:script, Codex.Script, type: :string)
+    has_many(:effects, Codex.AppliedMagicEffect)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do

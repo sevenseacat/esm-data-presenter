@@ -11,6 +11,6 @@ defmodule Codex.Specialization do
   @primary_key {:id, :id, autogenerate: false}
 
   schema "specializations" do
-    field :name
+    field(:name)
   end
 end

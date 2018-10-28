@@ -15,23 +15,23 @@ defmodule Codex.Book do
   @object_type "book"
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    field :scroll, :boolean
-    field :enchantment_points, :integer
-    field :text
+    field(:scroll, :boolean)
+    field(:enchantment_points, :integer)
+    field(:text)
 
-    belongs_to :skill, Codex.Skill
-    belongs_to :enchantment, Codex.Enchantment, type: :string
-    belongs_to :script, Codex.Script, type: :string
+    belongs_to(:skill, Codex.Skill)
+    belongs_to(:enchantment, Codex.Enchantment, type: :string)
+    belongs_to(:script, Codex.Script, type: :string)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do

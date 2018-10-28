@@ -16,14 +16,14 @@ defmodule Codex.Spell do
   @spell_types ~w(spell power ability blight disease)
 
   schema "spells" do
-    field :name
-    field :cost, :integer
-    field :type
-    field :always_succeeds, :boolean
-    field :autocalc, :boolean
-    field :starting_spell, :boolean
+    field(:name)
+    field(:cost, :integer)
+    field(:type)
+    field(:always_succeeds, :boolean)
+    field(:autocalc, :boolean)
+    field(:starting_spell, :boolean)
 
-    has_many :effects, Codex.AppliedMagicEffect
+    has_many(:effects, Codex.AppliedMagicEffect)
   end
 
   def all, do: __MODULE__

@@ -11,6 +11,6 @@ defmodule Codex.Attribute do
   @primary_key {:id, :id, autogenerate: false}
 
   schema "attributes" do
-    field :name
+    field(:name)
   end
 end

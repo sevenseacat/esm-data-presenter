@@ -26,7 +26,7 @@ defmodule Codex.ConnCase do
     {:ok, []}
   end
 
-  @spec errors(Ecto.Changeset.t) :: [{atom, String.t}]
+  @spec errors(Ecto.Changeset.t()) :: [{atom, String.t()}]
   def errors(changeset) do
     changeset
     |> Changeset.traverse_errors(fn {msg, opts} ->
@@ -34,7 +34,7 @@ defmodule Codex.ConnCase do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
-    |> Map.to_list
+    |> Map.to_list()
     |> Enum.map(fn {field, [message]} -> {field, message} end)
   end
 end

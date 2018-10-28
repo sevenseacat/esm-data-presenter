@@ -13,17 +13,17 @@ defmodule Codex.Faction.Reaction do
   @required_fields ~w(target_id adjustment)a
 
   schema "faction_reactions" do
-    field :adjustment, :integer
+    field(:adjustment, :integer)
 
-    belongs_to :source, Codex.Faction, type: :string
-    belongs_to :target, Codex.Faction, type: :string
+    belongs_to(:source, Codex.Faction, type: :string)
+    belongs_to(:target, Codex.Faction, type: :string)
   end
 
   @doc """
   This function is used when inserting faction reactions into the database directly, as opposed to
   creating reactions as part of the parent faction record.
   """
-  @spec changeset(map) :: Ecto.Changeset.t
+  @spec changeset(map) :: Ecto.Changeset.t()
   def changeset(params) do
     %Codex.Faction.Reaction{}
     |> cast(params, [:source_id])
@@ -35,7 +35,7 @@ defmodule Codex.Faction.Reaction do
   This function is used when creating faction reactions as part of the parent faction record, as
   opposed to inserting reactions directly.
   """
-  @spec changeset(%Codex.Faction.Reaction{}, map) :: Ecto.Changeset.t
+  @spec changeset(%Codex.Faction.Reaction{}, map) :: Ecto.Changeset.t()
   def changeset(schema, params) do
     schema
     |> cast(params, [:adjustment])

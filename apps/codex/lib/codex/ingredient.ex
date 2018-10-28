@@ -15,18 +15,18 @@ defmodule Codex.Ingredient do
   @object_type "ingredient"
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    belongs_to :script, Codex.Script, type: :string
-    has_many :ingredient_effects, Codex.Ingredient.Effect
+    belongs_to(:script, Codex.Script, type: :string)
+    has_many(:ingredient_effects, Codex.Ingredient.Effect)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   def changeset(params) do
     %Codex.Ingredient{}

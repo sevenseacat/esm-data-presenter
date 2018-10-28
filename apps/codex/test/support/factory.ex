@@ -47,7 +47,7 @@ defmodule Codex.Factory do
 
   def attribute_factory do
     %Codex.Attribute{
-      id: sequence(:id, &(&1)),
+      id: sequence(:id, & &1),
       name: "Test Attribute"
     }
   end
@@ -67,7 +67,7 @@ defmodule Codex.Factory do
 
   def class_factory do
     %Codex.Class{
-      id: sequence(:id, &("class_#{&1}")),
+      id: sequence(:id, &"class_#{&1}"),
       playable: true,
       attribute_1: build(:attribute),
       attribute_2: build(:attribute),
@@ -104,7 +104,7 @@ defmodule Codex.Factory do
 
   def faction_factory do
     %Codex.Faction{
-      id: sequence(:id, &("my_faction_#{&1}")),
+      id: sequence(:id, &"my_faction_#{&1}"),
       name: "My Faction",
       attribute_1: build(:attribute),
       attribute_2: build(:attribute),
@@ -137,8 +137,8 @@ defmodule Codex.Factory do
 
   def ingredient_factory do
     %Codex.Ingredient{
-      id: sequence(:id, &("ingredient_#{&1}")),
-      name: sequence(:name, &("Petal #{&1}")),
+      id: sequence(:id, &"ingredient_#{&1}"),
+      name: sequence(:name, &"Petal #{&1}"),
       model: "c/petal.nif",
       icon: "c/petal.dds",
       value: 5,
@@ -157,8 +157,8 @@ defmodule Codex.Factory do
 
   def magic_effect_factory do
     %Codex.MagicEffect{
-      id: sequence(:id, &(&1)),
-      name: sequence(:name, &("Mark#{&1}")),
+      id: sequence(:id, & &1),
+      name: sequence(:name, &"Mark#{&1}"),
       skill: build(:skill),
       base_cost: 15.0,
       spellmaking: true,
@@ -176,7 +176,7 @@ defmodule Codex.Factory do
 
   def misc_item_factory do
     %Codex.MiscItem{
-      id: sequence(:id, &("gold_#{&1}")),
+      id: sequence(:id, &"gold_#{&1}"),
       name: "Gold",
       value: 1,
       weight: 0.1,
@@ -205,7 +205,7 @@ defmodule Codex.Factory do
 
   def skill_factory do
     %Codex.Skill{
-      id: sequence(:id, &(&1)),
+      id: sequence(:id, & &1),
       name: "Awesome Skill",
       description: "Now with added fireballs.",
       attribute: build(:attribute),
@@ -215,14 +215,14 @@ defmodule Codex.Factory do
 
   def specialization_factory do
     %Codex.Specialization{
-      id: sequence(:id, &(&1)),
+      id: sequence(:id, & &1),
       name: "Stealth/Magic/Combat/HARBINGER OF DOOM"
     }
   end
 
   def spell_factory do
     %Codex.Spell{
-      id: sequence(:id, &("spell_#{&1}")),
+      id: sequence(:id, &"spell_#{&1}"),
       name: "AWESOME SPELL",
       type: "spell",
       cost: 5000
@@ -245,7 +245,7 @@ defmodule Codex.Factory do
 
   def weapon_factory do
     %Codex.Weapon{
-      id: sequence(:id, &("sword_#{&1}")),
+      id: sequence(:id, &"sword_#{&1}"),
       name: "Magebane",
       type: "long_blade_2_hand",
       model: "m\\magebane.nif",
@@ -269,8 +269,8 @@ defmodule Codex.Factory do
     params = params_with_assocs(:class)
 
     params
-    |> Map.put(:major_skill_ids, Enum.map(params[:major_skills], &(&1.id)))
-    |> Map.put(:minor_skill_ids, Enum.map(params[:minor_skills], &(&1.id)))
+    |> Map.put(:major_skill_ids, Enum.map(params[:major_skills], & &1.id))
+    |> Map.put(:minor_skill_ids, Enum.map(params[:minor_skills], & &1.id))
   end
 
   def attribute_effect(effect) do

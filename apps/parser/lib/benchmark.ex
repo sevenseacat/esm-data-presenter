@@ -8,6 +8,6 @@ defmodule Benchmark do
   @spec measure(func :: fun()) :: {String.t(), any}
   def measure(func) do
     {time, result} = :timer.tc(func)
-    {"#{time/(1_000_000)}sec", result}
+    {"#{time / 1_000_000}sec", result}
   end
 end

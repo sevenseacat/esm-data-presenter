@@ -16,14 +16,14 @@ defmodule Codex.Faction do
   @required_fields ~w(id name hidden attribute_1_id attribute_2_id)a
 
   schema "factions" do
-    field :name
-    field :hidden, :boolean
+    field(:name)
+    field(:hidden, :boolean)
 
-    belongs_to :attribute_1, Codex.Attribute
-    belongs_to :attribute_2, Codex.Attribute
-    has_many :ranks, Codex.Faction.Rank
-    has_many :reactions, Codex.Faction.Reaction, foreign_key: :source_id
-    many_to_many :favorite_skills, Codex.Skill, join_through: :faction_favorite_skills
+    belongs_to(:attribute_1, Codex.Attribute)
+    belongs_to(:attribute_2, Codex.Attribute)
+    has_many(:ranks, Codex.Faction.Rank)
+    has_many(:reactions, Codex.Faction.Reaction, foreign_key: :source_id)
+    many_to_many(:favorite_skills, Codex.Skill, join_through: :faction_favorite_skills)
   end
 
   def all, do: __MODULE__

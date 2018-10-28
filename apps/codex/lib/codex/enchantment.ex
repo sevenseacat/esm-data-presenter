@@ -15,12 +15,12 @@ defmodule Codex.Enchantment do
   @enchantment_types ~w(once on_strike when_used constant_effect)
 
   schema "enchantments" do
-    field :type
-    field :charge, :integer
-    field :cost, :integer
-    field :autocalc, :boolean
+    field(:type)
+    field(:charge, :integer)
+    field(:cost, :integer)
+    field(:autocalc, :boolean)
 
-    has_many :effects, Codex.AppliedMagicEffect
+    has_many(:effects, Codex.AppliedMagicEffect)
   end
 
   def all, do: __MODULE__

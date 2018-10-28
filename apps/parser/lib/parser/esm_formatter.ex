@@ -5,101 +5,343 @@ defmodule Parser.EsmFormatter do
 
   @apparatus_types %{0 => "mortar_pestle", 1 => "alembic", 2 => "calcinator", 3 => "retort"}
 
-  @armor_types %{0 => "helmet", 1 => "cuirass", 2 => "left_pauldron", 3 => "right_pauldron",
-    4 => "greaves", 5 => "boots", 6 => "left_gauntlet", 7 => "right_gauntlet", 8 => "shield",
-    9 => "left_bracer", 10 => "right_bracer"}
+  @armor_types %{
+    0 => "helmet",
+    1 => "cuirass",
+    2 => "left_pauldron",
+    3 => "right_pauldron",
+    4 => "greaves",
+    5 => "boots",
+    6 => "left_gauntlet",
+    7 => "right_gauntlet",
+    8 => "shield",
+    9 => "left_bracer",
+    10 => "right_bracer"
+  }
 
-  @clothing_types %{0 => "pants", 1 => "shoes", 2 => "shirt", 3 => "belt", 4 => "robe",
-    5 => "right_glove", 6 => "left_glove", 7 => "skirt", 8 => "ring", 9 => "amulet"}
+  @clothing_types %{
+    0 => "pants",
+    1 => "shoes",
+    2 => "shirt",
+    3 => "belt",
+    4 => "robe",
+    5 => "right_glove",
+    6 => "left_glove",
+    7 => "skirt",
+    8 => "ring",
+    9 => "amulet"
+  }
 
-  @dialogue_types %{0 => "topic", 1 => "voice", 2 => "greeting", 3 => "persuasion", 4 => "journal"}
+  @dialogue_types %{
+    0 => "topic",
+    1 => "voice",
+    2 => "greeting",
+    3 => "persuasion",
+    4 => "journal"
+  }
 
-  @dialogue_functions %{"00" => "rank_low", "01" => "rank_high", "02" => "rank_requirement",
-    "03" => "reputation", "04" => "health_percent", "05" => "pc_reputation", "06" => "pc_level",
-    "07" => "pc_health_percent", "08" => "pc_magicka", "09" => "pc_fatigue", "10" => "pc_strength",
-    "11" => "pc_block", "12" => "pc_armorer", "13" => "pc_medium_armor", "14" => "pc_heavy_armor",
-    "15" => "pc_blunt_weapon", "16" => "pc_long_blade", "17" => "pc_axe", "18" => "pc_spear",
-    "19" => "pc_athletics", "20" => "pc_enchant", "21" => "pc_destruction", "22" => "pc_alteration",
-    "23" => "pc_illusion", "24" => "pc_conjuration", "25" => "pc_mysticism",  "26" => "pc_restoration",
-    "27" => "pc_alchemy", "28" => "pc_unarmored", "29" => "pc_security", "30" => "pc_sneak",
-    "31" => "pc_acrobatics", "32" => "pc_light_armor", "33" => "pc_short_blade", "34" => "pc_marksman",
-    "35" => "pc_mercantile", "36" => "pc_speechcraft", "37" => "pc_hand_to_hand", "38" => "pc_gender",
-    "39" => "pc_expelled", "40" => "pc_common_disease", "41" => "pc_blight_disease",
-    "42" => "pc_clothing_modifier", "43" => "pc_crime_level", "44" => "same_gender",
-    "45" => "same_race", "46" => "same_faction", "47" => "faction_rank_diff", "48" => "detected",
-    "49" => "alarmed", "50" => "choice", "51" => "pc_intelligence", "52" => "pc_willpower",
-    "53" => "pc_agility", "54" => "pc_speed", "55" => "pc_endurance", "56" => "pc_personality",
-    "57" => "pc_luck", "58" => "pc_corprus", "59" => "weather", "60" => "pc_vampire", "61" => "level",
-    "62" => "attacked", "63" => "talked_to_pc", "64" => "pc_health", "65" => "creature_target",
-    "66" => "friend_hit", "67" => "fight", "69" => "hello", "69" => "alarm", "70" => "flee",
-    "71" => "should_attack", "sX" => "not_local", "JX" => "journal", "IX" => "item", "DX" => "dead",
-    "XX" => "not_id", "FX" => "not_faction", "CX" => "not_class", "RX" => "not_race", "LX" => "not_cell",
-    "fX" => "global"}
+  @dialogue_functions %{
+    "00" => "rank_low",
+    "01" => "rank_high",
+    "02" => "rank_requirement",
+    "03" => "reputation",
+    "04" => "health_percent",
+    "05" => "pc_reputation",
+    "06" => "pc_level",
+    "07" => "pc_health_percent",
+    "08" => "pc_magicka",
+    "09" => "pc_fatigue",
+    "10" => "pc_strength",
+    "11" => "pc_block",
+    "12" => "pc_armorer",
+    "13" => "pc_medium_armor",
+    "14" => "pc_heavy_armor",
+    "15" => "pc_blunt_weapon",
+    "16" => "pc_long_blade",
+    "17" => "pc_axe",
+    "18" => "pc_spear",
+    "19" => "pc_athletics",
+    "20" => "pc_enchant",
+    "21" => "pc_destruction",
+    "22" => "pc_alteration",
+    "23" => "pc_illusion",
+    "24" => "pc_conjuration",
+    "25" => "pc_mysticism",
+    "26" => "pc_restoration",
+    "27" => "pc_alchemy",
+    "28" => "pc_unarmored",
+    "29" => "pc_security",
+    "30" => "pc_sneak",
+    "31" => "pc_acrobatics",
+    "32" => "pc_light_armor",
+    "33" => "pc_short_blade",
+    "34" => "pc_marksman",
+    "35" => "pc_mercantile",
+    "36" => "pc_speechcraft",
+    "37" => "pc_hand_to_hand",
+    "38" => "pc_gender",
+    "39" => "pc_expelled",
+    "40" => "pc_common_disease",
+    "41" => "pc_blight_disease",
+    "42" => "pc_clothing_modifier",
+    "43" => "pc_crime_level",
+    "44" => "same_gender",
+    "45" => "same_race",
+    "46" => "same_faction",
+    "47" => "faction_rank_diff",
+    "48" => "detected",
+    "49" => "alarmed",
+    "50" => "choice",
+    "51" => "pc_intelligence",
+    "52" => "pc_willpower",
+    "53" => "pc_agility",
+    "54" => "pc_speed",
+    "55" => "pc_endurance",
+    "56" => "pc_personality",
+    "57" => "pc_luck",
+    "58" => "pc_corprus",
+    "59" => "weather",
+    "60" => "pc_vampire",
+    "61" => "level",
+    "62" => "attacked",
+    "63" => "talked_to_pc",
+    "64" => "pc_health",
+    "65" => "creature_target",
+    "66" => "friend_hit",
+    "67" => "fight",
+    "68" => "hello",
+    "69" => "alarm",
+    "70" => "flee",
+    "71" => "should_attack",
+    "sX" => "not_local",
+    "JX" => "journal",
+    "IX" => "item",
+    "DX" => "dead",
+    "XX" => "not_id",
+    "FX" => "not_faction",
+    "CX" => "not_class",
+    "RX" => "not_race",
+    "LX" => "not_cell",
+    "fX" => "global"
+  }
 
-  @dialogue_operations %{"0" => "=", "1" => "!=", "2" => ">", "3" => ">=", "4" => "<", "5" => "<="}
+  @dialogue_operations %{
+    "0" => "=",
+    "1" => "!=",
+    "2" => ">",
+    "3" => ">=",
+    "4" => "<",
+    "5" => "<="
+  }
 
   @enchantment_types %{0 => "once", 1 => "on_strike", 2 => "when_used", 3 => "constant_effect"}
 
-  @magic_effect_names %{0 => "Water Breathing", 1 => "Swift Swim", 2 => "Water Walking",
-    3 => "Shield", 4 => "Fire Shield", 5 => "Lightning Shield", 6 => "Frost Shield", 7 => "Burden",
-    8 => "Feather", 9 => "Jump", 10 => "Levitate", 11 => "Slow Fall", 12 => "Lock", 13 => "Open",
-    14 => "Fire Damage", 15 => "Shock Damage", 16 => "Frost Damage", 17 => "Drain Attribute",
-    18 => "Drain Health", 19 => "Drain Magicka", 20 => "Drain Fatigue", 21 => "Drain Skill",
-    22 => "Damage Attribute", 23 => "Damage Health", 24 => "Damage Magicka", 25 => "Damage Fatigue",
-    26 => "Damage Skill", 27 => "Poison", 28 => "Weakness to Fire", 29 => "Weakness to Frost",
-    30 => "Weakness to Shock", 31 => "Weakness to Magicka", 32 => "Weakness to Common Disease",
-    33 => "Weakness to Blight Disease", 34 => "Weakness to Corprus Disease",
-    35 => "Weakness to Poison", 36 => "Weakness to Normal Weapons", 37 => "Disintegrate Weapon",
-    38 => "Disintegrate Armor", 39 => "Invisibility", 40 => "Chameleon", 41 => "Light",
-    42 => "Sanctuary", 43 => "Night Eye", 44 => "Charm", 45 => "Paralyze", 46 => "Silence",
-    47 => "Blind", 48 => "Sound", 49 => "Calm Humanoid", 50 => "Calm Creature",
-    51 => "Frenzy Humanoid", 52 => "Frenzy Creature", 53 => "Demoralize Humanoid",
-    54 => "Demoralize Creature", 55 => "Rally Humanoid", 56 => "Rally Creature", 57 => "Dispel",
-    58 => "Soul Trap", 59 => "Telekinesis", 60 => "Mark", 61 => "Recall",
-    62 => "Divine Intervention", 63 => "Almsivi Intervention", 64 => "Detect Animal",
-    65 => "Detect Enchantment", 66 => "Detect Key", 67 => "Spell Absorption", 68 => "Reflect",
-    69 => "Cure Common Disease", 70 => "Cure Blight Disease", 71 => "Cure Corprus Disease",
-    72 => "Cure Poison", 73 => "Cure Paralyzation", 74 => "Restore Attribute",
-    75 => "Restore Health", 76 => "Restore Magicka", 77 => "Restore Fatigue", 78 => "Restore Skill",
-    79 => "Fortify Attribute", 80 => "Fortify Health", 81 => "Fortify Magicka",
-    82 => "Fortify Fatigue", 83 => "Fortify Skill", 84 => "Fortify Maximum Magicka",
-    85 => "Absorb Attribute", 86 => "Abosrb Health", 87 => "Absorb Magicka", 88 => "Absorb Fatigue",
-    89 => "Absorb Skill", 90 => "Resist Fire", 91 => "Resist Frost", 92 => "Resist Shock",
-    93 => "Resist Magicka", 94 => "Resist Common Disease", 95 => "Resist Blight Disease",
-    96 => "Resist Corprus Disease", 97 => "Resist Poison", 98 => "Resist Normal Weapons",
-    99 => "Resist Paralysis", 100 => "Remove Curse", 101 => "Turn Undead", 102 => "Summon Scamp",
-    103 => "Summon Clannfear", 104 => "Summon Daedroth", 105 => "Summon Dremora",
-    106 => "Summon Ancestral Ghost", 107 => "Summon Skeletal Minion", 108 => "Summon Bonewalker",
-    109 => "Summon Greater Bonewalker", 110 => "Summon Bonelord", 111 => "Summon Winged Twilight",
-    112 => "Summon Hunger", 113 => "Summon Golden Saint", 114 => "Summon Flame Atronach",
-    115 => "Summon Frost Atronach", 116 => "Summon Storm Atronach", 117 => "Fortify Attack",
-    118 => "Command Creature", 119 => "Command Humanoid", 120 => "Bound Dagger",
-    121 => "Bound Longsword", 122 => "Bound Mace", 123 => "Bound Battleaxe", 124 => "Bound Spear",
-    125 => "Bound Longbow", 126 => "Extra Spell", 127 => "Bound Cuirass", 128 => "Bound Helm",
-    129 => "Bound Boots", 130 => "Bound Shield", 131 => "Bound Gloves", 132 => "Corprus",
-    133 => "Vampirism", 134 => "Summon Centurion Sphere", 135 => "Sun Damage",
-    136 => "Stunted Magicka", 137 => "Summon Fabricant", 138 => "Summon Wolf", 139 => "Summon Bear",
-    140 => "Summon Bonewolf", 141 => "Summon Creature 04 ???", 142 => "Summon Creature 05 ???"}
+  @magic_effect_names %{
+    0 => "Water Breathing",
+    1 => "Swift Swim",
+    2 => "Water Walking",
+    3 => "Shield",
+    4 => "Fire Shield",
+    5 => "Lightning Shield",
+    6 => "Frost Shield",
+    7 => "Burden",
+    8 => "Feather",
+    9 => "Jump",
+    10 => "Levitate",
+    11 => "Slow Fall",
+    12 => "Lock",
+    13 => "Open",
+    14 => "Fire Damage",
+    15 => "Shock Damage",
+    16 => "Frost Damage",
+    17 => "Drain Attribute",
+    18 => "Drain Health",
+    19 => "Drain Magicka",
+    20 => "Drain Fatigue",
+    21 => "Drain Skill",
+    22 => "Damage Attribute",
+    23 => "Damage Health",
+    24 => "Damage Magicka",
+    25 => "Damage Fatigue",
+    26 => "Damage Skill",
+    27 => "Poison",
+    28 => "Weakness to Fire",
+    29 => "Weakness to Frost",
+    30 => "Weakness to Shock",
+    31 => "Weakness to Magicka",
+    32 => "Weakness to Common Disease",
+    33 => "Weakness to Blight Disease",
+    34 => "Weakness to Corprus Disease",
+    35 => "Weakness to Poison",
+    36 => "Weakness to Normal Weapons",
+    37 => "Disintegrate Weapon",
+    38 => "Disintegrate Armor",
+    39 => "Invisibility",
+    40 => "Chameleon",
+    41 => "Light",
+    42 => "Sanctuary",
+    43 => "Night Eye",
+    44 => "Charm",
+    45 => "Paralyze",
+    46 => "Silence",
+    47 => "Blind",
+    48 => "Sound",
+    49 => "Calm Humanoid",
+    50 => "Calm Creature",
+    51 => "Frenzy Humanoid",
+    52 => "Frenzy Creature",
+    53 => "Demoralize Humanoid",
+    54 => "Demoralize Creature",
+    55 => "Rally Humanoid",
+    56 => "Rally Creature",
+    57 => "Dispel",
+    58 => "Soul Trap",
+    59 => "Telekinesis",
+    60 => "Mark",
+    61 => "Recall",
+    62 => "Divine Intervention",
+    63 => "Almsivi Intervention",
+    64 => "Detect Animal",
+    65 => "Detect Enchantment",
+    66 => "Detect Key",
+    67 => "Spell Absorption",
+    68 => "Reflect",
+    69 => "Cure Common Disease",
+    70 => "Cure Blight Disease",
+    71 => "Cure Corprus Disease",
+    72 => "Cure Poison",
+    73 => "Cure Paralyzation",
+    74 => "Restore Attribute",
+    75 => "Restore Health",
+    76 => "Restore Magicka",
+    77 => "Restore Fatigue",
+    78 => "Restore Skill",
+    79 => "Fortify Attribute",
+    80 => "Fortify Health",
+    81 => "Fortify Magicka",
+    82 => "Fortify Fatigue",
+    83 => "Fortify Skill",
+    84 => "Fortify Maximum Magicka",
+    85 => "Absorb Attribute",
+    86 => "Abosrb Health",
+    87 => "Absorb Magicka",
+    88 => "Absorb Fatigue",
+    89 => "Absorb Skill",
+    90 => "Resist Fire",
+    91 => "Resist Frost",
+    92 => "Resist Shock",
+    93 => "Resist Magicka",
+    94 => "Resist Common Disease",
+    95 => "Resist Blight Disease",
+    96 => "Resist Corprus Disease",
+    97 => "Resist Poison",
+    98 => "Resist Normal Weapons",
+    99 => "Resist Paralysis",
+    100 => "Remove Curse",
+    101 => "Turn Undead",
+    102 => "Summon Scamp",
+    103 => "Summon Clannfear",
+    104 => "Summon Daedroth",
+    105 => "Summon Dremora",
+    106 => "Summon Ancestral Ghost",
+    107 => "Summon Skeletal Minion",
+    108 => "Summon Bonewalker",
+    109 => "Summon Greater Bonewalker",
+    110 => "Summon Bonelord",
+    111 => "Summon Winged Twilight",
+    112 => "Summon Hunger",
+    113 => "Summon Golden Saint",
+    114 => "Summon Flame Atronach",
+    115 => "Summon Frost Atronach",
+    116 => "Summon Storm Atronach",
+    117 => "Fortify Attack",
+    118 => "Command Creature",
+    119 => "Command Humanoid",
+    120 => "Bound Dagger",
+    121 => "Bound Longsword",
+    122 => "Bound Mace",
+    123 => "Bound Battleaxe",
+    124 => "Bound Spear",
+    125 => "Bound Longbow",
+    126 => "Extra Spell",
+    127 => "Bound Cuirass",
+    128 => "Bound Helm",
+    129 => "Bound Boots",
+    130 => "Bound Shield",
+    131 => "Bound Gloves",
+    132 => "Corprus",
+    133 => "Vampirism",
+    134 => "Summon Centurion Sphere",
+    135 => "Sun Damage",
+    136 => "Stunted Magicka",
+    137 => "Summon Fabricant",
+    138 => "Summon Wolf",
+    139 => "Summon Bear",
+    140 => "Summon Bonewolf",
+    141 => "Summon Creature 04 ???",
+    142 => "Summon Creature 05 ???"
+  }
 
   # Mapping school IDs to their actual skill IDs.
   @magic_effect_schools %{0 => 11, 1 => 13, 2 => 10, 3 => 12, 4 => 14, 5 => 15}
 
-  @skill_names %{0 => "Block", 1 => "Armorer", 2 => "Medium Armor", 3 => "Heavy Armor",
-    4 => "Blunt Weapon", 5 => "Long Blade", 6 => "Axe", 7 => "Spear", 8 => "Athletics",
-    9 => "Enchant", 10 => "Destruction", 11 => "Alteration", 12 => "Illusion",
-    13 => "Conjuration", 14 => "Mysticism", 15 => "Restoration", 16 => "Alchemy",
-    17 => "Unarmored", 18 => "Security", 19 => "Sneak", 20 => "Acrobatics",
-    21 => "Light Armor", 22 => "Short Blade", 23 => "Marksman", 24 => "Mercantile",
-    25 => "Speechcraft", 26 => "Hand to Hand"}
+  @skill_names %{
+    0 => "Block",
+    1 => "Armorer",
+    2 => "Medium Armor",
+    3 => "Heavy Armor",
+    4 => "Blunt Weapon",
+    5 => "Long Blade",
+    6 => "Axe",
+    7 => "Spear",
+    8 => "Athletics",
+    9 => "Enchant",
+    10 => "Destruction",
+    11 => "Alteration",
+    12 => "Illusion",
+    13 => "Conjuration",
+    14 => "Mysticism",
+    15 => "Restoration",
+    16 => "Alchemy",
+    17 => "Unarmored",
+    18 => "Security",
+    19 => "Sneak",
+    20 => "Acrobatics",
+    21 => "Light Armor",
+    22 => "Short Blade",
+    23 => "Marksman",
+    24 => "Mercantile",
+    25 => "Speechcraft",
+    26 => "Hand to Hand"
+  }
 
   @spell_effect_types %{0 => "self", 1 => "touch", 2 => "target"}
 
-  @spell_types %{0 => "spell", 1 => "ability", 2 => "blight", 3 => "disease", 4 => "curse", 5 => "power"}
+  @spell_types %{
+    0 => "spell",
+    1 => "ability",
+    2 => "blight",
+    3 => "disease",
+    4 => "curse",
+    5 => "power"
+  }
 
-  @weapon_types %{0 => "short_blade_1_hand", 1 => "long_blade_1_hand", 2 => "long_blade_2_hand",
-    3 => "blunt_1_hand", 4 => "blunt_2_hand_close", 5 => "blunt_2_hand_wide", 6 => "spear",
-    7 => "axe_1_hand", 8 => "axe_2_hand", 9 => "bow", 10 => "crossbow", 11 => "thrown", 12 => "arrow",
-    13 => "bolt"}
+  @weapon_types %{
+    0 => "short_blade_1_hand",
+    1 => "long_blade_1_hand",
+    2 => "long_blade_2_hand",
+    3 => "blunt_1_hand",
+    4 => "blunt_2_hand_close",
+    5 => "blunt_2_hand_wide",
+    6 => "spear",
+    7 => "axe_1_hand",
+    8 => "axe_2_hand",
+    9 => "bow",
+    10 => "crossbow",
+    11 => "thrown",
+    12 => "arrow",
+    13 => "bolt"
+  }
 
   @doc """
   Format a single record read from an ESM file into a human-readable form, ready for further
@@ -117,7 +359,7 @@ defmodule Parser.EsmFormatter do
         id: "potion_skooma_01", model: "n\\Potion_Skooma_01.NIF", name: "Skooma", script: nil,
         texture: "n\\Tx_skooma_01.tga", value: 500, weight: 1.0}}
   """
-  @spec build_record(type :: String.t, raw_data :: map(), flags :: map()) :: {atom, map()}
+  @spec build_record(type :: String.t(), raw_data :: map(), flags :: map()) :: {atom, map()}
   def build_record("ALCH", %{"NAME" => id, "FNAM" => name, "ALDT" => data} = raw_data, _special) do
     {
       :potion,
@@ -128,7 +370,8 @@ defmodule Parser.EsmFormatter do
         icon: Map.get(raw_data, "TEXT"),
         model: Map.get(raw_data, "MODL"),
         script_id: Map.get(raw_data, "SCRI")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
     }
   end
 
@@ -136,7 +379,7 @@ defmodule Parser.EsmFormatter do
     {
       :apparatus,
       data
-      |> Map.update!(:type, &(Map.get(@apparatus_types, &1)))
+      |> Map.update!(:type, &Map.get(@apparatus_types, &1))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -151,7 +394,7 @@ defmodule Parser.EsmFormatter do
     {
       :armor,
       data
-      |> Map.update!(:type, &(Map.get(@armor_types, &1)))
+      |> Map.update!(:type, &Map.get(@armor_types, &1))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -200,13 +443,14 @@ defmodule Parser.EsmFormatter do
     {
       :cell,
       %{
-        name: (if name == "", do: Map.get(raw_data, "RGNN"), else: name),
+        name: if(name == "", do: Map.get(raw_data, "RGNN"), else: name),
         water_height: Map.get(raw_data, "WHGT"),
         map_color: Map.get(raw_data, "NAM5"),
-        references: raw_data
+        references:
+          raw_data
           |> Map.get("REFS", [])
           |> Enum.map(&format_cell_references/1)
-          |> Enum.reverse
+          |> Enum.reverse()
       }
       |> Map.merge(Map.get(raw_data, "DATA", %{}))
       |> Map.merge(Map.get(raw_data, "AMBI", %{}))
@@ -220,7 +464,8 @@ defmodule Parser.EsmFormatter do
         id: id,
         name: name,
         description: Map.get(raw_data, "DESC")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
     }
   end
 
@@ -228,7 +473,7 @@ defmodule Parser.EsmFormatter do
     {
       :clothing,
       data
-      |> Map.update!(:type, &(Map.get(@clothing_types, &1)))
+      |> Map.update!(:type, &Map.get(@clothing_types, &1))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -249,7 +494,8 @@ defmodule Parser.EsmFormatter do
         capacity: Map.get(raw_data, "CNDT"),
         items: Map.get(raw_data, "ITEM", []),
         model: Map.get(raw_data, "MODL")
-      } |> Map.merge(flags)
+      }
+      |> Map.merge(flags)
     }
   end
 
@@ -265,7 +511,7 @@ defmodule Parser.EsmFormatter do
     {
       :enchantment,
       data
-      |> Map.update!(:type, &(Map.get(@enchantment_types, &1)))
+      |> Map.update!(:type, &Map.get(@enchantment_types, &1))
       |> Map.merge(%{
         id: id,
         effects: raw_data |> Map.get("ENAM", []) |> format_magic_effects
@@ -331,11 +577,16 @@ defmodule Parser.EsmFormatter do
         icon: Map.get(raw_data, "ITEX"),
         script_id: Map.get(raw_data, "SCRI"),
         model: Map.get(raw_data, "MODL")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
     }
   end
 
-  def build_record("LEVI", %{"NAME" => id, "INDX" => length, "ENTR" => entries} = raw_data, _special) do
+  def build_record(
+        "LEVI",
+        %{"NAME" => id, "INDX" => length, "ENTR" => entries} = raw_data,
+        _special
+      ) do
     {
       :levelled_item,
       raw_data
@@ -358,7 +609,8 @@ defmodule Parser.EsmFormatter do
         model: Map.get(raw_data, "MODL"),
         icon: Map.get(raw_data, "ITEX"),
         script_id: Map.get(raw_data, "SCRI")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
     }
   end
 
@@ -366,8 +618,16 @@ defmodule Parser.EsmFormatter do
     {
       :magic_effect,
       data
-      |> Map.take([:base_cost, :color, :speed, :size, :size_cap, :spellmaking, :enchanting,
-        :negative])
+      |> Map.take([
+        :base_cost,
+        :color,
+        :speed,
+        :size,
+        :size_cap,
+        :spellmaking,
+        :enchanting,
+        :negative
+      ])
       |> Map.merge(map_magic_effect_fields(raw_data))
       |> Map.merge(%{
         id: id,
@@ -392,8 +652,11 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("NPC_", %{"NAME" => id, "FNAM" => name, "FLAG" => flags, "NPDT" => data} =
-    raw_data, special) do
+  def build_record(
+        "NPC_",
+        %{"NAME" => id, "FNAM" => name, "FLAG" => flags, "NPDT" => data} = raw_data,
+        special
+      ) do
     {
       :npc,
       %{
@@ -403,7 +666,8 @@ defmodule Parser.EsmFormatter do
         race_id: Map.get(raw_data, "RNAM"),
         faction_id: Map.get(raw_data, "ANAM"),
         script_id: Map.get(raw_data, "SCRI"),
-        items: raw_data
+        items:
+          raw_data
           |> Map.get("NPCO", [])
           |> Enum.map(fn {count, id} -> %{id: id, count: count} end),
         spell_ids: Map.get(raw_data, "NPCS", [])
@@ -423,7 +687,8 @@ defmodule Parser.EsmFormatter do
         model: Map.get(raw_data, "MODL"),
         icon: Map.get(raw_data, "ITEX"),
         script_id: Map.get(raw_data, "SCRI")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
     }
   end
 
@@ -440,7 +705,11 @@ defmodule Parser.EsmFormatter do
     }
   end
 
-  def build_record("REGN", %{"NAME" => id, "FNAM" => name, "WEAT" => weather, "CNAM" => color}, _special) do
+  def build_record(
+        "REGN",
+        %{"NAME" => id, "FNAM" => name, "WEAT" => weather, "CNAM" => color},
+        _special
+      ) do
     {
       :region,
       %{
@@ -461,7 +730,8 @@ defmodule Parser.EsmFormatter do
         model: Map.get(raw_data, "MODL"),
         icon: Map.get(raw_data, "ITEX"),
         script_id: Map.get(raw_data, "SCRI")
-      } |> Map.merge(data)
+      }
+      |> Map.merge(data)
     }
   end
 
@@ -491,7 +761,7 @@ defmodule Parser.EsmFormatter do
       :spell,
       raw_data
       |> Map.get("SPDT")
-      |> Map.update!(:type, &(Map.get(@spell_types, &1)))
+      |> Map.update!(:type, &Map.get(@spell_types, &1))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -504,7 +774,7 @@ defmodule Parser.EsmFormatter do
     {
       :weapon,
       data
-      |> Map.update!(:type, &(Map.get(@weapon_types, &1)))
+      |> Map.update!(:type, &Map.get(@weapon_types, &1))
       |> Map.merge(%{
         id: id,
         name: name,
@@ -519,6 +789,7 @@ defmodule Parser.EsmFormatter do
   def build_record(type, subrecords, _special), do: {type, subrecords}
 
   defp zip_faction_ranks(faction, [], _), do: faction
+
   defp zip_faction_ranks(faction, [name | names], [rank | ranks]) do
     faction
     |> Map.update!(:ranks, fn ranks -> ranks ++ [Map.put(rank, :name, name)] end)
@@ -531,9 +802,17 @@ defmodule Parser.EsmFormatter do
 
   defp map_magic_effect_fields(data) do
     mappings = %{
-      description: "DESC", icon: "ITEX", particle_texture: "PTEX", cast_visual: "CVFX",
-      bolt_visual: "BVFX", hit_visual: "HVFX", area_visual: "AVFX", cast_sound: "CSND",
-      bolt_sound: "BSND", hit_sound: "HSND", area_sound: "ASND"
+      description: "DESC",
+      icon: "ITEX",
+      particle_texture: "PTEX",
+      cast_visual: "CVFX",
+      bolt_visual: "BVFX",
+      hit_visual: "HVFX",
+      area_visual: "AVFX",
+      cast_sound: "CSND",
+      bolt_sound: "BSND",
+      hit_sound: "HSND",
+      area_sound: "ASND"
     }
 
     for {key, value} <- mappings, into: %{}, do: {key, data[value]}
@@ -550,6 +829,7 @@ defmodule Parser.EsmFormatter do
 
   defp readable_conditions(nil), do: []
   defp readable_conditions(conditions), do: conditions |> Enum.map(&condition/1)
+
   defp condition({%{function: fun, name: name, operator: op}, value}) do
     %{
       function: Map.fetch!(@dialogue_functions, fun),
@@ -561,7 +841,7 @@ defmodule Parser.EsmFormatter do
 
   defp format_magic_effects(effects) do
     Enum.map(effects, fn effect ->
-      Map.update!(effect, :type, &(Map.get(@spell_effect_types, &1)))
+      Map.update!(effect, :type, &Map.get(@spell_effect_types, &1))
     end)
   end
 

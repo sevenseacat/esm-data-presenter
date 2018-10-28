@@ -18,17 +18,17 @@ defmodule Codex.Ingredient.Effect do
   @skill_magic_effect_ids [21, 26, 78, 83, 89]
 
   schema "ingredient_effects" do
-    belongs_to :ingredient, Codex.Ingredient, type: :string
-    belongs_to :attribute, Codex.Attribute
-    belongs_to :magic_effect, Codex.MagicEffect
-    belongs_to :skill, Codex.Skill
+    belongs_to(:ingredient, Codex.Ingredient, type: :string)
+    belongs_to(:attribute, Codex.Attribute)
+    belongs_to(:magic_effect, Codex.MagicEffect)
+    belongs_to(:skill, Codex.Skill)
   end
 
   @doc """
   This function is used when inserting ingredient effects into the database directly, as opposed to
   creating effects as part of the parent ingredient record.
   """
-  @spec changeset(map) :: Ecto.Changeset.t
+  @spec changeset(map) :: Ecto.Changeset.t()
   def changeset(params) do
     %Codex.Ingredient.Effect{}
     |> cast(params, [:ingredient_id])
@@ -40,7 +40,7 @@ defmodule Codex.Ingredient.Effect do
   This function is used when creating ingredient effects as part of the parent ingredient record,
   as opposed to inserting effects directly.
   """
-  @spec changeset(%Codex.Ingredient.Effect{}, map) :: Ecto.Changeset.t
+  @spec changeset(%Codex.Ingredient.Effect{}, map) :: Ecto.Changeset.t()
   def changeset(schema, params) do
     params = strip_invalid_params(params)
 
@@ -55,20 +55,21 @@ defmodule Codex.Ingredient.Effect do
   end
 
   defp ensure_only_one_association_specified(
-    %Ecto.Changeset{changes: %{skill_id: skill_id, attribute_id: attribute_id}} = changeset
-  ) when is_integer(skill_id) and is_integer(attribute_id) do
+         %Ecto.Changeset{changes: %{skill_id: skill_id, attribute_id: attribute_id}} = changeset
+       )
+       when is_integer(skill_id) and is_integer(attribute_id) do
     add_error(changeset, :skill_id, "must be nil if an attribute ID is also provided")
   end
 
   defp ensure_only_one_association_specified(changeset), do: changeset
 
   defp strip_invalid_params(%{magic_effect_id: effect, skill_id: _skill, attribute_id: attribute})
-    when effect in @attribute_magic_effect_ids do
+       when effect in @attribute_magic_effect_ids do
     %{magic_effect_id: effect, skill_id: nil, attribute_id: attribute}
   end
 
   defp strip_invalid_params(%{magic_effect_id: effect, skill_id: skill, attribute_id: _attribute})
-    when effect in @skill_magic_effect_ids do
+       when effect in @skill_magic_effect_ids do
     %{magic_effect_id: effect, skill_id: skill, attribute_id: nil}
   end
 

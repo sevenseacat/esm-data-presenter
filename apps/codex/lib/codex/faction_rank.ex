@@ -17,22 +17,22 @@ defmodule Codex.Faction.Rank do
   @required_fields ~w(number name attribute_1 attribute_2 skill_1 skill_2 reputation)a
 
   schema "faction_ranks" do
-    field :number, :integer
-    field :name
-    field :attribute_1, :integer
-    field :attribute_2, :integer
-    field :skill_1, :integer
-    field :skill_2, :integer
-    field :reputation, :integer
+    field(:number, :integer)
+    field(:name)
+    field(:attribute_1, :integer)
+    field(:attribute_2, :integer)
+    field(:skill_1, :integer)
+    field(:skill_2, :integer)
+    field(:reputation, :integer)
 
-    belongs_to :faction, Codex.Faction, type: :string
+    belongs_to(:faction, Codex.Faction, type: :string)
   end
 
   @doc """
   This function is used when inserting faction ranks into the database directly, as opposed to
   creating ranks as part of the parent faction record.
   """
-  @spec changeset(map) :: Ecto.Changeset.t
+  @spec changeset(map) :: Ecto.Changeset.t()
   def changeset(params) do
     %Codex.Faction.Rank{}
     |> cast(params, [:faction_id])
@@ -44,7 +44,7 @@ defmodule Codex.Faction.Rank do
   This function is used when creating faction ranks as part of the parent faction record, as opposed
   to inserting ranks directly.
   """
-  @spec changeset(%Codex.Faction.Rank{}, map) :: Ecto.Changeset.t
+  @spec changeset(%Codex.Faction.Rank{}, map) :: Ecto.Changeset.t()
   def changeset(schema, params) do
     schema
     |> cast(params, @required_fields)

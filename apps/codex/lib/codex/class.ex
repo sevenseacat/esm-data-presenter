@@ -15,18 +15,18 @@ defmodule Codex.Class do
   @required_fields ~w(id attribute_1_id attribute_2_id playable specialization_id services vendors)a
 
   schema "classes" do
-    field :name
-    field :description
-    field :playable, :boolean
-    field :services, :map
-    field :vendors, :map
+    field(:name)
+    field(:description)
+    field(:playable, :boolean)
+    field(:services, :map)
+    field(:vendors, :map)
 
-    belongs_to :specialization, Codex.Specialization
-    belongs_to :attribute_1, Codex.Attribute
-    belongs_to :attribute_2, Codex.Attribute
+    belongs_to(:specialization, Codex.Specialization)
+    belongs_to(:attribute_1, Codex.Attribute)
+    belongs_to(:attribute_2, Codex.Attribute)
 
-    many_to_many :minor_skills, Codex.Skill, join_through: "minor_class_skills"
-    many_to_many :major_skills, Codex.Skill, join_through: "major_class_skills"
+    many_to_many(:minor_skills, Codex.Skill, join_through: "minor_class_skills")
+    many_to_many(:major_skills, Codex.Skill, join_through: "major_class_skills")
   end
 
   def all, do: __MODULE__
@@ -45,7 +45,7 @@ defmodule Codex.Class do
   defp add_class_skills(changeset, params, type) do
     skill_ids = Map.get(params, String.to_atom("#{type}_skill_ids"), [])
     assoc_name = String.to_atom("#{type}_skills")
-    skills = Repo.all(from s in Codex.Skill, where: s.id in ^skill_ids)
+    skills = Repo.all(from(s in Codex.Skill, where: s.id in ^skill_ids))
 
     changeset
     |> put_assoc(assoc_name, skills)

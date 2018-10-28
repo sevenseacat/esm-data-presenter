@@ -18,22 +18,22 @@ defmodule Codex.AppliedMagicEffect do
   @effect_types ~w(self touch target)
 
   schema "applied_magic_effects" do
-    field :area, :integer
-    field :duration, :integer
-    field :magnitude_min, :integer
-    field :magnitude_max, :integer
-    field :type
+    field(:area, :integer)
+    field(:duration, :integer)
+    field(:magnitude_min, :integer)
+    field(:magnitude_max, :integer)
+    field(:type)
 
-    belongs_to :attribute, Codex.Attribute
-    belongs_to :magic_effect, Codex.MagicEffect
-    belongs_to :skill, Codex.Skill
+    belongs_to(:attribute, Codex.Attribute)
+    belongs_to(:magic_effect, Codex.MagicEffect)
+    belongs_to(:skill, Codex.Skill)
 
-    belongs_to :enchantment, Codex.Enchantment, type: :string
-    belongs_to :potion, Codex.Potion, type: :string
-    belongs_to :spell, Codex.Spell, type: :string
+    belongs_to(:enchantment, Codex.Enchantment, type: :string)
+    belongs_to(:potion, Codex.Potion, type: :string)
+    belongs_to(:spell, Codex.Spell, type: :string)
   end
 
-  @spec changeset(%Codex.AppliedMagicEffect{}, map) :: Ecto.Changeset.t
+  @spec changeset(%Codex.AppliedMagicEffect{}, map) :: Ecto.Changeset.t()
   def changeset(schema \\ %Codex.AppliedMagicEffect{}, params) do
     schema
     |> cast(params, [:attribute_id, :skill_id | @required_fields])
@@ -50,8 +50,9 @@ defmodule Codex.AppliedMagicEffect do
   end
 
   defp ensure_only_one_association_specified(
-    %Ecto.Changeset{changes: %{skill_id: skill_id, attribute_id: attribute_id}} = changeset
-  ) when is_integer(skill_id) and is_integer(attribute_id) do
+         %Ecto.Changeset{changes: %{skill_id: skill_id, attribute_id: attribute_id}} = changeset
+       )
+       when is_integer(skill_id) and is_integer(attribute_id) do
     add_error(changeset, :skill_id, "must be nil if an attribute ID is also provided")
   end
 

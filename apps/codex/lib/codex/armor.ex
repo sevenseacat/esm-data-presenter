@@ -16,43 +16,45 @@ defmodule Codex.Armor do
     right_gauntlet shield left_bracer right_bracer)
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    field :enchantment_points, :integer
-    field :type, :string
-    field :health, :integer
-    field :armor_rating, :integer
-    field :weight_class
+    field(:enchantment_points, :integer)
+    field(:type, :string)
+    field(:health, :integer)
+    field(:armor_rating, :integer)
+    field(:weight_class)
 
-    belongs_to :enchantment, Codex.Enchantment, type: :string
-    belongs_to :script, Codex.Script, type: :string
+    belongs_to(:enchantment, Codex.Enchantment, type: :string)
+    belongs_to(:script, Codex.Script, type: :string)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   def weight_class(%{type: type, weight: weight}) when type in @armor_types do
-    [medium, heavy] = %{
-      ~w(boots) => [12.0, 18.0],
-      ~w(cuirass) => [18.0, 27.0],
-      ~w(greaves shield) => [9.0, 13.5],
-      ~w(left_bracer right_bracer left_gauntlet right_gauntlet helmet) => [3.0, 4.5],
-      ~w(left_pauldron right_pauldron) => [6.0, 9.0]
-    }
-    |> Enum.find(fn {types, _} -> Enum.member?(types, type) end)
-    |> elem(1)
+    [medium, heavy] =
+      %{
+        ~w(boots) => [12.0, 18.0],
+        ~w(cuirass) => [18.0, 27.0],
+        ~w(greaves shield) => [9.0, 13.5],
+        ~w(left_bracer right_bracer left_gauntlet right_gauntlet helmet) => [3.0, 4.5],
+        ~w(left_pauldron right_pauldron) => [6.0, 9.0]
+      }
+      |> Enum.find(fn {types, _} -> Enum.member?(types, type) end)
+      |> elem(1)
 
     cond do
       weight <= medium -> "light"
-      weight <= heavy  -> "medium"
-      true             -> "heavy"
+      weight <= heavy -> "medium"
+      true -> "heavy"
     end
   end
-  def weight_class(%{type: type}), do: raise "unknown armor type '#{type}'"
+
+  def weight_class(%{type: type}), do: raise("unknown armor type '#{type}'")
 
   def changeset(params) do
     %Codex.Armor{}
@@ -74,5 +76,6 @@ defmodule Codex.Armor do
   defp add_weight_class(changeset, %{type: _, weight: _} = params) do
     put_change(changeset, :weight_class, weight_class(params))
   end
+
   defp add_weight_class(changeset, _params), do: changeset
 end

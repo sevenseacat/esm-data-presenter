@@ -18,11 +18,11 @@ defmodule Codex.Skill do
   @required_fields ~w(id name description attribute_id specialization_id)a
 
   schema "skills" do
-    field :name
-    field :description
+    field(:name)
+    field(:description)
 
-    belongs_to :attribute, Codex.Attribute
-    belongs_to :specialization, Codex.Specialization
+    belongs_to(:attribute, Codex.Attribute)
+    belongs_to(:specialization, Codex.Specialization)
   end
 
   def all, do: __MODULE__

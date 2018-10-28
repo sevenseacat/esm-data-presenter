@@ -19,37 +19,43 @@ defmodule Codex.Weapon do
     bolt bow crossbow long_blade_1_hand long_blade_2_hand short_blade_1_hand spear thrown)
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    field :chop_min, :integer
-    field :chop_max, :integer
-    field :thrust_min, :integer
-    field :thrust_max, :integer
-    field :slash_min, :integer
-    field :slash_max, :integer
-    field :enchantment_points, :integer
-    field :type, :string
-    field :health, :integer
-    field :speed, :decimal
-    field :reach, :decimal
-    field :ignore_resistance, :boolean
-    field :silver, :boolean
+    field(:chop_min, :integer)
+    field(:chop_max, :integer)
+    field(:thrust_min, :integer)
+    field(:thrust_max, :integer)
+    field(:slash_min, :integer)
+    field(:slash_max, :integer)
+    field(:enchantment_points, :integer)
+    field(:type, :string)
+    field(:health, :integer)
+    field(:speed, :decimal)
+    field(:reach, :decimal)
+    field(:ignore_resistance, :boolean)
+    field(:silver, :boolean)
 
-    belongs_to :enchantment, Codex.Enchantment, type: :string
-    belongs_to :script, Codex.Script, type: :string
+    belongs_to(:enchantment, Codex.Enchantment, type: :string)
+    belongs_to(:script, Codex.Script, type: :string)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   def changeset(params) do
     %Codex.Weapon{}
-    |> cast(params, [:enchantment_id, :script_id, :silver, :ignore_resistance, :icon |
-      @required_fields])
+    |> cast(params, [
+      :enchantment_id,
+      :script_id,
+      :silver,
+      :ignore_resistance,
+      :icon
+      | @required_fields
+    ])
     |> validate_required(@required_fields)
     |> validate_number(:weight, greater_than_or_equal_to: 0)
     |> validate_number(:value, greater_than_or_equal_to: 0)

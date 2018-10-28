@@ -10,9 +10,10 @@ defmodule Parser.Import.Tool do
   alias Codex.Tool
 
   def filter_records(stream), do: Filter.by_types(stream, [:probe, :lockpick, :repair])
+
   def build_changeset({type, record}) do
     record
     |> Map.put(:type, Atom.to_string(type))
-    |> Tool.changeset
+    |> Tool.changeset()
   end
 end

@@ -12,12 +12,12 @@ defmodule Codex.Object do
   @primary_key {:id, :string, autogenerate: false}
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string)
+    field(:model)
+    field(:icon)
   end
 
   def as_references(objects) do

@@ -15,18 +15,18 @@ defmodule Codex.Apparatus do
   @apparatus_types ~w(mortar_pestle retort calcinator alembic)
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    field :type, :string
-    field :quality, :decimal
+    field(:type, :string)
+    field(:quality, :decimal)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   @spec changeset(map) :: %Ecto.Changeset{valid?: boolean}
   def changeset(params) do

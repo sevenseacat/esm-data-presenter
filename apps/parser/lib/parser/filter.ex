@@ -22,18 +22,16 @@ defmodule Parser.Filter do
   end
 
   def by_type(stream, selected_type) do
-    Stream.filter_map(
-      stream,
-      fn {type, _record} -> type == selected_type end,
-      fn {_type, record} -> record end
-    )
+    stream
+    |> Stream.filter(fn {type, _record} -> type == selected_type end)
+    |> Stream.map(fn {_type, record} -> record end)
   end
 
   @doc """
   Filter the stream of records parsed with `Tes.EsmFile` to only those of particular types, eg.
   `:book` or `:apparatus`.
 
-  The resulting stream will be consist of {type, %{data}} tuples.
+  The resulting stream will consist of {type, %{data}} tuples.
   """
   @spec by_types(stream :: %Stream{}, types :: [atom]) :: %Stream{}
   def by_types(stream, types) when is_list(types) do
@@ -54,9 +52,9 @@ defmodule Parser.Filter do
   """
   @spec condition_value?(%Stream{}, atom, any) :: boolean
   def condition_value?(dialogue, field, value) do
-    Enum.any?(Map.get(dialogue, :infos, []), fn(info) ->
+    Enum.any?(Map.get(dialogue, :infos, []), fn info ->
       if Map.get(info, :conditions) != nil do
-        Enum.any?(Map.get(info, :conditions), fn(condition) ->
+        Enum.any?(Map.get(info, :conditions), fn condition ->
           condition[field] == value
         end)
       else
@@ -73,7 +71,7 @@ defmodule Parser.Filter do
     |> Stream.transform([], fn e, acc ->
       case e do
         nil -> {[acc], nil}
-        {^key, _} -> {(if Enum.empty?(acc), do: [], else: [acc]), [e]}
+        {^key, _} -> {if(Enum.empty?(acc), do: [], else: [acc]), [e]}
         {:info, _} -> {[], acc ++ [e]}
       end
     end)

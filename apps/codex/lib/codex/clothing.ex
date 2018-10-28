@@ -15,21 +15,21 @@ defmodule Codex.Clothing do
   @armor_types ~w(amulet belt left_glove pants right_glove ring robe shirt shoes skirt)
 
   schema "objects" do
-    field :name
-    field :weight, :decimal
-    field :value, :integer
-    field :object_type, :string, default: @object_type
-    field :model
-    field :icon
+    field(:name)
+    field(:weight, :decimal)
+    field(:value, :integer)
+    field(:object_type, :string, default: @object_type)
+    field(:model)
+    field(:icon)
 
-    field :enchantment_points, :integer
-    field :type, :string
+    field(:enchantment_points, :integer)
+    field(:type, :string)
 
-    belongs_to :enchantment, Codex.Enchantment, type: :string
-    belongs_to :script, Codex.Script, type: :string
+    belongs_to(:enchantment, Codex.Enchantment, type: :string)
+    belongs_to(:script, Codex.Script, type: :string)
   end
 
-  def all, do: from o in __MODULE__, where: o.object_type == @object_type
+  def all, do: from(o in __MODULE__, where: o.object_type == @object_type)
 
   def changeset(params) do
     %Codex.Clothing{}

@@ -5,6 +5,6 @@ defmodule Parser.Import.RecordType do
   modules - but this does allow for customization for more complicated scenarios.
   """
 
-  @callback filter_records(Stream.t) :: Stream.t
-  @callback build_changeset(Struct.t) :: Ecto.Changeset.t
+  @callback filter_records(Stream.t()) :: Stream.t()
+  @callback build_changeset(Struct.t()) :: Ecto.Changeset.t()
 end

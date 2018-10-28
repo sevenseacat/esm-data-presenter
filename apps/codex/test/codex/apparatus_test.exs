@@ -1,7 +1,7 @@
 defmodule Codex.ApparatusTest do
   use Codex.ConnCase
   alias Codex.Apparatus
-  doctest Codex.Apparatus
+  #doctest Codex.Apparatus
 
   test "has a valid factory" do
     assert insert(:apparatus)

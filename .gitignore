@@ -20,3 +20,5 @@ erl_crash.dump
 
 # Where Inch outputs docs
 apps/*/docs/
+
+.elixir_ls
