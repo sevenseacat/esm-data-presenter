@@ -119,7 +119,7 @@ defmodule Parser.EsmFile do
   ###############################
 
   defp format_value(_type, name, value)
-       when name in ["NAME", "FNAM", "DESC", "NPCS", "ITEX", "PTEX", "SCRI"] do
+       when name in ["NAME", "FNAM", "DESC", "MAST", "NPCS", "ITEX", "PTEX", "SCRI"] do
     value
     |> strip_null
     |> String.replace(<<146>>, "’")
@@ -639,6 +639,20 @@ defmodule Parser.EsmFile do
       magnitude_max: max
     }
   end
+
+  defp format_value(
+         "TES3",
+         "HEDR",
+         <<version::lfloat, _::long, company::binary-32, description::binary-256, _::binary>>
+       ) do
+    %{
+      version: Float.round(version, 2),
+      company: strip_null(company),
+      description: strip_null(description)
+    }
+  end
+
+  defp format_value("TES3", "DATA", <<value::long64>>), do: value
 
   defp format_value(
          "WEAP",

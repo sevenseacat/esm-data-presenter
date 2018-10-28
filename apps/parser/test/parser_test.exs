@@ -11,6 +11,13 @@ defmodule ParserTest do
     {:ok, stream: EsmFile.stream("test/fixtures/Test.esm")}
   end
 
+  test "can read Master data", %{stream: stream} do
+    master = stream |> Filter.by_type(:master) |> Enum.to_list
+
+    assert length(master) == 1
+    assert List.first(master) == %{company: "", description: "", parent: nil, version: 1.3}
+  end
+
   test "can read Apparatus data", %{stream: stream} do
     apparatuses = stream |> Filter.by_type(:apparatus) |> Enum.to_list
 

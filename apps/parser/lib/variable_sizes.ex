@@ -7,18 +7,22 @@ defmodule VariableSizes do
       iex> <<value::long>> = File.read(file, 32)
   """
   defmacro long do
-    quote do: signed-little-integer-size(32)
+    quote do: signed - little - integer - size(32)
+  end
+
+  defmacro long64 do
+    quote do: signed - little - integer - size(64)
   end
 
   defmacro lfloat do
-    quote do: signed-little-float-size(32)
+    quote do: signed - little - float - size(32)
   end
 
   defmacro short do
-    quote do: signed-little-integer-size(16)
+    quote do: signed - little - integer - size(16)
   end
 
   defmacro byte do
-    quote do: signed-little-integer-size(8)
+    quote do: signed - little - integer - size(8)
   end
 end

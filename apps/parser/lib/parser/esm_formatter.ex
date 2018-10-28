@@ -770,6 +770,16 @@ defmodule Parser.EsmFormatter do
     }
   end
 
+  def build_record("TES3", %{"HEDR" => header} = raw_data, _special) do
+    {
+      :master,
+      %{
+        parent: Map.get(raw_data, "MAST")
+      }
+      |> Map.merge(header)
+    }
+  end
+
   def build_record("WEAP", %{"NAME" => id, "FNAM" => name, "WPDT" => data} = raw_data, _special) do
     {
       :weapon,
