@@ -1,9 +1,11 @@
 defmodule Codex.Tool do
   @moduledoc """
-  In-game physical tools used for nefarious (stealth) purposes. Two types that share identical data:
+  In-game physical tools used for nefarious (stealth) purposes. There are three types that share
+  identical data:
 
-  * Probes used for disarming traps, and
-  * Lockpicks used for picking locks.
+  * Probes used for disarming traps,
+  * Lockpicks used for picking locks, and
+  * Repair items used for repairing weapons and armour.
   """
 
   use Ecto.Schema

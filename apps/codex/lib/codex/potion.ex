@@ -3,7 +3,7 @@ defmodule Codex.Potion do
   Represents a physical, consumable potion in the game world.
 
   Potions can be purchased from alchemists or created by the player by using alchemy Apparatus.
-  Each potion has one or more effects on the player when ingested.
+  Each potion applies one or more magic effects on the player when ingested.
   """
 
   use Ecto.Schema

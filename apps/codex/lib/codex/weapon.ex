@@ -3,10 +3,10 @@ defmodule Codex.Weapon do
   Represents an in-game weapon that can be wielded by the player character or an NPC in the game
   world, to deal damage during combat.
 
-  There are many different types of weapons - most are ranged, but some are ranged and use
+  There are many different types of weapons - most are melee, but some are ranged and use
   projectiles, also considered to be weapons in their own right.
 
-  Bare fists (when no weapon is eqipped) can also be used in combat, but are not listed here.
+  Bare fists (when no weapon is equipped) can also be used in combat, but are not listed here.
   """
   use Ecto.Schema
   import Ecto.{Changeset, Query}

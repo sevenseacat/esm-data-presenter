@@ -54,12 +54,12 @@ Some of these won't be handled at all, but the list is here for completeness
 
 - LevelledItem
 - Race
-- NPC
-- Dialogue
+- NPC (depends on Potion, LevelledItem, Spell, Race)
+- Dialogue (depends on NPC, Race)
 - Journal
 - Region
-- Cell/Container
-- Birthsign
+- Cell/Container (depends on Region, NPC, and all Objects)
+- Birthsign (depends on Spell)
 
 ### Record types (probably) not going to be done
 
